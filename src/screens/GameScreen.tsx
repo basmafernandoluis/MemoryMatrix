@@ -11,7 +11,7 @@ import { UserProgress } from '../types';
 import { feedback } from '../utils/soundManager';
 
 interface GameScreenProps {
-  onGameOver: (score: number, level: number, progress: UserProgress | null) => void;
+  onGameOver: (score: number, level: number) => void;
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
@@ -39,10 +39,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
   useEffect(() => {
     if (gameState.isGameOver && gameStatus === 'gameover') {
       setTimeout(() => {
-        onGameOver(gameState.score, gameState.level, userProgress);
+        onGameOver(gameState.score, gameState.level);
       }, 1500);
     }
-  }, [gameState.isGameOver, gameStatus, gameState.score, gameState.level, userProgress, onGameOver]);
+  }, [gameState.isGameOver, gameStatus, gameState.score, gameState.level, onGameOver]);
 
   const handlePausePress = async () => {
     await feedback.buttonPress();
@@ -57,7 +57,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
 
   const handleQuit = () => {
     setShowPauseModal(false);
-    onGameOver(gameState.score, gameState.level, userProgress);
+    onGameOver(gameState.score, gameState.level);
   };
 
   // Show sequence animation

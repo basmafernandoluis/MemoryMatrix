@@ -17,6 +17,8 @@ export interface UserProgress {
   maxLevelReached: number;
   dailyChallenge?: DailyChallenge;
   achievements?: string[]; // IDs of unlocked achievements
+  displayName?: string; // Pseudo du joueur (éditable)
+  avatarEmoji?: string; // Emoji choisi comme avatar
 }
 
 export interface DailyChallenge {

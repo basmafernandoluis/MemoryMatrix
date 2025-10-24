@@ -1,18 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { UserProgress, DailyChallenge } from '../types';
 import { feedback } from '../utils/soundManager';
 import { getAchievementsWithStatus } from '../utils/achievements';
-import { ShineEffect } from '../components/ShineEffect';
 
 interface HomeScreenProps {
   onStartGame: () => void;
+  onOpenLeaderboard: () => void;
+  onOpenProfile: () => void;
   userProgress: UserProgress | null;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgress }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ 
+  onStartGame, 
+  onOpenLeaderboard, 
+  onOpenProfile,
+  userProgress 
+}) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -24,27 +30,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
 
   const achievements = userProgress ? getAchievementsWithStatus(userProgress) : [];
   const unlockedCount = achievements.filter(a => a.unlocked).length;
-  
-  // Track recently unlocked achievements (those in the last session)
-  const [recentlyUnlocked, setRecentlyUnlocked] = useState<Set<string>>(new Set());
-  
-  useEffect(() => {
-    // Check for newly unlocked achievements only when userProgress changes
-    if (!userProgress) return;
-    
-    const newUnlocked = new Set<string>();
-    const achievementsToCheck = getAchievementsWithStatus(userProgress);
-    achievementsToCheck.forEach(achievement => {
-      if (achievement.unlocked && achievement.progress === achievement.target) {
-        newUnlocked.add(achievement.id);
-      }
-    });
-    
-    // Only update if there are actual changes
-    if (newUnlocked.size > 0) {
-      setRecentlyUnlocked(newUnlocked);
-    }
-  }, [userProgress?.achievements?.length, userProgress?.totalGamesPlayed, userProgress?.highScore]);
 
   useEffect(() => {
     // Entrance animation
@@ -84,6 +69,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
   const handleStartGame = async () => {
     await feedback.buttonPress();
     onStartGame();
+  };
+
+  const handleOpenLeaderboard = async () => {
+    await feedback.buttonPress();
+    onOpenLeaderboard();
+  };
+
+  const handleOpenProfile = async () => {
+    await feedback.buttonPress();
+    onOpenProfile();
   };
 
   return (
@@ -156,6 +151,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
             <Text style={styles.playButtonText}>▶ JOUER</Text>
           </Pressable>
         </Animated.View>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.leaderboardButton,
+            pressed && styles.leaderboardButtonPressed,
+          ]}
+          onPress={handleOpenLeaderboard}
+        >
+          <Text style={styles.leaderboardButtonText}>🏆 CLASSEMENT</Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.profileButton,
+            pressed && styles.profileButtonPressed,
+          ]}
+          onPress={handleOpenProfile}
+        >
+          <Text style={styles.profileButtonText}>👤 PROFIL</Text>
+        </Pressable>
         
         <View style={styles.achievementsSection}>
           <Text style={styles.achievementsTitle}>
@@ -174,9 +189,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
                   !achievement.unlocked && styles.achievementCardLocked,
                 ]}
               >
-                {achievement.unlocked && recentlyUnlocked.has(achievement.id) && (
-                  <ShineEffect active={true} size={80} color="#FFD700" />
-                )}
                 <Text style={styles.achievementIcon}>{achievement.icon}</Text>
                 <Text style={[
                   styles.achievementTitle,
@@ -328,6 +340,44 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     letterSpacing: 1,
+  },
+  leaderboardButton: {
+    backgroundColor: COLORS.surface,
+    paddingVertical: 14,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: COLORS.warning,
+  },
+  leaderboardButtonPressed: {
+    opacity: 0.7,
+  },
+  leaderboardButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.warning,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  profileButton: {
+    backgroundColor: COLORS.surface,
+    paddingVertical: 14,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  profileButtonPressed: {
+    opacity: 0.7,
+  },
+  profileButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
   instructions: {
     backgroundColor: COLORS.surface,
