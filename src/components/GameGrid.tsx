@@ -22,6 +22,13 @@ const GridCell: React.FC<GridCellProps> = ({
 
   useEffect(() => {
     if (isHighlighted) {
+      // Import feedback at top of file will be added
+      const playFeedback = async () => {
+        const { feedback } = await import('../utils/soundManager');
+        await feedback.cellHighlight();
+      };
+      playFeedback();
+      
       Animated.sequence([
         Animated.timing(scaleAnim, {
           toValue: 1.1,
@@ -37,7 +44,9 @@ const GridCell: React.FC<GridCellProps> = ({
     }
   }, [isHighlighted, scaleAnim]);
 
-  const handlePress = () => {
+  const handlePress = async () => {
+    const { feedback } = await import('../utils/soundManager');
+    await feedback.cellClick();
     onPress(index);
   };
 

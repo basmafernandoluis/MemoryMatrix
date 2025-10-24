@@ -15,6 +15,25 @@ export interface UserProgress {
   totalGamesPlayed: number;
   highScore: number;
   maxLevelReached: number;
+  dailyChallenge?: DailyChallenge;
+  achievements?: string[]; // IDs of unlocked achievements
+}
+
+export interface DailyChallenge {
+  date: string; // Format YYYY-MM-DD
+  targetScore: number;
+  currentScore: number;
+  completed: boolean;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  progress?: number;
+  target?: number;
 }
 
 export type GameStatus = 'idle' | 'showing' | 'playing' | 'correct' | 'wrong' | 'gameover';

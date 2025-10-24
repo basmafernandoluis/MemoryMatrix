@@ -7,8 +7,10 @@ import {
   updateHighScore, 
   updateMaxLevel, 
   incrementGamesPlayed,
-  initializeUserProgress 
+  initializeUserProgress,
+  updateDailyChallengeProgress
 } from '../utils/storage';
+import { feedback } from '../utils/soundManager';
 
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -24,6 +26,7 @@ export const useGameLogic = () => {
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('idle');
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Load user progress on mount
   useEffect(() => {
@@ -85,7 +88,7 @@ export const useGameLogic = () => {
 
   // Handle user cell click
   const handleCellClick = useCallback((cellIndex: number) => {
-    if (gameState.isShowingSequence || gameState.isGameOver || gameStatus !== 'playing') {
+    if (gameState.isShowingSequence || gameState.isGameOver || gameStatus !== 'playing' || isPaused) {
       return;
     }
 
@@ -95,10 +98,12 @@ export const useGameLogic = () => {
     if (!GameEngine.isPartialSequenceCorrect(newUserSequence, gameState.currentSequence)) {
       // Wrong! Lose a life
       const newLives = gameState.lives - 1;
+      feedback.wrong();
       
       if (newLives <= 0) {
         setGameState(prev => ({ ...prev, lives: 0, isGameOver: true, userSequence: newUserSequence }));
         setGameStatus('gameover');
+        setTimeout(() => feedback.gameOver(), 500);
       } else {
         setGameState(prev => ({ ...prev, lives: newLives, userSequence: [] }));
         setGameStatus('wrong');
@@ -124,9 +129,11 @@ export const useGameLogic = () => {
         userSequence: newUserSequence,
       }));
       setGameStatus('correct');
+      feedback.correct();
       
-      // Update high score if needed
+      // Update high score and daily challenge
       updateHighScore(newTotalScore).then(async () => {
+        await updateDailyChallengeProgress(newTotalScore);
         const progress = await loadUserProgress();
         if (progress) {
           setUserProgress(progress);
@@ -138,7 +145,9 @@ export const useGameLogic = () => {
         if (gameState.level >= GAME_CONFIG.MAX_LEVEL) {
           setGameState(prev => ({ ...prev, isGameOver: true }));
           setGameStatus('gameover');
+          feedback.gameOver();
         } else {
+          feedback.levelUp();
           nextLevel();
         }
       }, GAME_CONFIG.FEEDBACK_DURATION);
@@ -146,7 +155,20 @@ export const useGameLogic = () => {
       // Correct so far, continue
       setGameState(prev => ({ ...prev, userSequence: newUserSequence }));
     }
-  }, [gameState, gameStatus, nextLevel]);
+  }, [gameState, gameStatus, nextLevel, isPaused]);
+
+  // Pause/Resume functions
+  const pauseGame = useCallback(() => {
+    if (!gameState.isGameOver && !gameState.isShowingSequence) {
+      setIsPaused(true);
+      setGameState(prev => ({ ...prev, isPaused: true }));
+    }
+  }, [gameState.isGameOver, gameState.isShowingSequence]);
+
+  const resumeGame = useCallback(() => {
+    setIsPaused(false);
+    setGameState(prev => ({ ...prev, isPaused: false }));
+  }, []);
 
   // Finish showing sequence
   const finishShowingSequence = useCallback(() => {
@@ -163,9 +185,12 @@ export const useGameLogic = () => {
     gameState,
     gameStatus,
     userProgress,
+    isPaused,
     startGame,
     handleCellClick,
     finishShowingSequence,
     resetGame,
+    pauseGame,
+    resumeGame,
   };
 };

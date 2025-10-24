@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
 import { UserProgress } from '../types';
 
@@ -11,16 +11,54 @@ interface GameHeaderProps {
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ level, score, lives, userProgress }) => {
+  const levelScale = useRef(new Animated.Value(1)).current;
+  const scoreScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Animate level change
+    Animated.sequence([
+      Animated.spring(levelScale, {
+        toValue: 1.3,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(levelScale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [level, levelScale]);
+
+  useEffect(() => {
+    // Animate score change
+    Animated.sequence([
+      Animated.spring(scoreScale, {
+        toValue: 1.2,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scoreScale, {
+        toValue: 1,
+        friction: 3,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [score, scoreScale]);
   return (
     <View style={styles.container}>
       <View style={styles.stat}>
         <Text style={styles.label}>Niveau</Text>
-        <Text style={styles.value}>{level}</Text>
+        <Animated.Text style={[styles.value, { transform: [{ scale: levelScale }] }]}>
+          {level}
+        </Animated.Text>
       </View>
       
       <View style={styles.stat}>
         <Text style={styles.label}>Score</Text>
-        <Text style={styles.value}>{score}</Text>
+        <Animated.Text style={[styles.value, { transform: [{ scale: scoreScale }] }]}>
+          {score}
+        </Animated.Text>
         {userProgress && userProgress.highScore > 0 && (
           <Text style={styles.highScore}>Record: {userProgress.highScore}</Text>
         )}
@@ -48,6 +86,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ level, score, lives, use
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
