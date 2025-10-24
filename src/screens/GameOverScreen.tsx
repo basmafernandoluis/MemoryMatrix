@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { UserProgress } from '../types';
 import { feedback } from '../utils/soundManager';
+import { ConfettiEffect } from '../components/ConfettiEffect';
+import { ShineEffect } from '../components/ShineEffect';
 
 interface GameOverScreenProps {
   score: number;
@@ -21,6 +23,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   onBackToHome,
 }) => {
   const isNewHighScore = userProgress && score >= userProgress.highScore;
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -51,8 +54,12 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
       useNativeDriver: true,
     }).start();
 
-    // New record banner animation
+    // New record effects
     if (isNewHighScore && score > 0) {
+      // Trigger confetti
+      setTimeout(() => setShowConfetti(true), 300);
+      
+      // Banner animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(bannerAnim, {
@@ -82,6 +89,8 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
   return (
     <SafeAreaView style={styles.container}>
+      <ConfettiEffect active={showConfetti} particleCount={50} />
+      
       <Animated.View 
         style={[
           styles.content,
@@ -123,6 +132,9 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
             { transform: [{ scale: scoreScale }] },
           ]}
         >
+          {isNewHighScore && score > 0 && (
+            <ShineEffect active={true} size={150} color="#FFD700" />
+          )}
           <Text style={styles.scoreLabel}>Score Final</Text>
           <Text style={styles.scoreValue}>{score}</Text>
           <Text style={styles.levelText}>Niveau atteint: {level}</Text>

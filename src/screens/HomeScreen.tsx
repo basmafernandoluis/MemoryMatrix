@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { UserProgress, DailyChallenge } from '../types';
 import { feedback } from '../utils/soundManager';
 import { getAchievementsWithStatus } from '../utils/achievements';
+import { ShineEffect } from '../components/ShineEffect';
 
 interface HomeScreenProps {
   onStartGame: () => void;
@@ -23,6 +24,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
 
   const achievements = userProgress ? getAchievementsWithStatus(userProgress) : [];
   const unlockedCount = achievements.filter(a => a.unlocked).length;
+  
+  // Track recently unlocked achievements (those in the last session)
+  const [recentlyUnlocked, setRecentlyUnlocked] = useState<Set<string>>(new Set());
+  
+  useEffect(() => {
+    // Check for newly unlocked achievements only when userProgress changes
+    if (!userProgress) return;
+    
+    const newUnlocked = new Set<string>();
+    const achievementsToCheck = getAchievementsWithStatus(userProgress);
+    achievementsToCheck.forEach(achievement => {
+      if (achievement.unlocked && achievement.progress === achievement.target) {
+        newUnlocked.add(achievement.id);
+      }
+    });
+    
+    // Only update if there are actual changes
+    if (newUnlocked.size > 0) {
+      setRecentlyUnlocked(newUnlocked);
+    }
+  }, [userProgress?.achievements?.length, userProgress?.totalGamesPlayed, userProgress?.highScore]);
 
   useEffect(() => {
     // Entrance animation
@@ -152,6 +174,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ onStartGame, userProgres
                   !achievement.unlocked && styles.achievementCardLocked,
                 ]}
               >
+                {achievement.unlocked && recentlyUnlocked.has(achievement.id) && (
+                  <ShineEffect active={true} size={80} color="#FFD700" />
+                )}
                 <Text style={styles.achievementIcon}>{achievement.icon}</Text>
                 <Text style={[
                   styles.achievementTitle,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244583405813",
+    "project_id": "memorymatrix-9781b",
+    "storage_bucket": "memorymatrix-9781b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244583405813:android:faf907b7cdb2e8f0c14dbc",
+        "android_client_info": {
+          "package_name": "com.appwizards.MemoryMatrix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrJynkA8O-YU6aOtgLb30gH0F2JHZj1b4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
