@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
+import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { LeaderboardEntry, LeaderboardPeriod, leaderboardService } from '../services/leaderboard';
 import { feedback } from '../utils/soundManager';
 
@@ -73,7 +74,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <Pressable
           style={({ pressed }) => [
@@ -217,13 +218,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.lg,
+    backgroundColor: COLORS.background,
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: BORDER_RADIUS.round,
     backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, ScrollView } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
-import { UserProgress, DailyChallenge } from '../types';
+import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
+import { UserProgress, DailyChallenge, Achievement } from '../types';
 import { feedback } from '../utils/soundManager';
 import { getAchievementsWithStatus } from '../utils/achievements';
 
@@ -10,6 +11,7 @@ interface HomeScreenProps {
   onStartGame: () => void;
   onOpenLeaderboard: () => void;
   onOpenProfile: () => void;
+  onOpenChallenges: () => void;
   userProgress: UserProgress | null;
 }
 
@@ -17,11 +19,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onStartGame, 
   onOpenLeaderboard, 
   onOpenProfile,
+  onOpenChallenges,
   userProgress 
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const dailyChallenge = userProgress?.dailyChallenge;
   const challengeProgress = dailyChallenge 
@@ -29,35 +33,35 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     : 0;
 
   const achievements = userProgress ? getAchievementsWithStatus(userProgress) : [];
-  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  const unlockedCount = achievements.filter((a: Achievement) => a.unlocked).length;
 
   useEffect(() => {
-    // Entrance animation
+    // Entrance animation - faster for better UX
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 500,
+        duration: 400,
         useNativeDriver: true,
       }),
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 8,
-        tension: 40,
+        friction: 10,
+        tension: 50,
         useNativeDriver: true,
       }),
     ]).start();
 
-    // Pulse animation for play button
+    // Subtle pulse animation for play button
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 1000,
+          toValue: 1.03,
+          duration: 1200,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: 1200,
           useNativeDriver: true,
         }),
       ])
@@ -79,6 +83,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const handleOpenProfile = async () => {
     await feedback.buttonPress();
     onOpenProfile();
+  };
+
+  const handleOpenChallenges = async () => {
+    await feedback.buttonPress();
+    onOpenChallenges();
   };
 
   return (
@@ -152,25 +161,41 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </Pressable>
         </Animated.View>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.leaderboardButton,
-            pressed && styles.leaderboardButtonPressed,
-          ]}
-          onPress={handleOpenLeaderboard}
-        >
-          <Text style={styles.leaderboardButtonText}>🏆 CLASSEMENT</Text>
-        </Pressable>
+        {/* Menu circulaire gaming */}
+        <View style={styles.menuContainer}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuIcon,
+              pressed && styles.menuIconPressed,
+            ]}
+            onPress={handleOpenLeaderboard}
+          >
+            <Text style={styles.menuIconEmoji}>🏆</Text>
+            <Text style={styles.menuIconLabel}>Classement</Text>
+          </Pressable>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.profileButton,
-            pressed && styles.profileButtonPressed,
-          ]}
-          onPress={handleOpenProfile}
-        >
-          <Text style={styles.profileButtonText}>👤 PROFIL</Text>
-        </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuIcon,
+              pressed && styles.menuIconPressed,
+            ]}
+            onPress={handleOpenChallenges}
+          >
+            <Text style={styles.menuIconEmoji}>🎯</Text>
+            <Text style={styles.menuIconLabel}>Défis</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuIcon,
+              pressed && styles.menuIconPressed,
+            ]}
+            onPress={handleOpenProfile}
+          >
+            <Text style={styles.menuIconEmoji}>👤</Text>
+            <Text style={styles.menuIconLabel}>Profil</Text>
+          </Pressable>
+        </View>
         
         <View style={styles.achievementsSection}>
           <Text style={styles.achievementsTitle}>
@@ -181,7 +206,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             showsHorizontalScrollIndicator={false}
             style={styles.achievementsScroll}
           >
-            {achievements.map(achievement => (
+            {achievements.map((achievement: Achievement) => (
               <View 
                 key={achievement.id} 
                 style={[
@@ -212,16 +237,87 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </ScrollView>
         </View>
         
-        <View style={styles.instructions}>
-          <Text style={styles.instructionTitle}>Comment jouer ?</Text>
-          <Text style={styles.instructionText}>
-            1. Mémorise la séquence qui s'illumine{'\n'}
-            2. Reproduis-la en cliquant sur les cases{'\n'}
-            3. La séquence s'allonge à chaque niveau{'\n'}
-            4. Tu as 3 vies, ne te trompe pas !
-          </Text>
-        </View>
+        {/* Instructions Button instead of full instructions */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.instructionsButton,
+            pressed && styles.instructionsButtonPressed,
+          ]}
+          onPress={async () => {
+            await feedback.buttonPress();
+            setShowInstructions(true);
+          }}
+        >
+          <Text style={styles.instructionsButtonText}>❓ Comment jouer ?</Text>
+        </Pressable>
       </Animated.View>
+
+      {/* Instructions Modal */}
+      <Modal
+        visible={showInstructions}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowInstructions(false)}
+      >
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setShowInstructions(false)}
+        >
+          <Pressable 
+            style={styles.modalContent}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text style={styles.modalTitle}>📚 Comment jouer ?</Text>
+            
+            <View style={styles.instructionsList}>
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>1️⃣</Text>
+                <Text style={styles.instructionItemText}>
+                  Mémorise la séquence de cases qui s'illuminent
+                </Text>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>2️⃣</Text>
+                <Text style={styles.instructionItemText}>
+                  Reproduis la séquence en cliquant sur les cases dans le bon ordre
+                </Text>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>3️⃣</Text>
+                <Text style={styles.instructionItemText}>
+                  La séquence s'allonge à chaque niveau (jusqu'à 30 niveaux !)
+                </Text>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>4️⃣</Text>
+                <Text style={styles.instructionItemText}>
+                  Tu as 5 vies. Attention, chaque erreur te fait perdre une vie !
+                </Text>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>⭐</Text>
+                <Text style={styles.instructionItemText}>
+                  Débloque 16 achievements et grimpe dans le classement !
+                </Text>
+              </View>
+            </View>
+            
+            <Pressable
+              style={styles.closeButton}
+              onPress={async () => {
+                await feedback.buttonPress();
+                setShowInstructions(false);
+              }}
+            >
+              <Text style={styles.closeButtonText}>C'est compris !</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -238,174 +334,285 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.massive,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
-    marginBottom: 5,
-    marginTop: 10,
+    marginBottom: SPACING.xs,
+    marginTop: SPACING.md,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.xl,
     color: COLORS.warning,
-    marginBottom: 20,
-    fontWeight: '600',
+    marginBottom: SPACING.xl,
+    fontWeight: FONT_WEIGHT.semibold,
   },
   dailyChallengeCard: {
     backgroundColor: COLORS.surface,
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
+    padding: SPACING.lg,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.lg,
     width: '100%',
     maxWidth: 350,
     borderWidth: 2,
     borderColor: COLORS.warning,
   },
   challengeTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.warning,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   challengeTarget: {
-    fontSize: 13,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: SPACING.md,
   },
   progressBarContainer: {
     height: 10,
     backgroundColor: COLORS.cellDefault,
-    borderRadius: 5,
+    borderRadius: BORDER_RADIUS.sm,
     overflow: 'hidden',
-    marginBottom: 10,
+    marginBottom: SPACING.md,
   },
   progressBar: {
     height: '100%',
     backgroundColor: COLORS.primary,
-    borderRadius: 5,
+    borderRadius: BORDER_RADIUS.sm,
   },
   progressBarCompleted: {
     backgroundColor: COLORS.success,
   },
   challengeProgress: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.sm,
     color: COLORS.text,
     textAlign: 'center',
-    fontWeight: '600',
+    fontWeight: FONT_WEIGHT.semibold,
   },
   statsContainer: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 15,
+    gap: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   statCard: {
     backgroundColor: COLORS.surface,
-    padding: 12,
-    borderRadius: 10,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
     minWidth: 80,
     alignItems: 'center',
+    ...SHADOW.small,
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.xxxl,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
   playButton: {
     backgroundColor: COLORS.primary,
     paddingHorizontal: 50,
-    paddingVertical: 16,
-    borderRadius: 25,
-    marginBottom: 20,
-    elevation: 5,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    paddingVertical: SPACING.lg,
+    borderRadius: BORDER_RADIUS.xl,
+    marginBottom: SPACING.xl,
+    ...SHADOW.medium,
   },
   playButtonPressed: {
     backgroundColor: COLORS.primary,
-    opacity: 0.8,
-    transform: [{ scale: 0.95 }],
+    opacity: 0.85,
+    transform: [{ scale: 0.97 }],
   },
   playButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.xxl,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
     letterSpacing: 1,
   },
+  menuContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: SPACING.xl,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xl,
+  },
+  menuIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOW.medium,
+    borderWidth: 2,
+    borderColor: 'rgba(74, 144, 226, 0.3)',
+  },
+  menuIconPressed: {
+    transform: [{ scale: 0.92 }],
+    opacity: 0.8,
+  },
+  menuIconEmoji: {
+    fontSize: 32,
+    marginBottom: 4,
+  },
+  menuIconLabel: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textSecondary,
+    fontWeight: FONT_WEIGHT.semibold,
+    textAlign: 'center',
+  },
   leaderboardButton: {
     backgroundColor: COLORS.surface,
-    paddingVertical: 14,
-    paddingHorizontal: 25,
-    borderRadius: 20,
-    marginBottom: 20,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.lg,
     borderWidth: 2,
     borderColor: COLORS.warning,
+    ...SHADOW.small,
   },
   leaderboardButtonPressed: {
-    opacity: 0.7,
+    opacity: 0.75,
+    transform: [{ scale: 0.98 }],
   },
   leaderboardButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.warning,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  challengesButton: {
+    backgroundColor: COLORS.surface,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.lg,
+    borderWidth: 2,
+    borderColor: COLORS.secondary,
+    ...SHADOW.small,
+  },
+  challengesButtonPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.98 }],
+  },
+  challengesButtonText: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.secondary,
     textAlign: 'center',
     letterSpacing: 0.5,
   },
   profileButton: {
     backgroundColor: COLORS.surface,
-    paddingVertical: 14,
-    paddingHorizontal: 25,
-    borderRadius: 20,
-    marginBottom: 20,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.lg,
     borderWidth: 2,
     borderColor: COLORS.primary,
+    ...SHADOW.small,
   },
   profileButtonPressed: {
-    opacity: 0.7,
+    opacity: 0.75,
+    transform: [{ scale: 0.98 }],
   },
   profileButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textAlign: 'center',
     letterSpacing: 0.5,
   },
-  instructions: {
+  instructionsButton: {
     backgroundColor: COLORS.surface,
-    padding: 15,
-    borderRadius: 12,
-    maxWidth: 350,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    marginBottom: SPACING.md,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    ...SHADOW.small,
   },
-  instructionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  instructionsButtonPressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.98 }],
+  },
+  instructionsButtonText: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
-    marginBottom: 8,
     textAlign: 'center',
   },
-  instructionText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    lineHeight: 20,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.xl,
+  },
+  modalContent: {
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xxl,
+    width: '100%',
+    maxWidth: 400,
+    ...SHADOW.large,
+  },
+  modalTitle: {
+    fontSize: FONT_SIZE.xxxl,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.primary,
+    textAlign: 'center',
+    marginBottom: SPACING.xxl,
+  },
+  instructionsList: {
+    gap: SPACING.lg,
+    marginBottom: SPACING.xxl,
+  },
+  instructionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: SPACING.md,
+  },
+  instructionNumber: {
+    fontSize: FONT_SIZE.xxl,
+    minWidth: 30,
+  },
+  instructionItemText: {
+    flex: 1,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text,
+    lineHeight: 22,
+  },
+  closeButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    alignItems: 'center',
+    ...SHADOW.medium,
+  },
+  closeButtonText: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.text,
   },
   achievementsSection: {
     width: '100%',
-    marginBottom: 15,
+    marginBottom: SPACING.lg,
   },
   achievementsTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: FONT_SIZE.md,
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
-    marginBottom: 10,
+    marginBottom: SPACING.md,
     textAlign: 'center',
   },
   achievementsScroll: {
@@ -413,9 +620,9 @@ const styles = StyleSheet.create({
   },
   achievementCard: {
     backgroundColor: COLORS.surface,
-    padding: 12,
-    borderRadius: 10,
-    marginRight: 8,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginRight: SPACING.sm,
     width: 100,
     alignItems: 'center',
     borderWidth: 2,
@@ -427,14 +634,14 @@ const styles = StyleSheet.create({
   },
   achievementIcon: {
     fontSize: 28,
-    marginBottom: 6,
+    marginBottom: SPACING.xs,
   },
   achievementTitle: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: SPACING.xs,
   },
   achievementTitleLocked: {
     color: COLORS.textSecondary,
@@ -448,11 +655,11 @@ const styles = StyleSheet.create({
   achievementProgress: {
     fontSize: 9,
     color: COLORS.primary,
-    marginTop: 4,
-    fontWeight: '600',
+    marginTop: SPACING.xs,
+    fontWeight: FONT_WEIGHT.semibold,
   },
   achievementUnlocked: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.lg,
     color: COLORS.success,
     position: 'absolute',
     top: 4,

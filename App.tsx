@@ -8,16 +8,19 @@ import { GameScreen } from './src/screens/GameScreen';
 import { GameOverScreen } from './src/screens/GameOverScreen';
 import { LeaderboardScreen } from './src/screens/LeaderboardScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { ChallengesScreen } from './src/screens/ChallengesScreen';
 import { initializeAudio } from './src/utils/soundManager';
+import { hasCompletedOnboarding, setOnboardingCompleted } from './src/utils/storage';
 import { UserProgress } from './src/types';
 import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
 
-type Screen = 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile';
+type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('onboarding');
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [gameResult, setGameResult] = useState({ score: 0, level: 1 });
@@ -27,6 +30,9 @@ export default function App() {
   useEffect(() => {
     const initialize = async () => {
       await initializeAudio();
+      
+      // Check if onboarding has been completed
+      const onboardingCompleted = await hasCompletedOnboarding();
       
       // Listen to auth state changes
       const unsubscribe = firebaseService.onAuthStateChanged(async (user) => {
@@ -42,10 +48,10 @@ export default function App() {
             const newProgress = await firestoreService.initializeUser(user.uid);
             setUserProgress(newProgress);
           }
-          setCurrentScreen('home');
+          setCurrentScreen(onboardingCompleted ? 'home' : 'onboarding');
         } else {
-          // No user signed in, show login
-          setCurrentScreen('login');
+          // No user signed in, show login or onboarding
+          setCurrentScreen(onboardingCompleted ? 'login' : 'onboarding');
         }
         setIsLoading(false);
       });
@@ -143,6 +149,14 @@ export default function App() {
     transitionToScreen('home');
   };
 
+  const handleOpenChallenges = () => {
+    transitionToScreen('challenges');
+  };
+
+  const handleCloseChallenges = () => {
+    transitionToScreen('home');
+  };
+
   const handleProfileUpdated = (updatedProgress: UserProgress) => {
     setUserProgress(updatedProgress);
   };
@@ -152,9 +166,18 @@ export default function App() {
     setCurrentScreen('login');
   };
 
+  const handleOnboardingComplete = async () => {
+    await setOnboardingCompleted();
+    // If user is logged in, go to home, otherwise go to login
+    transitionToScreen(currentUser ? 'home' : 'login');
+  };
+
   return (
     <SafeAreaProvider>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        {currentScreen === 'onboarding' && (
+          <OnboardingScreen onComplete={handleOnboardingComplete} />
+        )}
         {currentScreen === 'login' && (
           <LoginScreen 
             onGuestLogin={handleGuestLogin}
@@ -166,6 +189,7 @@ export default function App() {
             onStartGame={handleStartGame}
             onOpenLeaderboard={handleOpenLeaderboard}
             onOpenProfile={handleOpenProfile}
+            onOpenChallenges={handleOpenChallenges}
             userProgress={userProgress}
           />
         )}
@@ -179,14 +203,23 @@ export default function App() {
           <ProfileScreen
             userProgress={userProgress}
             userId={currentUser.uid}
+            isAnonymous={currentUser.isAnonymous}
             onBack={handleCloseProfile}
             onSignOut={handleSignOut}
             onProfileUpdated={handleProfileUpdated}
           />
         )}
+        {currentScreen === 'challenges' && currentUser && (
+          <ChallengesScreen
+            userId={currentUser.uid}
+            onBack={handleCloseChallenges}
+            onRewardClaimed={handleProfileUpdated}
+          />
+        )}
         {currentScreen === 'game' && (
           <GameScreen 
             onGameOver={handleGameOver}
+            userId={currentUser?.uid || null}
           />
         )}
         {currentScreen === 'gameover' && (

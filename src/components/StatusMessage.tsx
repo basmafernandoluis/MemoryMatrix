@@ -1,46 +1,49 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
+import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
 import { GameStatus } from '../types';
 
 interface StatusMessageProps {
   gameStatus: GameStatus;
   isShowingSequence: boolean;
   sequenceLength: number;
+  level?: number; // Add level prop for encouraging messages
 }
 
 export const StatusMessage: React.FC<StatusMessageProps> = ({
   gameStatus,
   isShowingSequence,
   sequenceLength,
+  level = 1,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
   useEffect(() => {
-    // Animate message changes
+    // Minimal message change animation - faster and subtler
     Animated.sequence([
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 150,
+          duration: 100,
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 150,
+          toValue: 0.95,
+          duration: 100,
           useNativeDriver: true,
         }),
       ]),
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 150,
+          duration: 100,
           useNativeDriver: true,
         }),
-        Animated.spring(scaleAnim, {
+        Animated.timing(scaleAnim, {
           toValue: 1,
-          friction: 6,
+          duration: 100,
           useNativeDriver: true,
         }),
       ]),
@@ -49,7 +52,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   const getMessage = () => {
     if (gameStatus === 'showing' && isShowingSequence) {
       return {
-        text: `Mémorise la séquence (${sequenceLength} cases)`,
+        text: `Mémorise la séquence (${sequenceLength} case${sequenceLength > 1 ? 's' : ''})`,
         color: COLORS.primary,
       };
     }
@@ -60,14 +63,33 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
       };
     }
     if (gameStatus === 'correct') {
+      // Encouraging messages based on milestones
+      if (level === 5) {
+        return { text: '🎯 Niveau 5 ! Tu es sur la bonne voie !', color: COLORS.success };
+      }
+      if (level === 10) {
+        return { text: '🏆 Niveau 10 ! Tu es un Maître !', color: COLORS.warning };
+      }
+      if (level === 15) {
+        return { text: '🏅 Niveau 15 ! Champion !', color: COLORS.warning };
+      }
+      if (level === 20) {
+        return { text: '🏆 Niveau 20 ! Expert confirmé !', color: COLORS.warning };
+      }
+      if (level === 25) {
+        return { text: '👑 Niveau 25 ! Tu es une Légende !', color: COLORS.warning };
+      }
+      if (level === 30) {
+        return { text: '💎 NIVEAU 30 ! GÉNIE ABSOLU !', color: COLORS.warning };
+      }
       return {
-        text: '✓ Excellent ! Niveau suivant...',
+        text: '✓ Excellent ! Continue comme ça !',
         color: COLORS.success,
       };
     }
     if (gameStatus === 'wrong') {
       return {
-        text: '✗ Erreur ! Réessaye...',
+        text: '✗ Pas grave ! Réessaye, tu vas y arriver !',
         color: COLORS.error,
       };
     }
@@ -99,15 +121,15 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
-    paddingHorizontal: 15,
+    paddingVertical: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
     minHeight: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
   message: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.semibold,
     textAlign: 'center',
   },
 });

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Pressable } from 'react-native';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
+import { BORDER_RADIUS } from '../constants/designTokens';
 import { GameStatus } from '../types';
 
 interface GridCellProps {
@@ -29,15 +30,16 @@ const GridCell: React.FC<GridCellProps> = ({
       };
       playFeedback();
       
+      // Faster, subtler scale animation
       Animated.sequence([
         Animated.timing(scaleAnim, {
-          toValue: 1.1,
-          duration: 100,
+          toValue: 1.08,
+          duration: 80,
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
           toValue: 1,
-          duration: 100,
+          duration: 80,
           useNativeDriver: true,
         }),
       ]).start();
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
   cell: {
     width: GAME_CONFIG.CELL_SIZE,
     height: GAME_CONFIG.CELL_SIZE,
-    borderRadius: 10,
+    borderRadius: BORDER_RADIUS.md,
     backgroundColor: COLORS.cellDefault,
   },
 });

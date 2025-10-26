@@ -22,6 +22,8 @@ export const useGameLogic = () => {
     isShowingSequence: false,
     isGameOver: false,
     isPaused: false,
+    hintsRemaining: 3, // 3 astuces par partie
+    isHintReplay: false, // Pas de replay hint au départ
   });
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('idle');
@@ -49,6 +51,8 @@ export const useGameLogic = () => {
       isShowingSequence: true,
       isGameOver: false,
       isPaused: false,
+      hintsRemaining: 3, // Reset hints at start
+      isHintReplay: false,
     });
     setGameStatus('showing');
     
@@ -172,9 +176,35 @@ export const useGameLogic = () => {
 
   // Finish showing sequence
   const finishShowingSequence = useCallback(() => {
-    setGameState(prev => ({ ...prev, isShowingSequence: false }));
+    setGameState(prev => ({ 
+      ...prev, 
+      isShowingSequence: false,
+      isHintReplay: false, // Reset hint replay flag
+    }));
     setGameStatus('playing');
   }, []);
+
+  // Use a hint - replays the sequence slowly
+  const useHint = useCallback(() => {
+    if (gameState.hintsRemaining > 0 && gameStatus === 'playing') {
+      // Decrement hint counter and reset user sequence to replay
+      setGameState(prev => ({
+        ...prev,
+        hintsRemaining: prev.hintsRemaining - 1,
+        userSequence: [], // Reset so player can try again
+        isShowingSequence: true, // Show sequence again
+        isHintReplay: true, // Mark as hint replay for slower speed
+      }));
+      
+      setGameStatus('showing');
+      
+      // Play feedback
+      feedback.cellClick();
+      
+      return true; // Hint used successfully
+    }
+    return false; // Cannot use hint
+  }, [gameState, gameStatus]);
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -192,5 +222,6 @@ export const useGameLogic = () => {
     resetGame,
     pauseGame,
     resumeGame,
+    useHint,
   };
 };

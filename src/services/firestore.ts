@@ -1,9 +1,10 @@
 import { firestore } from './firebase';
-import { UserProgress, DailyChallenge } from '../types';
+import { UserProgress, DailyChallenge, ChallengeProgress, DailyChallengeExtended } from '../types';
 import { checkAchievements } from '../utils/achievements';
 
 const USERS_COLLECTION = 'users';
 const DISPLAYNAMES_COLLECTION = 'displayNames';
+const CHALLENGES_COLLECTION = 'challenges';
 
 export class FirestoreService {
   // Get user progress from Firestore
@@ -304,6 +305,76 @@ export class FirestoreService {
     } catch (error) {
       console.error('Error checking displayName uniqueness:', error);
       return false;
+    }
+  }
+
+  // ============================================
+  // CHALLENGE MANAGEMENT - Phase 8
+  // ============================================
+
+  /**
+   * Get challenge progress for a user
+   */
+  async getChallengeProgress(userId: string): Promise<ChallengeProgress | null> {
+    try {
+      const doc = await firestore()
+        .collection(CHALLENGES_COLLECTION)
+        .doc(userId)
+        .get();
+
+      if (!doc.exists) {
+        return null;
+      }
+
+      return doc.data() as ChallengeProgress;
+    } catch (error) {
+      console.error('Error getting challenge progress:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Save challenge progress
+   */
+  async saveChallengeProgress(progress: ChallengeProgress): Promise<void> {
+    try {
+      await firestore()
+        .collection(CHALLENGES_COLLECTION)
+        .doc(progress.userId)
+        .set(progress, { merge: true });
+    } catch (error) {
+      console.error('Error saving challenge progress:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update user coins and XP after claiming challenge reward
+   */
+  async claimChallengeReward(
+    userId: string,
+    xp: number,
+    coins: number
+  ): Promise<UserProgress> {
+    try {
+      const currentProgress = await this.getUserProgress(userId);
+      
+      const updatedProgress: UserProgress = {
+        ...currentProgress,
+        highScore: currentProgress?.highScore || 0,
+        maxLevelReached: currentProgress?.maxLevelReached || 1,
+        totalGamesPlayed: currentProgress?.totalGamesPlayed || 0,
+        achievements: currentProgress?.achievements || [],
+        xp: (currentProgress?.xp || 0) + xp,
+        coins: (currentProgress?.coins || 0) + coins,
+      };
+
+      await this.saveUserProgress(userId, updatedProgress);
+
+      return updatedProgress;
+    } catch (error) {
+      console.error('Error claiming challenge reward:', error);
+      throw error;
     }
   }
 }

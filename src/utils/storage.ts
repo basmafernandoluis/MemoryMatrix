@@ -6,6 +6,7 @@ import { checkAchievements } from './achievements';
 const STORAGE_KEYS = {
   USER_PROGRESS: '@MemoryMatrix:userProgress',
   HIGH_SCORE: '@MemoryMatrix:highScore',
+  ONBOARDING_COMPLETED: '@MemoryMatrix:onboardingCompleted',
 };
 
 // Helper to get today's date in YYYY-MM-DD format
@@ -196,6 +197,26 @@ export const clearAllData = async (): Promise<void> => {
     await AsyncStorage.removeItem(STORAGE_KEYS.USER_PROGRESS);
   } catch (error) {
     console.error('Error clearing data:', error);
+  }
+};
+
+// Check if onboarding has been completed
+export const hasCompletedOnboarding = async (): Promise<boolean> => {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+    return value === 'true';
+  } catch (error) {
+    console.error('Error checking onboarding status:', error);
+    return false;
+  }
+};
+
+// Mark onboarding as completed
+export const setOnboardingCompleted = async (): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+  } catch (error) {
+    console.error('Error setting onboarding completed:', error);
   }
 };
 

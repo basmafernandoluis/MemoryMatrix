@@ -1,14 +1,14 @@
 // Game Engine - Core logic for Memory Matrix Phase 1
 
-import { GAME_CONFIG } from '../constants/gameConfig';
+import { GAME_CONFIG, getSequenceLength, getLevelBonusPoints } from '../constants/gameConfig';
 
 export class GameEngine {
   /**
    * Generate a random sequence based on current level
+   * Uses the new getSequenceLength function for gentle progression
    */
   static generateSequence(level: number, gridSize: number = GAME_CONFIG.GRID_SIZE): number[] {
-    const sequenceLength = GAME_CONFIG.SEQUENCE_BASE_LENGTH + 
-                          (level - 1) * GAME_CONFIG.SEQUENCE_INCREMENT;
+    const sequenceLength = getSequenceLength(level);
     const maxCellIndex = gridSize * gridSize;
     const sequence: number[] = [];
     
@@ -33,11 +33,15 @@ export class GameEngine {
   }
 
   /**
-   * Calculate score for completing a level
+   * Calculate score for completing a level (with milestone bonuses)
    */
   static calculateLevelScore(level: number): number {
-    return GAME_CONFIG.POINTS_PER_LEVEL * level + 
-           (GAME_CONFIG.SEQUENCE_BASE_LENGTH + (level - 1)) * GAME_CONFIG.POINTS_PER_CORRECT_CELL;
+    const sequenceLength = getSequenceLength(level);
+    const baseScore = GAME_CONFIG.POINTS_PER_LEVEL * level + 
+                     sequenceLength * GAME_CONFIG.POINTS_PER_CORRECT_CELL;
+    const bonusPoints = getLevelBonusPoints(level);
+    
+    return baseScore + bonusPoints;
   }
 
   /**

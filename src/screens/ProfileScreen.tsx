@@ -8,14 +8,18 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserProgress } from '../types';
 import { firebaseService } from '../services/firebase';
 import { firestoreService } from '../services/firestore';
 import { EditProfileModal } from '../components/EditProfileModal';
+import { COLORS } from '../constants/gameConfig';
+import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
 
 interface ProfileScreenProps {
   userProgress: UserProgress | null;
   userId: string;
+  isAnonymous: boolean;
   onBack: () => void;
   onSignOut: () => void;
   onProfileUpdated: (progress: UserProgress) => void;
@@ -24,6 +28,7 @@ interface ProfileScreenProps {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   userProgress,
   userId,
+  isAnonymous,
   onBack,
   onSignOut,
   onProfileUpdated,
@@ -90,18 +95,19 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   };
 
   const achievementCount = userProgress?.achievements?.length || 0;
-  const totalAchievements = 6; // Total achievements available
+  const totalAchievements = 16; // Total achievements available (7 levels + 4 games + 5 scores)
 
   return (
-    <LinearGradient colors={['#1a1a2e', '#16213e', '#0f3460']} style={styles.container}>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <Text style={styles.backButtonText}>← Retour</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Mon Profil</Text>
-        </View>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <LinearGradient colors={['#1a1a2e', '#16213e', '#0f3460']} style={styles.container}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={onBack}>
+              <Text style={styles.backButtonText}>← Retour</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>Mon Profil</Text>
+          </View>
 
         {/* User Info Card */}
         <View style={styles.card}>
@@ -111,7 +117,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
           </View>
           <Text style={styles.username}>{displayName}</Text>
-          <Text style={styles.userId}>ID: {userId.substring(0, 8)}...</Text>
           
           {/* Edit Profile Button */}
           <TouchableOpacity
@@ -172,16 +177,31 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </View>
         </View>
 
-        {/* Sign Out Button */}
-        <TouchableOpacity
-          style={[styles.signOutButton, isSigningOut && styles.signOutButtonDisabled]}
-          onPress={handleSignOut}
-          disabled={isSigningOut}
-        >
-          <Text style={styles.signOutButtonText}>
-            {isSigningOut ? 'Déconnexion...' : '🚪 Se Déconnecter'}
-          </Text>
-        </TouchableOpacity>
+        {/* Sign Out Button - Only for non-anonymous users */}
+        {!isAnonymous && (
+          <TouchableOpacity
+            style={[styles.signOutButton, isSigningOut && styles.signOutButtonDisabled]}
+            onPress={handleSignOut}
+            disabled={isSigningOut}
+          >
+            <Text style={styles.signOutButtonText}>
+              {isSigningOut ? 'Déconnexion...' : '🚪 Se Déconnecter'}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Info for anonymous users */}
+        {isAnonymous && (
+          <View style={styles.anonymousInfo}>
+            <Text style={styles.anonymousIcon}>💡</Text>
+            <Text style={styles.anonymousText}>
+              Votre profil est sauvegardé sur cet appareil
+            </Text>
+            <Text style={styles.anonymousTextSmall}>
+              Astuce : Ne vous déconnectez pas pour conserver vos données !
+            </Text>
+          </View>
+        )}
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Memory Matrix v1.0</Text>
@@ -198,10 +218,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         onCancel={() => setIsEditModalVisible(false)}
       />
     </LinearGradient>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
+  },
   container: {
     flex: 1,
   },
@@ -209,19 +234,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    padding: SPACING.xl,
     paddingBottom: 40,
   },
   header: {
-    marginBottom: 30,
+    marginBottom: SPACING.xxl,
   },
   backButton: {
-    marginBottom: 15,
+    marginBottom: SPACING.lg,
+    paddingLeft: SPACING.xs,
   },
   backButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    color: COLORS.text,
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.semibold,
   },
   title: {
     fontSize: 32,
@@ -258,11 +284,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 5,
-  },
-  userId: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 5,
   },
   editButton: {
@@ -369,6 +390,32 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  anonymousInfo: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderRadius: 15,
+    padding: 20,
+    marginTop: 10,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 193, 7, 0.3)',
+    alignItems: 'center',
+  },
+  anonymousIcon: {
+    fontSize: 32,
+    marginBottom: 10,
+  },
+  anonymousText: {
+    color: '#FFC107',
+    fontSize: 15,
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  anonymousTextSmall: {
+    color: '#FFC107',
+    fontSize: 13,
+    textAlign: 'center',
+    opacity: 0.8,
   },
   footer: {
     marginTop: 30,

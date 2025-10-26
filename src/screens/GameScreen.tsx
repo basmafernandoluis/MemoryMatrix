@@ -6,15 +6,18 @@ import { GameGrid } from '../components/GameGrid';
 import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
 import { useGameLogic } from '../hooks/useGameLogic';
+import { useChallengeTracking } from '../hooks/useChallengeTracking';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
+import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { UserProgress } from '../types';
 import { feedback } from '../utils/soundManager';
 
 interface GameScreenProps {
   onGameOver: (score: number, level: number) => void;
+  userId: string | null;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) => {
   const {
     gameState,
     gameStatus,
@@ -25,19 +28,48 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
     finishShowingSequence,
     pauseGame,
     resumeGame,
+    useHint,
   } = useGameLogic();
+
+  // Challenge tracking hook
+  const challengeTracking = useChallengeTracking(userId);
 
   const [highlightedCell, setHighlightedCell] = useState<number | null>(null);
   const [showPauseModal, setShowPauseModal] = useState(false);
+  const [previousLevel, setPreviousLevel] = useState(1);
+  const [previousScore, setPreviousScore] = useState(0);
 
   // Start game on mount
   useEffect(() => {
     startGame();
+    challengeTracking.resetGameStats();
   }, []);
+
+  // Track level changes
+  useEffect(() => {
+    if (gameState.level !== previousLevel) {
+      challengeTracking.updateLevel(gameState.level);
+      setPreviousLevel(gameState.level);
+    }
+  }, [gameState.level]);
+
+  // Track score changes
+  useEffect(() => {
+    if (gameState.score !== previousScore) {
+      challengeTracking.updateScore(gameState.score);
+      setPreviousScore(gameState.score);
+    }
+  }, [gameState.score]);
+
+  // Track lives changes
+  useEffect(() => {
+    challengeTracking.updateLives(gameState.lives);
+  }, [gameState.lives]);
 
   // Handle game over
   useEffect(() => {
     if (gameState.isGameOver && gameStatus === 'gameover') {
+      challengeTracking.finalizeGame();
       setTimeout(() => {
         onGameOver(gameState.score, gameState.level);
       }, 1500);
@@ -60,11 +92,24 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
     onGameOver(gameState.score, gameState.level);
   };
 
+  const handleHintPress = async () => {
+    await feedback.buttonPress();
+    useHint(); // This will trigger the sequence replay
+  };
+
   // Show sequence animation
   useEffect(() => {
     if (gameState.isShowingSequence && gameStatus === 'showing') {
       let currentIndex = 0;
       const sequence = gameState.currentSequence;
+      
+      // Slower timing for hint replays
+      const highlightDuration = gameState.isHintReplay 
+        ? GAME_CONFIG.CELL_HIGHLIGHT_DURATION * 1.5 
+        : GAME_CONFIG.CELL_HIGHLIGHT_DURATION;
+      const delayBetweenCells = gameState.isHintReplay 
+        ? GAME_CONFIG.DELAY_BETWEEN_CELLS * 1.5 
+        : GAME_CONFIG.DELAY_BETWEEN_CELLS;
 
       const showNextCell = () => {
         if (currentIndex >= sequence.length) {
@@ -78,8 +123,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
         setTimeout(() => {
           setHighlightedCell(null);
           currentIndex++;
-          setTimeout(showNextCell, GAME_CONFIG.DELAY_BETWEEN_CELLS);
-        }, GAME_CONFIG.CELL_HIGHLIGHT_DURATION);
+          setTimeout(showNextCell, delayBetweenCells);
+        }, highlightDuration);
       };
 
       // Start showing sequence after a brief delay
@@ -91,31 +136,23 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.headerRow}>
-          <GameHeader
-            level={gameState.level}
-            score={gameState.score}
-            lives={gameState.lives}
-            userProgress={userProgress}
-          />
-          
-          <Pressable
-            style={({ pressed }) => [
-              styles.pauseButton,
-              (gameState.isShowingSequence || gameState.isGameOver) && styles.pauseButtonDisabled,
-              pressed && !gameState.isShowingSequence && !gameState.isGameOver && styles.pauseButtonPressed,
-            ]}
-            onPress={handlePausePress}
-            disabled={gameState.isShowingSequence || gameState.isGameOver}
-          >
-            <Text style={styles.pauseButtonText}>⏸️</Text>
-          </Pressable>
-        </View>
+        <GameHeader
+          level={gameState.level}
+          score={gameState.score}
+          lives={gameState.lives}
+          userProgress={userProgress}
+          onPausePress={handlePausePress}
+          isPauseDisabled={gameState.isShowingSequence || gameState.isGameOver}
+          onHintPress={handleHintPress}
+          hintsRemaining={gameState.hintsRemaining}
+          isHintDisabled={gameState.isShowingSequence || gameState.isGameOver || gameState.hintsRemaining === 0}
+        />
         
         <StatusMessage
           gameStatus={gameStatus}
           isShowingSequence={gameState.isShowingSequence}
           sequenceLength={gameState.currentSequence.length}
+          level={gameState.level}
         />
         
         <GameGrid
@@ -144,33 +181,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 15,
+    padding: SPACING.lg,
     justifyContent: 'center',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-  },
-  pauseButton: {
-    backgroundColor: COLORS.surface,
-    width: 45,
-    height: 45,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-  },
-  pauseButtonDisabled: {
-    opacity: 0.3,
-    borderColor: COLORS.textSecondary,
-  },
-  pauseButtonPressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.95 }],
-  },
-  pauseButtonText: {
-    fontSize: 20,
   },
 });
