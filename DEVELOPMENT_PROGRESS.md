@@ -57,11 +57,16 @@
 - [x] Sauvegarde des progrès utilisateur
 - [x] Service de classement (`leaderboard.ts`)
 
-### 🔊 Phase 7: Audio et Feedback (90%)
+### 🔊 Phase 7: Audio et Feedback (100%) ✅
 - [x] Gestionnaire de sons (`soundManager.ts`)
 - [x] Feedback haptique (Expo Haptics)
 - [x] Sons d'interface (boutons, erreurs)
-- [ ] **À FINALISER:** Sons de gameplay (séquences, succès)
+- [x] Sons de gameplay (click, bien2, alertefaill, chrono)
+- [x] Intégration son chrono avec mode Time Attack
+- [x] Prévention du chevauchement des sons
+- [x] Option pour désactiver/activer sons et vibrations
+- [x] Persistance des préférences audio dans AsyncStorage
+- [x] Modal des paramètres (SettingsModal)
 
 ---
 
@@ -73,7 +78,7 @@ _Aucune phase en cours actuellement_
 
 ## ✅ PHASES RÉCEMMENT COMPLETÉES
 
-### � Phase 8: Système de Défis Quotidiens (100%) ✨ NOUVEAU
+### 🎮 Phase 8: Système de Défis Quotidiens (100%) ✨
 - [x] Types et interfaces pour les défis
 - [x] Service de génération de défis quotidiens
 - [x] Persistance Firestore des progrès
@@ -85,23 +90,33 @@ _Aucune phase en cours actuellement_
 - [x] Système de récompenses (XP et Coins)
 - [x] Streak de connexion quotidienne
 
+### 🎮 Phase 10: Modes de Jeu Avancés (100%) ✅ COMPLÉTÉE
+- [x] Mode Classique (3 vies, 10 niveaux, gameplay original)
+- [x] Mode Survie (vie infinie, difficulté croissante, streak persisté)
+- [x] Mode Contre-la-Montre (3 vies, timer 120s fixes sans bonus)
+- [x] Mode Zen (vie infinie, sans limite de temps, tracking précision)
+- [x] Mode Personnalisé (débloqué niveau 5, UI configuration à implémenter)
+- [x] Sélecteur de mode carrousel horizontal animé
+- [x] Animations 3D (scale, rotation, opacity) lors du défilement
+- [x] Son "passe" lors du changement de carte
+- [x] Indicateurs de pagination dynamiques
+- [x] Hook useGameLogicExtended avec logique complète
+- [x] Configuration complète (gameModes.ts)
+- [x] Stats spécifiques par mode affichées en temps réel
+- [x] Système de déblocage des modes
+- [x] Intégration complète dans HomeScreen et GameScreen
+- [x] Corrections gameplay (vies, timer, persistance records)
+
 ---
 
 ## 📋 PHASES À DÉVELOPPER
 
-### 🎯 Phase 9: Défis Quotidiens (0%)
-- [ ] Système de défis quotidiens
-- [ ] Interface de gestion des défis
-- [ ] Récompenses pour complétion
-- [ ] Persistance des défis complétés
-- [ ] Génération automatique de nouveaux défis
-
-### 🏁 Phase 10: Modes de Jeu Avancés (0%)
-- [ ] Mode survie (vie infinie, difficulté croissante)
-- [ ] Mode contre-la-montre
-- [ ] Mode zen (sans limite de temps)
-- [ ] Mode défi personnalisé
-- [ ] Sélecteur de mode dans le menu
+###  Phase 10: Modes de Jeu Avancés (100%) ✅ COMPLÉTÉE
+- [x] Mode survie (vie infinie, difficulté croissante)
+- [x] Mode contre-la-montre
+- [x] Mode zen (sans limite de temps)
+- [x] Mode défi personnalisé
+- [x] Sélecteur de mode dans le menu
 
 ### 🎨 Phase 11: Thèmes et Personnalisation (0%)
 - [ ] Système de thèmes déblocables
@@ -143,10 +158,19 @@ _Aucune phase en cours actuellement_
 ## 🔄 PROCHAINES ÉTAPES PRIORITAIRES
 
 ### À Court Terme (Semaine 1-2)
-1. **Finaliser les sons de gameplay** dans `soundManager.ts`
-2. **Tester les défis quotidiens** - validation complète du système
-3. **Implémenter les modes de jeu avancés** (Zen, Blitz, Survival)
-4. **Améliorer les notifications d'achievements**
+1. ✅ **Intégrer le modal des paramètres dans HomeScreen** - COMPLÉTÉ
+2. ✅ **Corrections UX HomeScreen** - COMPLÉTÉ
+   - Bouton "Comment jouer" remonté pour éviter chevauchement
+   - Modal instructions avec scroll fonctionnel (maxHeight: 400px)
+   - Correction double affichage OnboardingScreen
+3. ✅ **Correction Navigation App.tsx** - COMPLÉTÉ
+   - Séparation des useEffect pour éviter closures
+   - Ajout écran de chargement initial
+   - Fix flux onboarding → login → home
+   - Console.logs pour debug navigation
+4. **Tester tous les sons dans différents modes de jeu**
+5. **Tester les défis quotidiens** - validation complète du système
+6. **Améliorer les notifications d'achievements**
 
 ### À Moyen Terme (Semaine 3-4)
 1. **Développer le système de thèmes**
@@ -164,16 +188,16 @@ _Aucune phase en cours actuellement_
 
 ## 📊 MÉTRIQUES D'AVANCEMENT
 
-- **Phases Complètes :** 8/15 (53%)
+- **Phases Complètes :** 9/15 (60%)
 - **Phases En Cours :** 0/15 (0%)
-- **Phases Restantes :** 7/15 (47%)
+- **Phases Restantes :** 6/15 (40%)
 
 ### Répartition par Catégorie
 - **Core Gameplay :** ✅ 100% Complet
 - **Interface Utilisateur :** ✅ 100% Complet  
 - **Backend/Firebase :** ✅ 100% Complet
-- **Audio/Feedback :** 🚧 90% Complet
-- **Features Avancées :** ✅ 50% Complet (Défis Quotidiens terminés)
+- **Audio/Feedback :** ✅ 100% Complet
+- **Features Avancées :** ✅ 100% Complet (Défis + Modes)
 - **Polish/Déploiement :** 📋 0% Complet
 
 ---

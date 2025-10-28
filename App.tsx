@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
@@ -12,7 +12,7 @@ import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ChallengesScreen } from './src/screens/ChallengesScreen';
 import { initializeAudio } from './src/utils/soundManager';
 import { hasCompletedOnboarding, setOnboardingCompleted } from './src/utils/storage';
-import { UserProgress } from './src/types';
+import { UserProgress, GameMode } from './src/types';
 import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
@@ -26,41 +26,67 @@ export default function App() {
   const [gameResult, setGameResult] = useState({ score: 0, level: 1 });
   const [fadeAnim] = useState(new Animated.Value(1));
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedGameMode, setSelectedGameMode] = useState<GameMode>('classic');
+  const [onboardingDone, setOnboardingDone] = useState(false);
 
+  // Initialize audio and check onboarding status
   useEffect(() => {
     const initialize = async () => {
       await initializeAudio();
-      
-      // Check if onboarding has been completed
       const onboardingCompleted = await hasCompletedOnboarding();
-      
-      // Listen to auth state changes
-      const unsubscribe = firebaseService.onAuthStateChanged(async (user) => {
-        setCurrentUser(user);
-        
-        if (user) {
-          // User is signed in, load their progress
-          const progress = await firestoreService.getUserProgress(user.uid);
-          if (progress) {
-            setUserProgress(progress);
-          } else {
-            // Initialize new user
-            const newProgress = await firestoreService.initializeUser(user.uid);
-            setUserProgress(newProgress);
-          }
-          setCurrentScreen(onboardingCompleted ? 'home' : 'onboarding');
-        } else {
-          // No user signed in, show login or onboarding
-          setCurrentScreen(onboardingCompleted ? 'login' : 'onboarding');
-        }
-        setIsLoading(false);
-      });
-
-      return unsubscribe;
+      setOnboardingDone(onboardingCompleted);
     };
-    
     initialize();
   }, []);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = firebaseService.onAuthStateChanged(async (user) => {
+      setCurrentUser(user);
+      
+      if (user) {
+        // User is signed in, load their progress
+        const progress = await firestoreService.getUserProgress(user.uid);
+        if (progress) {
+          setUserProgress(progress);
+        } else {
+          // Initialize new user
+          const newProgress = await firestoreService.initializeUser(user.uid);
+          setUserProgress(newProgress);
+        }
+      }
+      setIsLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Handle navigation based on user and onboarding state
+  useEffect(() => {
+    console.log('Navigation effect:', { isLoading, onboardingDone, currentUser: !!currentUser, currentScreen });
+    
+    if (isLoading) return; // Don't navigate while loading
+
+    if (!onboardingDone) {
+      // Onboarding not completed - show onboarding
+      if (currentScreen !== 'onboarding') {
+        console.log('Navigating to onboarding');
+        setCurrentScreen('onboarding');
+      }
+    } else if (!currentUser) {
+      // Onboarding done but no user - show login
+      if (currentScreen !== 'login') {
+        console.log('Navigating to login');
+        setCurrentScreen('login');
+      }
+    } else {
+      // User is authenticated and onboarding is done - show home if coming from onboarding/login
+      if (currentScreen === 'onboarding' || currentScreen === 'login') {
+        console.log('Navigating to home');
+        setCurrentScreen('home');
+      }
+    }
+  }, [currentUser, onboardingDone, isLoading, currentScreen]);
 
   const transitionToScreen = (screen: Screen) => {
     Animated.sequence([
@@ -79,7 +105,8 @@ export default function App() {
     setTimeout(() => setCurrentScreen(screen), 200);
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = (mode: GameMode = 'classic') => {
+    setSelectedGameMode(mode);
     transitionToScreen('game');
   };
 
@@ -95,13 +122,14 @@ export default function App() {
       );
       setUserProgress(progress);
       
-      // Save score to leaderboard with display name from progress
+      // Save score to leaderboard with display name and game mode
       const displayName = progress.displayName || currentUser.displayName || `Guest_${currentUser.uid.substring(0, 6)}`;
       await leaderboardService.saveScore(
         currentUser.uid,
         displayName,
         score,
-        level
+        level,
+        selectedGameMode // Passer le mode de jeu actuel
       );
       
       // TODO: Show achievement notifications if newAchievements.length > 0
@@ -168,6 +196,7 @@ export default function App() {
 
   const handleOnboardingComplete = async () => {
     await setOnboardingCompleted();
+    setOnboardingDone(true); // Mark as done in state immediately
     // If user is logged in, go to home, otherwise go to login
     transitionToScreen(currentUser ? 'home' : 'login');
   };
@@ -175,15 +204,23 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        {currentScreen === 'onboarding' && (
-          <OnboardingScreen onComplete={handleOnboardingComplete} />
-        )}
-        {currentScreen === 'login' && (
-          <LoginScreen 
-            onGuestLogin={handleGuestLogin}
-            isLoading={isLoading}
-          />
-        )}
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Memory Matrix</Text>
+            <Text style={styles.loadingText}>By AppWizards</Text>
+            <Text style={styles.loadingSubtext}>Chargement...</Text>
+          </View>
+        ) : (
+          <>
+            {currentScreen === 'onboarding' && !onboardingDone && (
+              <OnboardingScreen onComplete={handleOnboardingComplete} />
+            )}
+            {currentScreen === 'login' && (
+              <LoginScreen 
+                onGuestLogin={handleGuestLogin}
+                isLoading={isLoading}
+              />
+            )}
         {currentScreen === 'home' && (
           <HomeScreen 
             onStartGame={handleStartGame}
@@ -216,10 +253,12 @@ export default function App() {
             onRewardClaimed={handleProfileUpdated}
           />
         )}
-        {currentScreen === 'game' && (
+                {currentScreen === 'game' && (
           <GameScreen 
             onGameOver={handleGameOver}
-            userId={currentUser?.uid || null}
+            userProgress={userProgress}
+            userId={currentUser?.uid ?? null}
+            mode={selectedGameMode}
           />
         )}
         {currentScreen === 'gameover' && (
@@ -231,6 +270,8 @@ export default function App() {
             onBackToHome={handleBackToHome}
           />
         )}
+          </>
+        )}
       </Animated.View>
       <StatusBar style="light" />
     </SafeAreaProvider>
@@ -240,5 +281,21 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1a1a2e',
+  },
+  loadingText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+    marginBottom: 16,
+  },
+  loadingSubtext: {
+    fontSize: 16,
+    color: '#E0E0E0',
   },
 });

@@ -14,6 +14,7 @@ interface GameHeaderProps {
   hintsRemaining?: number;
   onHintPress?: () => void;
   isHintDisabled?: boolean;
+  hideHearts?: boolean; // Cacher les cœurs pour modes infinis
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ 
@@ -26,6 +27,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   hintsRemaining = 0,
   onHintPress,
   isHintDisabled = false,
+  hideHearts = false,
 }) => {
   const levelScale = useRef(new Animated.Value(1)).current;
   const scoreScale = useRef(new Animated.Value(1)).current;
@@ -83,22 +85,24 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
       </View>
 
       <View style={styles.centerSection}>
-        <View style={styles.stat}>
-          <Text style={styles.label}>Vies</Text>
-          <View style={styles.livesContainer}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.heart,
-                  index < lives ? styles.heartActive : styles.heartInactive,
-                ]}
-              >
-                <Text style={styles.heartText}>♥</Text>
-              </View>
-            ))}
+        {!hideHearts && (
+          <View style={styles.stat}>
+            <Text style={styles.label}>Vies</Text>
+            <View style={styles.livesContainer}>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.heart,
+                    index < lives ? styles.heartActive : styles.heartInactive,
+                  ]}
+                >
+                  <Text style={styles.heartText}>♥</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
+        )}
       </View>
 
       <View style={styles.rightSection}>

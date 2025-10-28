@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Refre
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
-import { LeaderboardEntry, LeaderboardPeriod, leaderboardService } from '../services/leaderboard';
+import { LeaderboardEntry, LeaderboardPeriod, LeaderboardMode, leaderboardService } from '../services/leaderboard';
 import { feedback } from '../utils/soundManager';
 
 interface LeaderboardScreenProps {
@@ -11,8 +11,53 @@ interface LeaderboardScreenProps {
   currentUserId: string | null;
 }
 
+// Composant TabButton réutilisable
+interface TabButtonProps {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+const TabButton: React.FC<TabButtonProps> = ({ label, active, onPress }) => (
+  <Pressable
+    style={({ pressed }) => [
+      styles.tab,
+      active && styles.tabActive,
+      pressed && styles.tabPressed,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={[styles.tabText, active && styles.tabTextActive]}>
+      {label}
+    </Text>
+  </Pressable>
+);
+
+// Composant TabButton pour les modes (plus compact)
+interface ModeTabButtonProps {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+const ModeTabButton: React.FC<ModeTabButtonProps> = ({ label, active, onPress }) => (
+  <Pressable
+    style={({ pressed }) => [
+      styles.modeTab,
+      active && styles.modeTabActive,
+      pressed && styles.tabPressed,
+    ]}
+    onPress={onPress}
+  >
+    <Text style={[styles.modeTabText, active && styles.modeTabTextActive]}>
+      {label}
+    </Text>
+  </Pressable>
+);
+
 export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, currentUserId }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>('daily');
+  const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>('alltime');
+  const [selectedMode, setSelectedMode] = useState<LeaderboardMode>('global');
   const [topScores, setTopScores] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [userScore, setUserScore] = useState<LeaderboardEntry | null>(null);
@@ -21,15 +66,15 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
 
   useEffect(() => {
     loadLeaderboard();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, selectedMode]);
 
   const loadLeaderboard = async () => {
     setIsLoading(true);
     try {
       const [scores, rank, score] = await Promise.all([
-        leaderboardService.getTopScores(selectedPeriod, 100),
-        currentUserId ? leaderboardService.getUserRank(currentUserId, selectedPeriod) : null,
-        currentUserId ? leaderboardService.getUserScore(currentUserId, selectedPeriod) : null,
+        leaderboardService.getTopScores(selectedPeriod, selectedMode, 100),
+        currentUserId ? leaderboardService.getUserRank(currentUserId, selectedPeriod, selectedMode) : null,
+        currentUserId ? leaderboardService.getUserScore(currentUserId, selectedPeriod, selectedMode) : null,
       ]);
 
       setTopScores(scores);
@@ -53,6 +98,11 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
     setSelectedPeriod(period);
   };
 
+  const handleModeChange = async (mode: LeaderboardMode) => {
+    await feedback.buttonPress();
+    setSelectedMode(mode);
+  };
+
   const handleBack = async () => {
     await feedback.buttonPress();
     onBack();
@@ -63,6 +113,17 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
       case 'daily': return '📅 Aujourd\'hui';
       case 'weekly': return '📆 Cette Semaine';
       case 'alltime': return '🏆 All-Time';
+    }
+  };
+
+  const getScoreForMode = (entry: LeaderboardEntry, mode: LeaderboardMode): number => {
+    switch (mode) {
+      case 'global': return entry.globalScore;
+      case 'classic': return entry.classicBest;
+      case 'survival': return entry.survivalBest;
+      case 'timeAttack': return entry.timeAttackBest;
+      case 'zen': return entry.zenBest;
+      default: return 0;
     }
   };
 
@@ -91,53 +152,57 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
 
       {/* Period Tabs */}
       <View style={styles.tabsContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.tab,
-            selectedPeriod === 'daily' && styles.tabActive,
-            pressed && styles.tabPressed,
-          ]}
+        <TabButton
+          label="📅 Jour"
+          active={selectedPeriod === 'daily'}
           onPress={() => handlePeriodChange('daily')}
-        >
-          <Text style={[
-            styles.tabText,
-            selectedPeriod === 'daily' && styles.tabTextActive,
-          ]}>
-            📅 Jour
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.tab,
-            selectedPeriod === 'weekly' && styles.tabActive,
-            pressed && styles.tabPressed,
-          ]}
+        />
+        <TabButton
+          label="📆 Semaine"
+          active={selectedPeriod === 'weekly'}
           onPress={() => handlePeriodChange('weekly')}
-        >
-          <Text style={[
-            styles.tabText,
-            selectedPeriod === 'weekly' && styles.tabTextActive,
-          ]}>
-            📆 Semaine
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [
-            styles.tab,
-            selectedPeriod === 'alltime' && styles.tabActive,
-            pressed && styles.tabPressed,
-          ]}
+        />
+        <TabButton
+          label="🏆 Total"
+          active={selectedPeriod === 'alltime'}
           onPress={() => handlePeriodChange('alltime')}
+        />
+      </View>
+
+      {/* Mode Tabs */}
+      <View style={styles.modeTabsWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.modeTabsContainer}
+          contentContainerStyle={styles.modeTabsContent}
         >
-          <Text style={[
-            styles.tabText,
-            selectedPeriod === 'alltime' && styles.tabTextActive,
-          ]}>
-            🏆 Total
-          </Text>
-        </Pressable>
+          <ModeTabButton
+            label="🌟 Global"
+            active={selectedMode === 'global'}
+            onPress={() => handleModeChange('global')}
+          />
+          <ModeTabButton
+            label="🎮 Classique"
+            active={selectedMode === 'classic'}
+            onPress={() => handleModeChange('classic')}
+          />
+          <ModeTabButton
+            label="🔥 Survie"
+            active={selectedMode === 'survival'}
+            onPress={() => handleModeChange('survival')}
+          />
+          <ModeTabButton
+            label="⏱️ Chrono"
+            active={selectedMode === 'timeAttack'}
+            onPress={() => handleModeChange('timeAttack')}
+          />
+          <ModeTabButton
+            label="🧘 Zen"
+            active={selectedMode === 'zen'}
+            onPress={() => handleModeChange('zen')}
+          />
+        </ScrollView>
       </View>
 
       {/* User Position Card */}
@@ -147,7 +212,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           <View style={styles.userPositionContent}>
             <Text style={styles.userRank}>#{userRank}</Text>
             <View style={styles.userStats}>
-              <Text style={styles.userScore}>{userScore.score} pts</Text>
+              <Text style={styles.userScore}>{getScoreForMode(userScore, selectedMode)} pts</Text>
               <Text style={styles.userLevel}>Niveau {userScore.level}</Text>
             </View>
           </View>
@@ -163,7 +228,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
       ) : (
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            !(userScore && userRank) && styles.scrollContentWithoutUserCard
+          ]}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -199,7 +267,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
                   </Text>
                   <Text style={styles.playerLevel}>Niveau {entry.level}</Text>
                 </View>
-                <Text style={styles.scoreText}>{entry.score}</Text>
+                <Text style={styles.scoreText}>{getScoreForMode(entry, selectedMode)}</Text>
               </View>
             ))
           )}
@@ -249,11 +317,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     gap: 10,
-    marginBottom: 15,
+    marginBottom: 6,
+  },
+  modeTabsWrapper: {
+    height: 36,
+    marginBottom: 2,
+  },
+  modeTabsContainer: {
+    flex: 1,
+  },
+  modeTabsContent: {
+    paddingHorizontal: 15,
+    gap: 8,
+    alignItems: 'center',
   },
   tab: {
     flex: 1,
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     backgroundColor: COLORS.surface,
     alignItems: 'center',
@@ -272,9 +353,32 @@ const styles = StyleSheet.create({
   tabTextActive: {
     color: COLORS.text,
   },
+  // Styles spécifiques pour les boutons de mode (hauteur très réduite)
+  modeTab: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
+    height: 28,
+  },
+  modeTabActive: {
+    backgroundColor: COLORS.primary,
+  },
+  modeTabText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+  },
+  modeTabTextActive: {
+    color: COLORS.text,
+  },
   userPositionCard: {
     marginHorizontal: 15,
-    marginBottom: 15,
+    marginBottom: 8,
+    marginTop: 0,
     padding: 15,
     borderRadius: 15,
     backgroundColor: COLORS.primary,
@@ -310,6 +414,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 20,
   },
   loadingText: {
     marginTop: 10,
@@ -322,9 +427,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 15,
     paddingBottom: 20,
+    paddingTop: 4,
+  },
+  scrollContentWithoutUserCard: {
+    paddingTop: 2,
   },
   emptyContainer: {
-    paddingVertical: 40,
+    paddingVertical: 30,
     alignItems: 'center',
   },
   emptyText: {
@@ -340,7 +449,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    marginBottom: 8,
+    marginBottom: 6,
     borderRadius: 12,
     backgroundColor: COLORS.surface,
     gap: 12,

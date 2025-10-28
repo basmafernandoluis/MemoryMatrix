@@ -19,9 +19,24 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const previousStatus = useRef<GameStatus>(gameStatus);
 
   useEffect(() => {
-    // Minimal message change animation - faster and subtler
+    // Ne pas animer les transitions rapides correct <-> playing
+    const isQuickTransition = 
+      (previousStatus.current === 'correct' && gameStatus === 'playing') ||
+      (previousStatus.current === 'playing' && gameStatus === 'correct');
+    
+    previousStatus.current = gameStatus;
+    
+    if (isQuickTransition) {
+      // Transition instantanée sans animation
+      fadeAnim.setValue(1);
+      scaleAnim.setValue(1);
+      return;
+    }
+    
+    // Animation minimale pour les autres transitions
     Animated.sequence([
       Animated.parallel([
         Animated.timing(fadeAnim, {

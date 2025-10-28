@@ -5,31 +5,38 @@ import { GameHeader } from '../components/GameHeader';
 import { GameGrid } from '../components/GameGrid';
 import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
-import { useGameLogic } from '../hooks/useGameLogic';
+import { useGameLogicExtended } from '../hooks/useGameLogicExtended';
 import { useChallengeTracking } from '../hooks/useChallengeTracking';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
-import { UserProgress } from '../types';
+import { UserProgress, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
 
 interface GameScreenProps {
   onGameOver: (score: number, level: number) => void;
   userId: string | null;
+  userProgress?: UserProgress | null;
+  mode?: GameMode;
 }
 
-export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) => {
+export const GameScreen: React.FC<GameScreenProps> = ({ 
+  onGameOver, 
+  userId, 
+  userProgress: externalUserProgress,
+  mode = 'classic'
+}) => {
   const {
     gameState,
+    gameModeState,
     gameStatus,
     userProgress,
     isPaused,
     startGame,
     handleCellClick,
+    togglePause,
     finishShowingSequence,
-    pauseGame,
-    resumeGame,
     useHint,
-  } = useGameLogic();
+  } = useGameLogicExtended(mode);
 
   // Challenge tracking hook
   const challengeTracking = useChallengeTracking(userId);
@@ -41,9 +48,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) =>
 
   // Start game on mount
   useEffect(() => {
-    startGame();
+    startGame(mode);
     challengeTracking.resetGameStats();
-  }, []);
+  }, [mode]);
 
   // Track level changes
   useEffect(() => {
@@ -78,13 +85,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) =>
 
   const handlePausePress = async () => {
     await feedback.buttonPress();
-    pauseGame();
+    togglePause();
     setShowPauseModal(true);
   };
 
   const handleResume = () => {
     setShowPauseModal(false);
-    resumeGame();
+    togglePause();
   };
 
   const handleQuit = () => {
@@ -94,7 +101,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) =>
 
   const handleHintPress = async () => {
     await feedback.buttonPress();
-    useHint(); // This will trigger the sequence replay
+    const hintUsed = useHint();
+    if (!hintUsed) {
+      // Optionnel: feedback si l'indice ne peut pas être utilisé
+      await feedback.wrong();
+    }
   };
 
   // Show sequence animation
@@ -115,6 +126,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) =>
         if (currentIndex >= sequence.length) {
           setHighlightedCell(null);
           finishShowingSequence();
+          
+          // En mode TimeAttack, si c'était un hint replay, on relance le timer
+          if (gameState.isHintReplay && mode === 'timeAttack') {
+            togglePause(); // Unpause pour relancer le timer
+          }
+          
           return;
         }
 
@@ -146,7 +163,31 @@ export const GameScreen: React.FC<GameScreenProps> = ({ onGameOver, userId }) =>
           onHintPress={handleHintPress}
           hintsRemaining={gameState.hintsRemaining}
           isHintDisabled={gameState.isShowingSequence || gameState.isGameOver || gameState.hintsRemaining === 0}
+          hideHearts={mode === 'zen' || mode === 'survival'}
         />
+
+        {/* Mode-specific stats */}
+        {mode === 'timeAttack' && gameModeState.timeAttackStats && (
+          <View style={styles.modeStats}>
+            <Text style={styles.modeStatsText}>
+              ⏱️ Temps: {Math.floor(gameModeState.timeAttackStats.timeRemaining)}s
+            </Text>
+          </View>
+        )}
+        {mode === 'survival' && gameModeState.survivalStats && (
+          <View style={styles.modeStats}>
+            <Text style={styles.modeStatsText}>
+              🔥 Série: {gameModeState.survivalStats.currentStreak} (Record: {gameModeState.survivalStats.bestStreak})
+            </Text>
+          </View>
+        )}
+        {mode === 'zen' && gameModeState.zenStats && (
+          <View style={styles.modeStats}>
+            <Text style={styles.modeStatsText}>
+              ✨ Précision: {Math.round(gameModeState.zenStats.averageAccuracy)}%
+            </Text>
+          </View>
+        )}
         
         <StatusMessage
           gameStatus={gameStatus}
@@ -183,5 +224,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: SPACING.lg,
     justifyContent: 'center',
+  },
+  modeStats: {
+    backgroundColor: COLORS.surface,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.md,
+    alignItems: 'center',
+  },
+  modeStatsText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

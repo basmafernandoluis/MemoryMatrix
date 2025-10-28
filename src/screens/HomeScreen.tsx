@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
-import { UserProgress, DailyChallenge, Achievement } from '../types';
+import { UserProgress, DailyChallenge, Achievement, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
 import { getAchievementsWithStatus } from '../utils/achievements';
+import GameModeSelector from './GameModeSelector';
+import { SettingsModal } from '../components/SettingsModal';
 
 interface HomeScreenProps {
-  onStartGame: () => void;
+  onStartGame: (mode?: GameMode) => void;
   onOpenLeaderboard: () => void;
   onOpenProfile: () => void;
   onOpenChallenges: () => void;
@@ -26,6 +28,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showModeSelector, setShowModeSelector] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const dailyChallenge = userProgress?.dailyChallenge;
   const challengeProgress = dailyChallenge 
@@ -72,7 +76,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   }, [fadeAnim, scaleAnim, pulseAnim]);
   const handleStartGame = async () => {
     await feedback.buttonPress();
-    onStartGame();
+    setShowModeSelector(true);
+  };
+
+  const handleModeSelected = (mode: GameMode) => {
+    setShowModeSelector(false);
+    onStartGame(mode);
   };
 
   const handleOpenLeaderboard = async () => {
@@ -88,6 +97,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const handleOpenChallenges = async () => {
     await feedback.buttonPress();
     onOpenChallenges();
+  };
+
+  const handleOpenSettings = async () => {
+    await feedback.buttonPress();
+    setShowSettings(true);
   };
 
   return (
@@ -195,7 +209,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <Text style={styles.menuIconEmoji}>👤</Text>
             <Text style={styles.menuIconLabel}>Profil</Text>
           </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.menuIcon,
+              pressed && styles.menuIconPressed,
+            ]}
+            onPress={handleOpenSettings}
+          >
+            <Text style={styles.menuIconEmoji}>⚙️</Text>
+            <Text style={styles.menuIconLabel}>Paramètres</Text>
+          </Pressable>
         </View>
+        
+        {/* Instructions Button - moved up before achievements */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.instructionsButton,
+            pressed && styles.instructionsButtonPressed,
+          ]}
+          onPress={async () => {
+            await feedback.buttonPress();
+            setShowInstructions(true);
+          }}
+        >
+          <Text style={styles.instructionsButtonText}>❓ Comment jouer ?</Text>
+        </Pressable>
         
         <View style={styles.achievementsSection}>
           <Text style={styles.achievementsTitle}>
@@ -236,20 +275,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             ))}
           </ScrollView>
         </View>
-        
-        {/* Instructions Button instead of full instructions */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.instructionsButton,
-            pressed && styles.instructionsButtonPressed,
-          ]}
-          onPress={async () => {
-            await feedback.buttonPress();
-            setShowInstructions(true);
-          }}
-        >
-          <Text style={styles.instructionsButtonText}>❓ Comment jouer ?</Text>
-        </Pressable>
       </Animated.View>
 
       {/* Instructions Modal */}
@@ -269,42 +294,89 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             <Text style={styles.modalTitle}>📚 Comment jouer ?</Text>
             
-            <View style={styles.instructionsList}>
-              <View style={styles.instructionItem}>
-                <Text style={styles.instructionNumber}>1️⃣</Text>
-                <Text style={styles.instructionItemText}>
-                  Mémorise la séquence de cases qui s'illuminent
-                </Text>
+            <ScrollView style={styles.instructionsScrollView} showsVerticalScrollIndicator={false}>
+              <View style={styles.instructionsList}>
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>🎮</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>5 Modes de Jeu</Text>
+                    <Text style={styles.instructionItemText}>
+                      Classique, Survie, Contre-la-Montre, Zen et Personnalisé. Chaque mode est unique !
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>1️⃣</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Mémorise</Text>
+                    <Text style={styles.instructionItemText}>
+                      Observe la séquence de cases qui s'illuminent
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>2️⃣</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Reproduis</Text>
+                    <Text style={styles.instructionItemText}>
+                      Clique sur les cases dans le bon ordre
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>❤️</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Vies</Text>
+                    <Text style={styles.instructionItemText}>
+                      Classique/Chrono: 3 vies • Survie/Zen: illimité
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>⏱️</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Contre-la-Montre</Text>
+                    <Text style={styles.instructionItemText}>
+                      120 secondes pour marquer un maximum de points !
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>🎯</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Défis Quotidiens</Text>
+                    <Text style={styles.instructionItemText}>
+                      Un nouveau défi chaque jour avec des récompenses
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>🏆</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Classements</Text>
+                    <Text style={styles.instructionItemText}>
+                      Quotidien, hebdomadaire et all-time par mode de jeu
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={styles.instructionItem}>
+                  <Text style={styles.instructionNumber}>🔊</Text>
+                  <View style={styles.instructionTextContainer}>
+                    <Text style={styles.instructionTitle}>Sons & Paramètres</Text>
+                    <Text style={styles.instructionItemText}>
+                      Personnalise ton expérience dans les paramètres ⚙️
+                    </Text>
+                  </View>
+                </View>
               </View>
-              
-              <View style={styles.instructionItem}>
-                <Text style={styles.instructionNumber}>2️⃣</Text>
-                <Text style={styles.instructionItemText}>
-                  Reproduis la séquence en cliquant sur les cases dans le bon ordre
-                </Text>
-              </View>
-              
-              <View style={styles.instructionItem}>
-                <Text style={styles.instructionNumber}>3️⃣</Text>
-                <Text style={styles.instructionItemText}>
-                  La séquence s'allonge à chaque niveau (jusqu'à 30 niveaux !)
-                </Text>
-              </View>
-              
-              <View style={styles.instructionItem}>
-                <Text style={styles.instructionNumber}>4️⃣</Text>
-                <Text style={styles.instructionItemText}>
-                  Tu as 5 vies. Attention, chaque erreur te fait perdre une vie !
-                </Text>
-              </View>
-              
-              <View style={styles.instructionItem}>
-                <Text style={styles.instructionNumber}>⭐</Text>
-                <Text style={styles.instructionItemText}>
-                  Débloque 16 achievements et grimpe dans le classement !
-                </Text>
-              </View>
-            </View>
+            </ScrollView>
             
             <Pressable
               style={styles.closeButton}
@@ -318,6 +390,28 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Mode Selector Modal */}
+      {showModeSelector && (
+        <Modal
+          visible={showModeSelector}
+          animationType="slide"
+          transparent={false}
+          onRequestClose={() => setShowModeSelector(false)}
+        >
+          <GameModeSelector
+            onSelectMode={handleModeSelected}
+            onBack={() => setShowModeSelector(false)}
+            maxLevelReached={userProgress?.maxLevelReached || 0}
+          />
+        </Modal>
+      )}
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -438,14 +532,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: SPACING.xl,
+    gap: SPACING.md,
     marginTop: SPACING.lg,
     marginBottom: SPACING.xl,
+    flexWrap: 'wrap',
+    paddingHorizontal: SPACING.sm,
   },
   menuIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
@@ -458,8 +554,8 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   menuIconEmoji: {
-    fontSize: 32,
-    marginBottom: 4,
+    fontSize: 28,
+    marginBottom: 2,
   },
   menuIconLabel: {
     fontSize: FONT_SIZE.xs,
@@ -563,6 +659,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xxl,
     width: '100%',
     maxWidth: 400,
+    maxHeight: '80%',
     ...SHADOW.large,
   },
   modalTitle: {
@@ -572,6 +669,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: SPACING.xxl,
   },
+  instructionsScrollView: {
+    maxHeight: 400,
+  },
   instructionsList: {
     gap: SPACING.lg,
     marginBottom: SPACING.xxl,
@@ -580,10 +680,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: SPACING.md,
+    backgroundColor: 'rgba(76, 175, 80, 0.05)',
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.primary,
   },
   instructionNumber: {
     fontSize: FONT_SIZE.xxl,
     minWidth: 30,
+  },
+  instructionTextContainer: {
+    flex: 1,
+    gap: SPACING.xs,
+  },
+  instructionTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: FONT_WEIGHT.bold,
+    color: COLORS.primary,
+    marginBottom: SPACING.xs,
   },
   instructionItemText: {
     flex: 1,
