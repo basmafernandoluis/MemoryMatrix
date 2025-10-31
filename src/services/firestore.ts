@@ -28,6 +28,11 @@ export class FirestoreService {
         dailyChallenge: data?.dailyChallenge || null,
         displayName: data?.displayName || null,
         avatarEmoji: data?.avatarEmoji || null,
+        coins: data?.coins || 0,
+        xp: data?.xp || 0,
+        survivalBestStreak: data?.survivalBestStreak || 0,
+        timeAttackBestScore: data?.timeAttackBestScore || 0,
+        zenBestAccuracy: data?.zenBestAccuracy || 0,
       };
     } catch (error) {
       console.error('Error getting user progress:', error);
@@ -374,6 +379,42 @@ export class FirestoreService {
       return updatedProgress;
     } catch (error) {
       console.error('Error claiming challenge reward:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update game mode specific records
+   */
+  async updateModeRecords(
+    userId: string,
+    updates: {
+      survivalBestStreak?: number;
+      timeAttackBestScore?: number;
+      zenBestAccuracy?: number;
+    }
+  ): Promise<void> {
+    try {
+      const data: any = {
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (updates.survivalBestStreak !== undefined) {
+        data.survivalBestStreak = updates.survivalBestStreak;
+      }
+      if (updates.timeAttackBestScore !== undefined) {
+        data.timeAttackBestScore = updates.timeAttackBestScore;
+      }
+      if (updates.zenBestAccuracy !== undefined) {
+        data.zenBestAccuracy = updates.zenBestAccuracy;
+      }
+
+      await firestore()
+        .collection(USERS_COLLECTION)
+        .doc(userId)
+        .set(data, { merge: true });
+    } catch (error) {
+      console.error('Error updating mode records:', error);
       throw error;
     }
   }

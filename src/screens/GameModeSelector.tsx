@@ -26,7 +26,7 @@ import { playPasseSound } from '../utils/soundManager';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
-const CARD_HEIGHT = SCREEN_HEIGHT * 0.65; // Hauteur augmentée
+const CARD_HEIGHT = SCREEN_HEIGHT * 0.58; // Réduit de 0.65 à 0.58
 const CARD_SPACING = 20;
 
 interface GameModeSelectorProps {
@@ -145,7 +145,7 @@ export default function GameModeSelector({
             {config.settings.hasLives !== false && (
               <View style={styles.feature}>
                 <Text style={styles.featureIcon}>❤️</Text>
-                <Text style={styles.featureText}>3 vies</Text>
+                <Text style={styles.featureText}>5 vies</Text>
               </View>
             )}
             {config.settings.hasLives === false && (
@@ -298,17 +298,17 @@ const styles = StyleSheet.create({
   },
   cardGradient: {
     flex: 1,
-    padding: SPACING.xl,
+    padding: SPACING.lg,
     justifyContent: 'space-between',
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
   },
   modeIcon: {
-    fontSize: 70,
-    marginRight: SPACING.lg,
+    fontSize: 60,
+    marginRight: SPACING.md,
   },
   cardTitleContainer: {
     flex: 1,

@@ -20,6 +20,8 @@ import {
   updateZenBestAccuracy,
   getSurvivalBestStreak,
 } from '../utils/gameModeStorage';
+import { firestoreService } from '../services/firestore';
+import { firebaseService } from '../services/firebase';
 import { feedback, startChronoSound, stopChronoSound } from '../utils/soundManager';
 import { 
   getScoreMultiplier, 
@@ -110,6 +112,17 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
             if (timerRef.current) clearInterval(timerRef.current);
             // Stop chrono sound when time is up
             stopChronoSound();
+            
+            // Sauvegarder le meilleur score TimeAttack
+            (async () => {
+              const currentUser = firebaseService.getCurrentUser();
+              if (currentUser) {
+                await updateHighScore(gameState.score);
+                await firestoreService.updateModeRecords(currentUser.uid, {
+                  timeAttackBestScore: gameState.score,
+                });
+              }
+            })();
           }
           
           return {
@@ -146,9 +159,9 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     const sequence = GameEngine.generateSequence(startLevel);
 
     // Déterminer le nombre de vies selon le mode
-    let initialLives = 3; // Par défaut : 3 vies (Classic, TimeAttack)
+    let initialLives = 5; // Par défaut : 5 vies (Classic)
     if (config.settings.hasLives === false) {
-      initialLives = 999; // Vie infinie (Zen, Survival)
+      initialLives = 999; // Vie infinie (Zen, Survival, TimeAttack)
     }
 
     setGameState({
@@ -223,9 +236,16 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
         } : undefined,
       }));
       
-      // Sauvegarder le nouveau record
+      // Sauvegarder le nouveau record (local + Firestore)
       if (newBest > gameModeState.survivalStats.bestStreak) {
         await updateSurvivalBestStreak(newBest);
+        // Sauvegarder dans Firestore aussi
+        const currentUser = firebaseService.getCurrentUser();
+        if (currentUser) {
+          await firestoreService.updateModeRecords(currentUser.uid, {
+            survivalBestStreak: newBest,
+          });
+        }
       }
     }
     

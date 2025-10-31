@@ -163,7 +163,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           onHintPress={handleHintPress}
           hintsRemaining={gameState.hintsRemaining}
           isHintDisabled={gameState.isShowingSequence || gameState.isGameOver || gameState.hintsRemaining === 0}
-          hideHearts={mode === 'zen' || mode === 'survival'}
+          hideHearts={mode === 'zen' || mode === 'survival' || mode === 'timeAttack'}
         />
 
         {/* Mode-specific stats */}

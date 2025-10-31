@@ -74,74 +74,40 @@ Entraînez votre mémoire avec des défis quotidiens ! Jeu de mémorisation de g
 
 **Description complète** (4000 caractères max) :
 ```
-🧠 MEMORY MATRIX - Entraînez Votre Mémoire !
+🧠 MEMORY MATRIX — Entraînez et défiez votre cerveau !
 
-Testez et améliorez votre mémoire avec Memory Matrix, le jeu de mémorisation de grilles addictif !
+Memory Matrix est un jeu de mémorisation de grilles pensé pour progresser jour après jour. Mémorisez, reproduisez et améliorez vos scores en découvrant des modes variés, des défis quotidiens et un suivi de progression complet.
 
 🎮 COMMENT JOUER
-• Mémorisez la grille de couleurs affichée
-• Reproduisez-la exactement après sa disparition
-• Progressez à travers 10 niveaux de difficulté croissante
-• Gagnez des points et battez vos records !
+• Observez une grille de couleurs
+• Reproduisez la séquence après sa disparition
+• Montez en difficulté (2x2 → 6x6) et optimisez votre score
 
-✨ FONCTIONNALITÉS
-• 10 niveaux progressifs (grilles de 2x2 à 6x6)
-• Système de vies (3 erreurs = Game Over)
-• Score en temps réel avec multiplicateur
-• Classement mondial des meilleurs joueurs
-• Défis quotidiens pour gagner des récompenses
-• Profil personnalisable avec statistiques détaillées
-• Effets visuels et animations fluides
-• Mode pause pour faire une pause
+🔥 Nouvelles fonctionnalités
+• Mode Time Attack avec compte à rebours audible (son chrono) pour une tension maximale
+• Sélecteur de mode en carousel horizontal animé (effets 3D) — changez de mode par glissement (son "passe" activé)
+• Système de sons et vibrations personnalisables dans les Réglages (persistants)
+• Intro sonore sur l'écran de chargement pour plus de dynamisme
 
-🏆 DÉFIS QUOTIDIENS
-Chaque jour, relevez 5 défis uniques :
-• Défi Rapidité : Terminez 3 niveaux en moins de 2 minutes
-• Défi Précision : Atteignez 95% de précision
-• Défi Endurance : Survivez à 10 niveaux sans erreur
-• Défi Score : Dépassez 10 000 points
-• Défi Parfait : Terminez un niveau sans erreur
+🏆 DÉFIS & PROGRESSION
+• Défis quotidiens renouvelés : objectifs de rapidité, précision, endurance et score
+• Succès et récompenses: pièces, XP et streaks journaliers
+• Classement mondial pour comparer vos meilleurs scores
 
-🎁 RÉCOMPENSES
-• Gagnez des pièces en complétant les défis
-• Accumulez de l'XP pour monter de niveau
-• Suivez votre streak de jours consécutifs
-• Débloquez des succès et accomplissements
+👤 PROFIL & ONBOARDING
+• Onboarding enrichi (8 écrans) pour bien démarrer
+• Après l'onboarding, créez votre pseudo et avatar (modale profil) pour sauvegarder vos stats
 
-📊 STATISTIQUES
-• Total de parties jouées
-• Meilleur score personnel
-• Taux de réussite global
-• Niveau le plus élevé atteint
-• Historique complet de vos performances
+⚙️ RÉGLAGES & ACCESSIBILITÉ
+• Activez/désactivez sons et haptics depuis la modal Réglages — préférences sauvegardées localement
+• Interface fluide, animations soignées et boutons ergonomiques
 
-🌟 POURQUOI MEMORY MATRIX ?
-• Améliore la concentration et la mémoire à court terme
-• Exercice cérébral quotidien amusant
-• Interface colorée et intuitive
-• Progression motivante et gratifiante
-• Connexion Firebase pour sauvegarder votre progression
-• Classement mondial pour comparer vos scores
+� CONFIDENTIALITÉ & TECH
+• Sauvegarde et authentification via Firebase
+• Données chiffrées, pas de vente de données
+• Fonctionne hors ligne (sauf pour le classement)
 
-🎯 POUR QUI ?
-• Enfants : Développer la mémoire visuelle
-• Adultes : Entraînement cérébral quotidien
-• Seniors : Maintenir les capacités cognitives
-• Joueurs : Défis et compétition mondiale
-
-📱 COMPATIBILITÉ
-• Optimisé pour tous les téléphones Android
-• Fonctionne hors ligne (sauf classement)
-• Synchronisation cloud automatique
-• Performances fluides garanties
-
-🔐 CONFIDENTIALITÉ
-• Connexion sécurisée avec Google
-• Données chiffrées sur Firebase
-• Pas de publicités intrusives
-• Respect de votre vie privée
-
-Téléchargez Memory Matrix maintenant et commencez à entraîner votre cerveau ! 🧠✨
+Téléchargez Memory Matrix et commencez votre entraînement cérébral dès aujourd'hui ! 🧠✨
 
 Développé par AppWizards
 ```
@@ -270,19 +236,20 @@ Contact : votre_email@gmail.com
    - **Version name** : 1.0.0
    - **Package** : com.appwizards.MemoryMatrix
 
-### B. Notes de version
+**Notes de version**
 
 **Français** :
 ```
-🎮 Première version de Memory Matrix !
+🎮 Version 1.1 de Memory Matrix !
 
-Fonctionnalités :
-• 10 niveaux de difficulté progressive
+Nouveautés :
+• 5 vies au lieu de 3 pour un jeu plus accessible
+• Mode Contre-la-Montre amélioré (120s sans game over)
+• Système de classement équilibré et sans doublons
+• Records persistés par mode (Survie, Time Attack, Zen)
+• XP et Coins visibles dans votre profil
 • Défis quotidiens avec récompenses
-• Classement mondial
-• Profil utilisateur personnalisable
-• Système de vies et scoring
-• Synchronisation cloud
+• Interface améliorée et animations fluides
 
 Amusez-vous bien ! 🧠✨
 ```

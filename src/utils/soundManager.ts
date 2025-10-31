@@ -15,6 +15,7 @@ let hapticsEnabled = true;
 
 // Sound objects cache
 interface SoundCache {
+  intro?: Audio.Sound;
   click?: Audio.Sound;
   bien2?: Audio.Sound;
   alertefaill?: Audio.Sound;
@@ -54,6 +55,13 @@ export const initializeAudio = async () => {
 // Preload all sound files
 const preloadSounds = async () => {
   try {
+    // Load intro sound (splash screen)
+    const { sound: introSound } = await Audio.Sound.createAsync(
+      require('../../assets/Sound/intro.mp3'),
+      { shouldPlay: false, volume: 0.5 }
+    );
+    soundCache.intro = introSound;
+
     // Load click sound
     const { sound: clickSound } = await Audio.Sound.createAsync(
       require('../../assets/Sound/click.mp3'),
@@ -268,6 +276,10 @@ export const playGameOverSound = async () => {
 
 export const playPasseSound = async () => {
   await playSound('passe');
+};
+
+export const playIntroSound = async () => {
+  await playSound('intro');
 };
 
 // Feedback helper combining sound and haptics

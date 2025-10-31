@@ -10,7 +10,8 @@ import { LeaderboardScreen } from './src/screens/LeaderboardScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ChallengesScreen } from './src/screens/ChallengesScreen';
-import { initializeAudio } from './src/utils/soundManager';
+import { EditProfileModal } from './src/components/EditProfileModal';
+import { initializeAudio, playIntroSound } from './src/utils/soundManager';
 import { hasCompletedOnboarding, setOnboardingCompleted } from './src/utils/storage';
 import { UserProgress, GameMode } from './src/types';
 import { firebaseService, FirebaseUser } from './src/services/firebase';
@@ -28,6 +29,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGameMode, setSelectedGameMode] = useState<GameMode>('classic');
   const [onboardingDone, setOnboardingDone] = useState(false);
+  const [showProfileSetup, setShowProfileSetup] = useState(false);
 
   // Initialize audio and check onboarding status
   useEffect(() => {
@@ -38,6 +40,13 @@ export default function App() {
     };
     initialize();
   }, []);
+
+  // Play intro sound when loading starts
+  useEffect(() => {
+    if (isLoading) {
+      playIntroSound();
+    }
+  }, [isLoading]);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -196,9 +205,44 @@ export default function App() {
 
   const handleOnboardingComplete = async () => {
     await setOnboardingCompleted();
-    setOnboardingDone(true); // Mark as done in state immediately
-    // If user is logged in, go to home, otherwise go to login
-    transitionToScreen(currentUser ? 'home' : 'login');
+    setOnboardingDone(true);
+    // Show profile setup modal instead of going to login
+    setShowProfileSetup(true);
+  };
+
+  const handleProfileSetupComplete = async (displayName: string, avatarEmoji: string) => {
+    try {
+      // Show loading screen while creating user
+      setShowProfileSetup(false);
+      setIsLoading(true);
+      
+      // Create anonymous user if not already logged in
+      if (!currentUser) {
+        await firebaseService.signInAnonymously();
+        
+        // Wait for auth listener to create the user and initialize userProgress
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+      
+      // Now update the profile with the chosen name and avatar
+      const user = firebaseService.getCurrentUser();
+      if (user) {
+        await firestoreService.updateProfile(user.uid, displayName, avatarEmoji);
+        const updatedProgress = await firestoreService.getUserProgress(user.uid);
+        setUserProgress(updatedProgress);
+      }
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error setting up profile:', error);
+      setIsLoading(false);
+      setShowProfileSetup(false);
+    }
+  };
+
+  const handleProfileSetupSkip = () => {
+    // If user skips, just go to login as before
+    setShowProfileSetup(false);
   };
 
   return (
@@ -210,6 +254,9 @@ export default function App() {
             <Text style={styles.loadingText}>By AppWizards</Text>
             <Text style={styles.loadingSubtext}>Chargement...</Text>
           </View>
+        ) : showProfileSetup ? (
+          // Show empty screen while profile modal is displayed
+          <View style={styles.loadingContainer} />
         ) : (
           <>
             {currentScreen === 'onboarding' && !onboardingDone && (
@@ -272,6 +319,15 @@ export default function App() {
         )}
           </>
         )}
+        
+        {/* Profile Setup Modal after Onboarding */}
+        <EditProfileModal
+          visible={showProfileSetup}
+          currentDisplayName=""
+          currentAvatarEmoji="🎮"
+          onSave={handleProfileSetupComplete}
+          onCancel={handleProfileSetupSkip}
+        />
       </Animated.View>
       <StatusBar style="light" />
     </SafeAreaProvider>

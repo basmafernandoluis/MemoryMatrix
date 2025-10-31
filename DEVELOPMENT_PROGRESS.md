@@ -1,9 +1,9 @@
 # 📋 Suivi de l'Avancement - Memory Matrix
 
 ## 🎯 État Général du Projet
-**Date de mise à jour :** 25 octobre 2025  
-**Branche actuelle :** ProfileOK  
-**Version :** 1.0.0  
+**Date de mise à jour :** 31 octobre 2025  
+**Branche actuelle :** 1erDeploimenet  
+**Version :** 1.1.0 (mise à jour équilibrage)  
 
 ---
 
@@ -157,26 +157,53 @@ _Aucune phase en cours actuellement_
 
 ## 🔄 PROCHAINES ÉTAPES PRIORITAIRES
 
+### ✅ Récemment Complété (31 octobre 2025)
+1. ✅ **Équilibrage du gameplay** - COMPLÉTÉ
+   - Vies augmentées de 3 à 5
+   - Mode Time Attack sans vies (jeu continu 120s)
+2. ✅ **Correction système de classement** - COMPLÉTÉ
+   - Score global = meilleur score (pas accumulation)
+   - Déduplication des joueurs dans le classement
+   - Calcul équilibré par mode (survie pas ×50)
+3. ✅ **Persistance records par mode** - COMPLÉTÉ
+   - Survival: meilleur streak sauvegardé Firestore
+   - Time Attack: meilleur score sauvegardé
+   - Structure Zen prête (à finaliser)
+4. ✅ **Affichage XP et Coins** - COMPLÉTÉ
+   - Section visuelle dans ProfileScreen
+   - Indication de leur utilité (défis quotidiens)
+
 ### À Court Terme (Semaine 1-2)
-1. ✅ **Intégrer le modal des paramètres dans HomeScreen** - COMPLÉTÉ
-2. ✅ **Corrections UX HomeScreen** - COMPLÉTÉ
-   - Bouton "Comment jouer" remonté pour éviter chevauchement
-   - Modal instructions avec scroll fonctionnel (maxHeight: 400px)
-   - Correction double affichage OnboardingScreen
-3. ✅ **Correction Navigation App.tsx** - COMPLÉTÉ
-   - Séparation des useEffect pour éviter closures
-   - Ajout écran de chargement initial
-   - Fix flux onboarding → login → home
-   - Console.logs pour debug navigation
-4. **Tester tous les sons dans différents modes de jeu**
-5. **Tester les défis quotidiens** - validation complète du système
-6. **Améliorer les notifications d'achievements**
+1. **Implémenter classement Zen par précision**
+   - Sauvegarder zenBestAccuracy automatiquement
+   - Créer LeaderboardMode 'zen' basé sur précision
+   - Afficher top 100 joueurs les plus précis
+2. **Améliorer système de déblocage des modes**
+   - Rendre progressif: Survie niveau 3, Time Attack niveau 5, etc.
+   - Utiliser XP pour débloquer Mode Custom (500 XP)
+   - Ajouter animations de déblocage
+3. **Créer boutique de Coins**
+   - Acheter hints (50 coins)
+   - Débloquer thèmes (100-500 coins)
+   - Acheter avatars premium (200 coins)
+4. **Afficher records mondiaux par mode**
+   - Meilleur streak Survie mondial
+   - Meilleur score Time Attack mondial
+   - Meilleure précision Zen mondiale
 
 ### À Moyen Terme (Semaine 3-4)
-1. **Développer le système de thèmes**
-2. **Ajouter les statistiques avancées**
-3. **Améliorer l'interface des statistiques**
-4. **Optimiser les performances**
+1. **Migration données utilisateurs existants**
+   - Recalculer scores globaux selon nouvelle formule
+   - Nettoyer doublons Firestore
+   - Script de migration automatique
+2. **Tests utilisateurs complets**
+   - Valider équilibrage 5 vies
+   - Tester tous les modes sur devices
+   - Collecter feedback joueurs existants
+3. **Optimiser performances Firestore**
+   - Indexation pour classements
+   - Pagination des résultats
+   - Cache local amélioré
 
 ### À Long Terme (Mois 2)
 1. **Fonctionnalités sociales de base**

@@ -89,7 +89,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
           <View style={styles.stat}>
             <Text style={styles.label}>Vies</Text>
             <View style={styles.livesContainer}>
-              {Array.from({ length: 3 }).map((_, index) => (
+              {Array.from({ length: 5 }).map((_, index) => (
                 <View
                   key={index}
                   style={[

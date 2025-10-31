@@ -9,7 +9,7 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
   classic: {
     mode: 'classic',
     name: 'Classique',
-    description: '10 niveaux, 3 vies. Le mode original !',
+    description: '10 niveaux, 5 vies. Le mode original !',
     icon: '🎮',
     color: '#4A90E2',
     unlocked: true,
@@ -46,7 +46,7 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
     color: '#FFB84D',
     unlocked: true,
     settings: {
-      hasLives: true,
+      hasLives: false, // ✅ Pas de vies - le jeu continue pendant 120s
       hasTimer: true,
       timerDuration: 120, // 2 minutes fixes, pas de bonus
       hasTimeLimit: true,

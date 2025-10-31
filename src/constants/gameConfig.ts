@@ -5,7 +5,7 @@ export const GAME_CONFIG = {
   GRID_SIZE: 4, // 4x4 grid (16 cells)
   
   // Game rules
-  INITIAL_LIVES: 5, // ⬆️ Increased from 3 to 5 for wider audience (6-100 years)
+  INITIAL_LIVES: 5, // ✅ 5 vies pour un jeu plus accessible
   INITIAL_LEVEL: 1,
   MAX_LEVEL: 30, // ⬆️ Increased from 10 to 30 for longer engagement
   

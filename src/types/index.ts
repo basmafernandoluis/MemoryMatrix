@@ -25,7 +25,7 @@ export interface UserProgress {
   xp?: number; // Points d'expérience
   // Stats par mode
   survivalBestStreak?: number; // Meilleur streak en mode survie
-  timeAttackBestTime?: number; // Meilleur temps en contre-la-montre
+  timeAttackBestScore?: number; // Meilleur score en contre-la-montre (changé de time à score)
   zenBestAccuracy?: number; // Meilleure précision en mode zen
 }
 

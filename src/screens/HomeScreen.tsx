@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
@@ -294,86 +294,88 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             <Text style={styles.modalTitle}>📚 Comment jouer ?</Text>
             
-            <ScrollView style={styles.instructionsScrollView} showsVerticalScrollIndicator={false}>
-              <View style={styles.instructionsList}>
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>🎮</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>5 Modes de Jeu</Text>
-                    <Text style={styles.instructionItemText}>
-                      Classique, Survie, Contre-la-Montre, Zen et Personnalisé. Chaque mode est unique !
-                    </Text>
-                  </View>
+            <ScrollView 
+              style={styles.instructionsScrollView}
+              contentContainerStyle={styles.instructionsScrollContent}
+              showsVerticalScrollIndicator={true}
+            >
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>🎮</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>5 Modes de Jeu</Text>
+                  <Text style={styles.instructionItemText}>
+                    Classique, Survie, Contre-la-Montre, Zen et Personnalisé. Chaque mode est unique !
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>1️⃣</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Mémorise</Text>
-                    <Text style={styles.instructionItemText}>
-                      Observe la séquence de cases qui s'illuminent
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>1️⃣</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Mémorise</Text>
+                  <Text style={styles.instructionItemText}>
+                    Observe la séquence de cases qui s'illuminent
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>2️⃣</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Reproduis</Text>
-                    <Text style={styles.instructionItemText}>
-                      Clique sur les cases dans le bon ordre
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>2️⃣</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Reproduis</Text>
+                  <Text style={styles.instructionItemText}>
+                    Clique sur les cases dans le bon ordre
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>❤️</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Vies</Text>
-                    <Text style={styles.instructionItemText}>
-                      Classique/Chrono: 3 vies • Survie/Zen: illimité
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>❤️</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Vies</Text>
+                  <Text style={styles.instructionItemText}>
+                    Classique/Chrono: 3 vies • Survie/Zen: illimité
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>⏱️</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Contre-la-Montre</Text>
-                    <Text style={styles.instructionItemText}>
-                      120 secondes pour marquer un maximum de points !
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>⏱️</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Contre-la-Montre</Text>
+                  <Text style={styles.instructionItemText}>
+                    120 secondes pour marquer un maximum de points !
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>🎯</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Défis Quotidiens</Text>
-                    <Text style={styles.instructionItemText}>
-                      Un nouveau défi chaque jour avec des récompenses
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>🎯</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Défis Quotidiens</Text>
+                  <Text style={styles.instructionItemText}>
+                    Un nouveau défi chaque jour avec des récompenses
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>🏆</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Classements</Text>
-                    <Text style={styles.instructionItemText}>
-                      Quotidien, hebdomadaire et all-time par mode de jeu
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>🏆</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Classements</Text>
+                  <Text style={styles.instructionItemText}>
+                    Quotidien, hebdomadaire et all-time par mode de jeu
+                  </Text>
                 </View>
-                
-                <View style={styles.instructionItem}>
-                  <Text style={styles.instructionNumber}>🔊</Text>
-                  <View style={styles.instructionTextContainer}>
-                    <Text style={styles.instructionTitle}>Sons & Paramètres</Text>
-                    <Text style={styles.instructionItemText}>
-                      Personnalise ton expérience dans les paramètres ⚙️
-                    </Text>
-                  </View>
+              </View>
+              
+              <View style={styles.instructionItem}>
+                <Text style={styles.instructionNumber}>🔊</Text>
+                <View style={styles.instructionTextContainer}>
+                  <Text style={styles.instructionTitle}>Sons & Paramètres</Text>
+                  <Text style={styles.instructionItemText}>
+                    Personnalise ton expérience dans les paramètres ⚙️
+                  </Text>
                 </View>
               </View>
             </ScrollView>
@@ -415,6 +417,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     </SafeAreaView>
   );
 };
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -659,7 +663,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xxl,
     width: '100%',
     maxWidth: 400,
-    maxHeight: '80%',
+    height: SCREEN_HEIGHT * 0.75,
     ...SHADOW.large,
   },
   modalTitle: {
@@ -667,32 +671,33 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     textAlign: 'center',
-    marginBottom: SPACING.xxl,
+    marginBottom: SPACING.lg,
   },
   instructionsScrollView: {
-    maxHeight: 400,
+    flex: 1,
+    marginBottom: SPACING.md,
   },
-  instructionsList: {
-    gap: SPACING.lg,
-    marginBottom: SPACING.xxl,
+  instructionsScrollContent: {
+    paddingBottom: SPACING.lg,
   },
   instructionItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: SPACING.md,
     backgroundColor: 'rgba(76, 175, 80, 0.05)',
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
     borderLeftWidth: 3,
     borderLeftColor: COLORS.primary,
+    marginBottom: SPACING.lg,
   },
   instructionNumber: {
     fontSize: FONT_SIZE.xxl,
     minWidth: 30,
+    flexShrink: 0,
+    marginRight: SPACING.md,
   },
   instructionTextContainer: {
     flex: 1,
-    gap: SPACING.xs,
   },
   instructionTitle: {
     fontSize: FONT_SIZE.lg,
@@ -701,7 +706,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   instructionItemText: {
-    flex: 1,
     fontSize: FONT_SIZE.md,
     color: COLORS.text,
     lineHeight: 22,

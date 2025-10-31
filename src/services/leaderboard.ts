@@ -11,13 +11,13 @@ const calculateGlobalPoints = (score: number, level: number, mode: GameMode): nu
       return Math.floor(score * 1.0);
     
     case 'survival':
-      // Mode Survie: streak × 50 (valorise la progression)
-      return Math.floor(score * 50);
+      // Mode Survie: streak seulement (pas de multiplication)
+      // On garde juste le streak comme score pour éviter l'explosion des points
+      return score;
     
     case 'timeAttack':
-      // Mode Contre-la-Montre: (score × 1.2) + niveau
-      // Bonus pour la performance sous pression
-      return Math.floor(score * 1.2 + level * 10);
+      // Mode Contre-la-Montre: score × 1.0 (pas de bonus)
+      return Math.floor(score * 1.0);
     
     case 'zen':
       // Mode Zen: score × 0.8 (mode détendu, moins de points)
@@ -72,8 +72,9 @@ export class LeaderboardService {
         gamesPlayed: (existingData?.gamesPlayed || 0) + 1,
       };
       
-      // Mettre à jour le score global (cumul)
-      const newGlobalScore = (existingData?.globalScore || 0) + globalPoints;
+      // Mettre à jour le score global (MEILLEUR score, pas accumulation)
+      const currentGlobalBest = existingData?.globalScore || 0;
+      const newGlobalScore = Math.max(currentGlobalBest, globalPoints);
       
       // Mettre à jour le meilleur score pour ce mode (maximum)
       const currentModeBest = existingData?.[modeScoreField] || 0;
@@ -167,26 +168,50 @@ export class LeaderboardService {
           .orderBy(sortField, 'desc');
       }
 
-      const snapshot = await query.limit(limit).get();
+      const snapshot = await query.limit(limit * 3).get(); // Récupérer plus d'entrées pour filtrer après
 
-      const entries: LeaderboardEntry[] = [];
-      snapshot.forEach((doc, index) => {
+      const entriesMap = new Map<string, LeaderboardEntry>();
+      
+      snapshot.forEach((doc) => {
         const data = doc.data();
-        entries.push({
-          userId: data.userId,
-          displayName: data.displayName || 'Guest',
-          globalScore: data.globalScore || 0,
-          classicBest: data.classicBest || 0,
-          survivalBest: data.survivalBest || 0,
-          timeAttackBest: data.timeAttackBest || 0,
-          zenBest: data.zenBest || 0,
-          gamesPlayed: data.gamesPlayed || 0,
-          lastPlayed: data.lastPlayed?.toDate() || new Date(),
-          timestamp: data.timestamp?.toDate() || new Date(),
-          level: data.level || 0,
-          rank: index + 1,
-        });
+        const userId = data.userId;
+        const currentScore = data[sortField] || 0;
+        
+        // Ne garder que le meilleur score par joueur
+        const existingEntry = entriesMap.get(userId);
+        const existingScore = existingEntry 
+          ? (sortField === 'globalScore' ? existingEntry.globalScore : existingEntry[sortField as keyof LeaderboardEntry] as number || 0)
+          : 0;
+          
+        if (!existingEntry || currentScore > existingScore) {
+          entriesMap.set(userId, {
+            userId: data.userId,
+            displayName: data.displayName || 'Guest',
+            globalScore: data.globalScore || 0,
+            classicBest: data.classicBest || 0,
+            survivalBest: data.survivalBest || 0,
+            timeAttackBest: data.timeAttackBest || 0,
+            zenBest: data.zenBest || 0,
+            gamesPlayed: data.gamesPlayed || 0,
+            lastPlayed: data.lastPlayed?.toDate() || new Date(),
+            timestamp: data.timestamp?.toDate() || new Date(),
+            level: data.level || 0,
+          });
+        }
       });
+
+      // Convertir en array et trier par score
+      const entries = Array.from(entriesMap.values())
+        .sort((a, b) => {
+          const scoreA = (sortField === 'globalScore' ? a.globalScore : a[sortField as keyof LeaderboardEntry]) as number || 0;
+          const scoreB = (sortField === 'globalScore' ? b.globalScore : b[sortField as keyof LeaderboardEntry]) as number || 0;
+          return scoreB - scoreA;
+        })
+        .slice(0, limit) // Limiter au nombre demandé
+        .map((entry, index) => ({
+          ...entry,
+          rank: index + 1,
+        }));
 
       return entries;
     } catch (error) {

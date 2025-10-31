@@ -38,10 +38,10 @@ export const updateTimeAttackBestTime = async (timeRemaining: number): Promise<v
     const progress = await loadUserProgress();
     if (!progress) return;
 
-    const currentBest = progress.timeAttackBestTime || 0;
+    const currentBest = progress.timeAttackBestScore || 0;
     // Plus de temps restant = meilleur score
     if (timeRemaining > currentBest) {
-      progress.timeAttackBestTime = timeRemaining;
+      progress.timeAttackBestScore = timeRemaining;
       await saveUserProgress(progress);
     }
   } catch (error) {
@@ -86,7 +86,7 @@ export const getSurvivalBestStreak = async (): Promise<number> => {
 export const getTimeAttackBestTime = async (): Promise<number> => {
   try {
     const progress = await loadUserProgress();
-    return progress?.timeAttackBestTime || 0;
+    return progress?.timeAttackBestScore || 0;
   } catch (error) {
     console.error('Error getting time attack best time:', error);
     return 0;

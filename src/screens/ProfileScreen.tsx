@@ -125,6 +125,29 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           >
             <Text style={styles.editButtonText}>✏️ Modifier mon profil</Text>
           </TouchableOpacity>
+          
+          {/* XP and Coins Display */}
+          <View style={styles.currencyContainer}>
+            <View style={styles.currencyItem}>
+              <Text style={styles.currencyIcon}>⭐</Text>
+              <View style={styles.currencyInfo}>
+                <Text style={styles.currencyValue}>{userProgress?.xp || 0}</Text>
+                <Text style={styles.currencyLabel}>XP</Text>
+              </View>
+            </View>
+            <View style={styles.currencyDivider} />
+            <View style={styles.currencyItem}>
+              <Text style={styles.currencyIcon}>🪙</Text>
+              <View style={styles.currencyInfo}>
+                <Text style={styles.currencyValue}>{userProgress?.coins || 0}</Text>
+                <Text style={styles.currencyLabel}>Coins</Text>
+              </View>
+            </View>
+          </View>
+          
+          <Text style={styles.rewardsInfo}>
+            💡 Gagnez XP et Coins en complétant les défis quotidiens !
+          </Text>
         </View>
 
         {/* Stats Grid */}
@@ -297,6 +320,52 @@ const styles = StyleSheet.create({
     color: '#1a1a2e',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  currencyContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 15,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  currencyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  currencyIcon: {
+    fontSize: 28,
+    marginRight: 10,
+  },
+  currencyInfo: {
+    alignItems: 'flex-start',
+  },
+  currencyValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFD700',
+  },
+  currencyLabel: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  currencyDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginHorizontal: 10,
+  },
+  rewardsInfo: {
+    marginTop: 15,
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.5)',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   memberSince: {
     fontSize: 12,
