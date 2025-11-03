@@ -10,6 +10,8 @@ import { LeaderboardScreen } from './src/screens/LeaderboardScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ChallengesScreen } from './src/screens/ChallengesScreen';
+import { FriendsScreen } from './src/screens/FriendsScreen';
+import { FriendChallengesScreen } from './src/screens/FriendChallengesScreen';
 import { EditProfileModal } from './src/components/EditProfileModal';
 import { initializeAudio, playIntroSound } from './src/utils/soundManager';
 import { hasCompletedOnboarding, setOnboardingCompleted } from './src/utils/storage';
@@ -18,7 +20,7 @@ import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
 
-type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges';
+type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('onboarding');
@@ -30,6 +32,7 @@ export default function App() {
   const [selectedGameMode, setSelectedGameMode] = useState<GameMode>('classic');
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [activeChallengeId, setActiveChallengeId] = useState<string | undefined>(undefined);
 
   // Initialize audio and check onboarding status
   useEffect(() => {
@@ -114,8 +117,9 @@ export default function App() {
     setTimeout(() => setCurrentScreen(screen), 200);
   };
 
-  const handleStartGame = (mode: GameMode = 'classic') => {
+  const handleStartGame = (mode: GameMode = 'classic', challengeId?: string) => {
     setSelectedGameMode(mode);
+    setActiveChallengeId(challengeId);
     transitionToScreen('game');
   };
 
@@ -148,6 +152,7 @@ export default function App() {
   };
 
   const handlePlayAgain = () => {
+    // Keep the same mode and challengeId if replaying a challenge
     transitionToScreen('game');
   };
 
@@ -156,6 +161,8 @@ export default function App() {
       const progress = await firestoreService.getUserProgress(currentUser.uid);
       setUserProgress(progress);
     }
+    // Clear the active challenge when going back to home
+    setActiveChallengeId(undefined);
     transitionToScreen('home');
   };
 
@@ -192,6 +199,27 @@ export default function App() {
 
   const handleCloseChallenges = () => {
     transitionToScreen('home');
+  };
+
+  const handleOpenFriends = () => {
+    transitionToScreen('friends');
+  };
+
+  const handleCloseFriends = () => {
+    transitionToScreen('home');
+  };
+
+  const handleOpenFriendChallenges = () => {
+    transitionToScreen('friendChallenges');
+  };
+
+  const handleCloseFriendChallenges = () => {
+    transitionToScreen('home');
+  };
+
+  const handleChallengeFriend = (friendId: string) => {
+    // Navigate to create challenge for this friend
+    handleOpenFriendChallenges();
   };
 
   const handleProfileUpdated = (updatedProgress: UserProgress) => {
@@ -274,6 +302,7 @@ export default function App() {
             onOpenLeaderboard={handleOpenLeaderboard}
             onOpenProfile={handleOpenProfile}
             onOpenChallenges={handleOpenChallenges}
+            onOpenFriends={handleOpenFriends}
             userProgress={userProgress}
           />
         )}
@@ -300,6 +329,24 @@ export default function App() {
             onRewardClaimed={handleProfileUpdated}
           />
         )}
+        {currentScreen === 'friends' && currentUser && (
+          <FriendsScreen
+            userId={currentUser.uid}
+            userProgress={userProgress}
+            onBack={handleCloseFriends}
+            onChallengeFriend={handleChallengeFriend}
+          />
+        )}
+        {currentScreen === 'friendChallenges' && currentUser && (
+          <FriendChallengesScreen
+            userId={currentUser.uid}
+            userProgress={userProgress}
+            onBack={handleCloseFriendChallenges}
+            onStartChallenge={(challenge) => {
+              handleStartGame(challenge.mode, challenge.id);
+            }}
+          />
+        )}
                 {currentScreen === 'game' && (
           <GameScreen 
             onGameOver={handleGameOver}
@@ -315,6 +362,9 @@ export default function App() {
             userProgress={userProgress}
             onPlayAgain={handlePlayAgain}
             onBackToHome={handleBackToHome}
+            mode={selectedGameMode}
+            challengeId={activeChallengeId}
+            userId={currentUser?.uid}
           />
         )}
           </>

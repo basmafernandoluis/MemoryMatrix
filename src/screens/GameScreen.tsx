@@ -108,6 +108,20 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     }
   };
 
+  // Obtenir la valeur actuelle selon le mode pour les records
+  const getCurrentModeValue = (): number => {
+    switch (mode) {
+      case 'survival':
+        return gameModeState.survivalStats?.currentStreak || 0;
+      case 'timeAttack':
+        return gameState.score;
+      case 'zen':
+        return gameModeState.zenStats?.averageAccuracy || 0;
+      default:
+        return gameState.score;
+    }
+  };
+
   // Show sequence animation
   useEffect(() => {
     if (gameState.isShowingSequence && gameStatus === 'showing') {
@@ -164,6 +178,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           hintsRemaining={gameState.hintsRemaining}
           isHintDisabled={gameState.isShowingSequence || gameState.isGameOver || gameState.hintsRemaining === 0}
           hideHearts={mode === 'zen' || mode === 'survival' || mode === 'timeAttack'}
+          mode={mode}
+          currentModeValue={getCurrentModeValue()}
+          userId={userId || undefined}
         />
 
         {/* Mode-specific stats */}

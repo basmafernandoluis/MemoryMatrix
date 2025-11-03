@@ -5,7 +5,18 @@
 
 import { GameMode, GameModeConfig } from '../types';
 
-export const GAME_MODES: Record<GameMode, GameModeConfig> = {
+export interface UnlockRequirements {
+  levelRequired?: number; // Niveau requis en mode classique
+  xpCost?: number; // Coût en XP pour débloquer
+  coinsCost?: number; // Coût en coins pour débloquer
+}
+
+export interface GameModeConfigExtended extends Omit<GameModeConfig, 'unlocked'> {
+  unlocked: boolean;
+  unlockRequirements?: UnlockRequirements;
+}
+
+export const GAME_MODES: Record<GameMode, GameModeConfigExtended> = {
   classic: {
     mode: 'classic',
     name: 'Classique',
@@ -28,7 +39,10 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
     description: 'Vie infinie, difficulté croissante. Jusqu\'où irez-vous ?',
     icon: '🔥',
     color: '#FF6B6B',
-    unlocked: true,
+    unlocked: false,
+    unlockRequirements: {
+      levelRequired: 5,
+    },
     settings: {
       hasLives: false, // Pas de game over sur erreur
       hasTimer: false,
@@ -44,7 +58,10 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
     description: '120 secondes pour scorer un maximum !',
     icon: '⏱️',
     color: '#FFB84D',
-    unlocked: true,
+    unlocked: false,
+    unlockRequirements: {
+      levelRequired: 7,
+    },
     settings: {
       hasLives: false, // ✅ Pas de vies - le jeu continue pendant 120s
       hasTimer: true,
@@ -61,7 +78,10 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
     description: 'Sans pression. Prenez votre temps, relaxez-vous.',
     icon: '🧘',
     color: '#95E1D3',
-    unlocked: true,
+    unlocked: false,
+    unlockRequirements: {
+      levelRequired: 8,
+    },
     settings: {
       hasLives: false, // Pas de game over
       hasTimer: false,
@@ -77,7 +97,11 @@ export const GAME_MODES: Record<GameMode, GameModeConfig> = {
     description: 'Créez votre propre défi !',
     icon: '⚙️',
     color: '#A29BFE',
-    unlocked: false, // Débloqué après niveau 5 en classique
+    unlocked: false,
+    unlockRequirements: {
+      xpCost: 500,
+      coinsCost: 100,
+    },
     settings: {
       hasLives: true,
       hasTimer: false,
@@ -137,11 +161,42 @@ export const getSurvivalDifficultyIncrease = (currentLevel: number): number => {
 /**
  * Vérifier si un mode est débloqué
  */
-export const isModeUnlocked = (mode: GameMode, maxLevelReached: number): boolean => {
-  if (mode === 'custom') {
-    return maxLevelReached >= 5; // Débloqué après niveau 5
+export const isModeUnlocked = (
+  mode: GameMode, 
+  maxLevelReached: number,
+  userXp: number = 0,
+  userCoins: number = 0
+): boolean => {
+  const modeConfig = GAME_MODES[mode];
+  
+  // Mode classique toujours débloqué
+  if (mode === 'classic') {
+    return true;
   }
-  return GAME_MODES[mode].unlocked;
+  
+  // Si pas de requirements, utiliser le flag unlocked
+  if (!modeConfig.unlockRequirements) {
+    return modeConfig.unlocked;
+  }
+  
+  const req = modeConfig.unlockRequirements;
+  
+  // Vérifier niveau requis
+  if (req.levelRequired && maxLevelReached < req.levelRequired) {
+    return false;
+  }
+  
+  // Vérifier XP requis
+  if (req.xpCost && userXp < req.xpCost) {
+    return false;
+  }
+  
+  // Vérifier Coins requis
+  if (req.coinsCost && userCoins < req.coinsCost) {
+    return false;
+  }
+  
+  return true;
 };
 
 /**

@@ -8,13 +8,16 @@ import { feedback } from '../utils/soundManager';
 import { getAchievementsWithStatus } from '../utils/achievements';
 import GameModeSelector from './GameModeSelector';
 import { SettingsModal } from '../components/SettingsModal';
+import UnlockModeAnimation from '../components/UnlockModeAnimation';
 
 interface HomeScreenProps {
   onStartGame: (mode?: GameMode) => void;
   onOpenLeaderboard: () => void;
   onOpenProfile: () => void;
   onOpenChallenges: () => void;
+  onOpenFriends?: () => void;
   userProgress: UserProgress | null;
+  newlyUnlockedMode?: GameMode | null; // Mode qui vient d'être débloqué
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ 
@@ -22,7 +25,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenLeaderboard, 
   onOpenProfile,
   onOpenChallenges,
-  userProgress 
+  onOpenFriends,
+  userProgress,
+  newlyUnlockedMode = null,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -30,6 +35,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [showInstructions, setShowInstructions] = useState(false);
   const [showModeSelector, setShowModeSelector] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [unlockedMode, setUnlockedMode] = useState<GameMode | null>(null);
+  const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
 
   const dailyChallenge = userProgress?.dailyChallenge;
   const challengeProgress = dailyChallenge 
@@ -38,6 +45,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const achievements = userProgress ? getAchievementsWithStatus(userProgress) : [];
   const unlockedCount = achievements.filter((a: Achievement) => a.unlocked).length;
+
+  // Afficher l'animation de déblocage si un mode a été débloqué
+  useEffect(() => {
+    if (newlyUnlockedMode) {
+      setUnlockedMode(newlyUnlockedMode);
+      setShowUnlockAnimation(true);
+    }
+  }, [newlyUnlockedMode]);
 
   useEffect(() => {
     // Entrance animation - faster for better UX
@@ -97,6 +112,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const handleOpenChallenges = async () => {
     await feedback.buttonPress();
     onOpenChallenges();
+  };
+
+  const handleOpenFriends = async () => {
+    await feedback.buttonPress();
+    if (onOpenFriends) onOpenFriends();
   };
 
   const handleOpenSettings = async () => {
@@ -198,6 +218,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <Text style={styles.menuIconEmoji}>🎯</Text>
             <Text style={styles.menuIconLabel}>Défis</Text>
           </Pressable>
+
+          {onOpenFriends && (
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuIcon,
+                pressed && styles.menuIconPressed,
+              ]}
+              onPress={handleOpenFriends}
+            >
+              <Text style={styles.menuIconEmoji}>👥</Text>
+              <Text style={styles.menuIconLabel}>Amis</Text>
+            </Pressable>
+          )}
 
           <Pressable
             style={({ pressed }) => [
@@ -405,6 +438,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onSelectMode={handleModeSelected}
             onBack={() => setShowModeSelector(false)}
             maxLevelReached={userProgress?.maxLevelReached || 0}
+            userXp={userProgress?.xp || 0}
+            userCoins={userProgress?.coins || 0}
           />
         </Modal>
       )}
@@ -413,6 +448,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       <SettingsModal 
         visible={showSettings}
         onClose={() => setShowSettings(false)}
+      />
+
+      {/* Unlock Mode Animation */}
+      <UnlockModeAnimation
+        visible={showUnlockAnimation}
+        mode={unlockedMode}
+        onComplete={() => {
+          setShowUnlockAnimation(false);
+          setUnlockedMode(null);
+        }}
       />
     </SafeAreaView>
   );

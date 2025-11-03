@@ -160,3 +160,81 @@ export interface LeaderboardEntry {
 
 export type LeaderboardMode = 'global' | 'classic' | 'survival' | 'timeAttack' | 'zen';
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'alltime';
+
+// Social Features - Phase 13
+
+// Friend System
+export interface Friend {
+  userId: string;
+  displayName: string;
+  avatarEmoji: string;
+  level: number;
+  lastPlayed?: Date;
+  addedAt: Date;
+}
+
+export interface FriendRequest {
+  id: string;
+  fromUserId: string;
+  fromDisplayName: string;
+  fromAvatarEmoji: string;
+  toUserId: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: Date;
+  respondedAt?: Date;
+}
+
+export interface UserSearchResult {
+  userId: string;
+  displayName: string;
+  avatarEmoji: string;
+  level: number;
+  friendStatus: 'none' | 'friend' | 'pending-sent' | 'pending-received';
+}
+
+// Friend Challenges
+export interface FriendChallenge {
+  id: string;
+  challengerId: string;
+  challengerName: string;
+  challengerAvatar: string;
+  opponentId: string;
+  opponentName: string;
+  opponentAvatar: string;
+  mode: GameMode;
+  status: 'pending' | 'active' | 'completed' | 'expired';
+  
+  // Challenge details
+  targetScore?: number; // Score à battre
+  targetLevel?: number; // Niveau à atteindre
+  
+  // Results
+  challengerScore?: number;
+  challengerLevel?: number;
+  opponentScore?: number;
+  opponentLevel?: number;
+  winnerId?: string;
+  
+  // Timestamps
+  createdAt: Date;
+  acceptedAt?: Date;
+  completedAt?: Date;
+  expiresAt: Date; // 24h après création
+}
+
+export type ChallengeStatus = 'pending' | 'active' | 'completed' | 'expired';
+
+// Share Options
+export interface ShareOptions {
+  score: number;
+  level: number;
+  mode: GameMode;
+  rank?: number;
+  isNewRecord?: boolean;
+}
+
+export interface ShareResult {
+  success: boolean;
+  platform?: 'facebook' | 'twitter' | 'instagram' | 'whatsapp' | 'other';
+  error?: string;
+}

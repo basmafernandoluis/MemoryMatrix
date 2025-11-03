@@ -2,29 +2,92 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
     // Users collection - accessible uniquement par le propriétaire
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
     }
     
     // DisplayNames collection - lecture publique, écriture restreinte
     match /displayNames/{displayName} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
     // Leaderboard collection - lecture publique, écriture par propriétaire
     match /leaderboard/{entryId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
-      allow update: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
-    // Challenges collection - NOUVEAU pour Phase 8
+    // Challenges collection - Défis quotidiens
     match /challenges/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ===== FONCTIONNALITÉS SOCIALES (v1.4.0) =====
+    
+    // Friends - Listes d'amis (sous-collection)
+    match /friends/{userId}/userFriends/{friendId} {
+      // Lecture : l'utilisateur peut voir sa propre liste
+      allow read: if isOwner(userId);
+      
+      // Écriture : l'utilisateur peut gérer sa liste + lors d'acceptation de demande
+      // Permet la création bidirectionnelle lors de l'acceptation
+      allow write: if isOwner(userId) || isOwner(friendId);
+    }
+    
+    // Friend Requests - Demandes d'amis
+    match /friendRequests/{requestId} {
+      // Lecture : expéditeur ou destinataire
+      allow read: if isSignedIn() && (
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+      
+      // Création : expéditeur uniquement
+      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
+      
+      // Mise à jour : les deux parties peuvent mettre à jour (acceptation/refus)
+      allow update: if isSignedIn() && (
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+      
+      // Suppression : les deux parties peuvent supprimer
+      allow delete: if isSignedIn() && (
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+    }
+    
+    // Friend Challenges - Défis entre amis
+    match /friendChallenges/{challengeId} {
+      allow read: if isSignedIn() && (
+        resource.data.challengerId == request.auth.uid ||
+        resource.data.opponentId == request.auth.uid
+      );
+      allow create: if isSignedIn() && request.resource.data.challengerId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.challengerId == request.auth.uid ||
+        resource.data.opponentId == request.auth.uid
+      );
+      allow delete: if isSignedIn() && (
+        (resource.data.opponentId == request.auth.uid && resource.data.status == 'pending') ||
+        resource.data.challengerId == request.auth.uid
+      );
     }
   }
 }

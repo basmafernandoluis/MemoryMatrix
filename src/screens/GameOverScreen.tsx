@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
-import { UserProgress } from '../types';
+import { UserProgress, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
 import { ConfettiEffect } from '../components/ConfettiEffect';
 import { ShineEffect } from '../components/ShineEffect';
+import { shareService } from '../services/shareService';
+import { friendChallengesService } from '../services/friendChallengesService';
 
 interface GameOverScreenProps {
   score: number;
@@ -13,6 +15,10 @@ interface GameOverScreenProps {
   userProgress: UserProgress | null;
   onPlayAgain: () => void;
   onBackToHome: () => void;
+  mode?: GameMode;
+  rank?: number;
+  challengeId?: string;
+  userId?: string;
 }
 
 export const GameOverScreen: React.FC<GameOverScreenProps> = ({
@@ -21,14 +27,41 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   userProgress,
   onPlayAgain,
   onBackToHome,
+  mode = 'classic',
+  rank,
+  challengeId,
+  userId,
 }) => {
   const isNewHighScore = userProgress && score >= userProgress.highScore;
   const [showConfetti, setShowConfetti] = useState(false);
+  const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const bannerAnim = useRef(new Animated.Value(0)).current;
   const scoreScale = useRef(new Animated.Value(0)).current;
+
+  // Soumettre automatiquement le score si c'est un défi
+  useEffect(() => {
+    const submitChallengeScore = async () => {
+      if (challengeId && userId && !scoreSubmitted) {
+        try {
+          await friendChallengesService.submitChallengeScore(
+            userId,
+            challengeId,
+            score,
+            level
+          );
+          setScoreSubmitted(true);
+          console.log('Challenge score submitted:', { challengeId, score, level });
+        } catch (error) {
+          console.error('Error submitting challenge score:', error);
+        }
+      }
+    };
+
+    submitChallengeScore();
+  }, [challengeId, userId, score, level, scoreSubmitted]);
 
   useEffect(() => {
     // Entrance animations
@@ -85,6 +118,26 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const handleBackToHome = async () => {
     await feedback.buttonPress();
     onBackToHome();
+  };
+
+  const handleShare = async () => {
+    try {
+      await feedback.buttonPress();
+      
+      const result = await shareService.shareScore({
+        score,
+        level,
+        mode,
+        rank,
+        isNewRecord: isNewHighScore || false,
+      });
+
+      if (result.success) {
+        Alert.alert('Succès', 'Score partagé !');
+      }
+    } catch (error) {
+      console.error('Error sharing score:', error);
+    }
   };
 
   return (
@@ -167,6 +220,17 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
             onPress={handlePlayAgain}
           >
             <Text style={styles.primaryButtonText}>🔄 REJOUER</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              styles.shareButton,
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={handleShare}
+          >
+            <Text style={styles.shareButtonText}>📤 PARTAGER</Text>
           </Pressable>
           
           <Pressable
@@ -279,6 +343,9 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: COLORS.success,
   },
+  shareButton: {
+    backgroundColor: '#2196F3',
+  },
   secondaryButton: {
     backgroundColor: COLORS.surface,
     borderWidth: 2,
@@ -292,6 +359,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text,
+    letterSpacing: 0.5,
+  },
+  shareButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
     letterSpacing: 0.5,
   },
   secondaryButtonText: {

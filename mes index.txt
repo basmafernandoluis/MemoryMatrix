@@ -1,0 +1,224 @@
+ID de collection	
+Champs indexés
+
+Champ d'application de la requête	Identifiant d'index		État	
+leaderboard	
+week
+year
+period
+classicBest
+__name__
+Collection	CICAgLjy8MAI		Activé	
+leaderboard	
+week
+year
+period
+zenBest
+__name__
+Collection	CICAgOi39MkI		Activé	
+leaderboard	
+period
+zenBest
+__name__
+Collection	CICAgLjy8IAJ		Activé	
+leaderboard	
+period
+zenBest
+__name__
+Collection	CICAgJiHgokJ		Activé	
+leaderboard	
+period
+timeAttackBest
+__name__
+Collection	CICAgOi39IkJ		Activé	
+friendChallenges	
+challengerId
+status
+createdAt
+__name__
+Collection	CICAgNirtJAJ		Activé	
+leaderboard	
+week
+year
+period
+zenBest
+__name__
+Collection	CICAgJiH2JAJ		Activé	
+leaderboard	
+period
+survivalBest
+__name__
+Collection	CICAgJjmiJEJ		Activé	
+leaderboard	
+date
+period
+globalScore
+__name__
+Collection	CICAgJiUsZIJ		Activé	
+leaderboard	
+date
+period
+survivalBest
+__name__
+Collection	CICAgLjRnZMJ		Activé	
+leaderboard	
+period
+timeAttackBest
+__name__
+Collection	CICAgLjy8IAK		Activé	
+leaderboard	
+period
+globalScore
+__name__
+Collection	CICAgNiroIEK		Activé	
+leaderboard	
+week
+year
+period
+timeAttackBest
+__name__
+Collection	CICAgLiT6IEK		Activé	
+leaderboard	
+date
+period
+classicBest
+__name__
+Collection	CICAgLjRyYIK		Activé	
+leaderboard	
+period
+classicBest
+__name__
+Collection	CICAgLiIkYMK		Activé	
+leaderboard	
+week
+year
+period
+globalScore
+__name__
+Collection	CICAgPig2YMK		Activé	
+friendRequests	
+fromUserId
+status
+createdAt
+__name__
+Collection	CICAgJiH8YUK		Activé	
+friendRequests	
+toUserId
+status
+createdAt
+__name__
+Collection	CICAgJjmnIgK		Activé	
+leaderboard	
+date
+period
+zenBest
+__name__
+Collection	CICAgJiHgokK		Activé	
+leaderboard	
+week
+year
+period
+globalScore
+__name__
+Collection	CICAgOi39IkK		Activé	
+leaderboard	
+week
+year
+period
+survivalBest
+__name__
+Collection	CICAgJjFvYoK		Activé	
+friendChallenges	
+status
+expiresAt
+__name__
+Collection	CICAgNi4o4sK		Activé	
+friendChallenges	
+opponentId
+status
+createdAt
+__name__
+Collection	CICAgNirtJAK		Activé	
+leaderboard	
+date
+period
+globalScore
+__name__
+Collection	CICAgJiH2JAK		Activé	
+leaderboard	
+date
+period
+timeAttackBest
+__name__
+Collection	CICAgJjmiJEK		Activé	
+leaderboard	
+week
+year
+period
+classicBest
+__name__
+Collection	CICAgNjaxJEK		Activé	
+leaderboard	
+period
+globalScore
+__name__
+Collection	CICAgJiUsZIK		Activé	
+leaderboard	
+period
+survivalBest
+__name__
+Collection	CICAgNi4-ZIK		Activé	
+leaderboard	
+period
+classicBest
+__name__
+Collection	CICAgLjRnZMK		Activé	
+users	
+displayNameLower
+name
+__name__
+Collection	CICAgJiHlpgK		Activé	
+friendChallenges	
+challengerId
+status
+completedAt
+__name__
+Collection	CICAgOi36pgK		Activé	
+leaderboard	
+date
+period
+timeAttackBest
+__name__
+Collection	CICAgJjFx5sK		Activé	
+leaderboard	
+date
+period
+classicBest
+__name__
+Collection	CICAgLjy8MAK		Activé	
+leaderboard	
+date
+period
+survivalBest
+__name__
+Collection	CICAgLjy8IAL		Activé	
+leaderboard	
+week
+year
+period
+survivalBest
+__name__
+Collection	CICAgOi39IkL		Activé	
+leaderboard	
+week
+year
+period
+timeAttackBest
+__name__
+Collection	CICAgJiUsZIL		Activé	
+leaderboard	
+date
+period
+zenBest
+__name__
+Collection	CICAgLjRnZML		Activé	

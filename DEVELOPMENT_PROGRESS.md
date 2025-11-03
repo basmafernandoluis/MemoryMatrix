@@ -1,9 +1,9 @@
 # 📋 Suivi de l'Avancement - Memory Matrix
 
 ## 🎯 État Général du Projet
-**Date de mise à jour :** 31 octobre 2025  
+**Date de mise à jour :** 3 novembre 2025  
 **Branche actuelle :** 1erDeploimenet  
-**Version :** 1.1.0 (mise à jour équilibrage)  
+**Version :** 1.4.0 (Fonctionnalités Sociales)  
 
 ---
 
@@ -93,17 +93,17 @@ _Aucune phase en cours actuellement_
 ### 🎮 Phase 10: Modes de Jeu Avancés (100%) ✅ COMPLÉTÉE
 - [x] Mode Classique (3 vies, 10 niveaux, gameplay original)
 - [x] Mode Survie (vie infinie, difficulté croissante, streak persisté)
-- [x] Mode Contre-la-Montre (3 vies, timer 120s fixes sans bonus)
+- [x] Mode Contre-la-Montre (vie illimitée, timer 120s fixes)
 - [x] Mode Zen (vie infinie, sans limite de temps, tracking précision)
-- [x] Mode Personnalisé (débloqué niveau 5, UI configuration à implémenter)
-- [x] Sélecteur de mode carrousel horizontal animé
-- [x] Animations 3D (scale, rotation, opacity) lors du défilement
-- [x] Son "passe" lors du changement de carte
-- [x] Indicateurs de pagination dynamiques
+- [x] Mode Personnalisé (débloqué par XP/Coins, UI configuration à implémenter)
+- [x] Sélecteur de mode GRID (2 colonnes, tous modes visibles)
+- [x] Système de déblocage progressif (niveau 3, 5, 7)
+- [x] Animation de déblocage avec confettis
+- [x] Service modeUnlockService pour gestion déblocages
 - [x] Hook useGameLogicExtended avec logique complète
-- [x] Configuration complète (gameModes.ts)
+- [x] Configuration complète (gameModes.ts avec UnlockRequirements)
 - [x] Stats spécifiques par mode affichées en temps réel
-- [x] Système de déblocage des modes
+- [x] Design compact style cards Succès
 - [x] Intégration complète dans HomeScreen et GameScreen
 - [x] Corrections gameplay (vies, timer, persistance records)
 
@@ -117,6 +117,8 @@ _Aucune phase en cours actuellement_
 - [x] Mode zen (sans limite de temps)
 - [x] Mode défi personnalisé
 - [x] Sélecteur de mode dans le menu
+- [x] Système de déblocage progressif
+- [x] Animation de déblocage
 
 ### 🎨 Phase 11: Thèmes et Personnalisation (0%)
 - [ ] Système de thèmes déblocables
@@ -131,13 +133,22 @@ _Aucune phase en cours actuellement_
 - [ ] Historique détaillé des parties
 - [ ] Statistiques comparatives
 - [ ] Export des données
+- [ ] Historique des modes débloqués (date, méthode)
 
-### 🌐 Phase 13: Fonctionnalités Sociales (0%)
-- [ ] Partage de scores sur réseaux sociaux
-- [ ] Défis entre amis
-- [ ] Système d'amis
-- [ ] Chat/messages
-- [ ] Clubs et communautés
+### 🌐 Phase 13: Fonctionnalités Sociales (100%) ✅ COMPLÉTÉE
+- [x] Système d'amis (recherche, demandes, acceptation, suppression)
+- [x] Défis entre amis (création, acceptation, soumission scores, historique)
+- [x] Partage de scores sur réseaux sociaux (Share API native)
+- [x] Service friendsService.ts (420 lignes)
+- [x] Service friendChallengesService.ts (485 lignes)
+- [x] Service shareService.ts (310 lignes)
+- [x] Interface FriendsScreen.tsx (670 lignes, 3 onglets)
+- [x] Interface FriendChallengesScreen.tsx (550 lignes, stats + 3 onglets)
+- [x] Bouton partage dans GameOverScreen
+- [x] Navigation intégrée (App.tsx + HomeScreen)
+- [x] Types TypeScript complets
+- [x] Documentation SOCIAL_FEATURES.md
+
 
 ### 🔧 Phase 14: Optimisations et Polish (0%)
 - [ ] Optimisation des performances
@@ -172,16 +183,51 @@ _Aucune phase en cours actuellement_
 4. ✅ **Affichage XP et Coins** - COMPLÉTÉ
    - Section visuelle dans ProfileScreen
    - Indication de leur utilité (défis quotidiens)
+5. ✅ **Système de déblocage progressif** - COMPLÉTÉ (v1.2.0)
+   - Déblocage par niveau: Survie (3), Time Attack (5), Zen (7)
+   - Déblocage par ressources: Custom (500 XP + 100 Coins)
+   - Nouveau design Grid 2 colonnes (style cards Succès)
+   - Animation de déblocage avec confettis
+   - Service modeUnlockService complet
+6. ✅ **Records mondiaux par mode** - COMPLÉTÉ (v1.3.0)
+   - Service worldRecords avec cache 5 min
+   - Hook useWorldRecords pour temps réel
+   - Affichage dual: record perso + record mondial
+   - Badges: Champion (👑) si détenteur, Proche (🔥) si 90%+
+   - Subscription Firestore pour mises à jour live
+   - Formatage adapté par mode (pts, niveaux, %)
+7. ✅ **Fonctionnalités Sociales** - COMPLÉTÉ (v1.4.0)
+   - Système d'amis complet (recherche, demandes, acceptation)
+   - Défis entre amis (création, stats, historique)
+   - Partage de scores sur réseaux sociaux
+   - 3 nouveaux services (friends, challenges, share)
+   - 2 nouveaux écrans (FriendsScreen, FriendChallengesScreen)
+   - Bouton Amis dans HomeScreen
+   - Bouton Partage dans GameOverScreen
+   - Structure Firestore optimisée avec index
 
 ### À Court Terme (Semaine 1-2)
-1. **Implémenter classement Zen par précision**
+1. **Créer les index Firestore requis**
+   - Index pour recherche d'utilisateurs (displayNameLower)
+   - Index pour demandes d'amis (toUserId, fromUserId, status, createdAt)
+   - Index pour défis (challengerId, opponentId, status, createdAt/completedAt/expiresAt)
+   - Total: 9 index à créer dans Firebase Console
+2. **Migrer displayNameLower pour utilisateurs existants**
+   - Script de migration pour ajouter le champ aux profils
+   - Ou attendre que les utilisateurs modifient leur profil
+3. **Tester fonctionnalités sociales**
+   - Recherche et ajout d'amis
+   - Création et acceptation de défis
+   - Partage de scores sur différentes plateformes
+   - Notifications temps réel
+4. **Implémenter classement Zen par précision**
    - Sauvegarder zenBestAccuracy automatiquement
    - Créer LeaderboardMode 'zen' basé sur précision
    - Afficher top 100 joueurs les plus précis
-2. **Améliorer système de déblocage des modes**
-   - Rendre progressif: Survie niveau 3, Time Attack niveau 5, etc.
-   - Utiliser XP pour débloquer Mode Custom (500 XP)
-   - Ajouter animations de déblocage
+2. **Bouton "Débloquer maintenant" pour mode Custom**
+   - Modal de confirmation avec coût (500 XP + 100 Coins)
+   - Déduction des ressources
+   - Animation de déblocage immédiate
 3. **Créer boutique de Coins**
    - Acheter hints (50 coins)
    - Débloquer thèmes (100-500 coins)
@@ -215,16 +261,16 @@ _Aucune phase en cours actuellement_
 
 ## 📊 MÉTRIQUES D'AVANCEMENT
 
-- **Phases Complètes :** 9/15 (60%)
+- **Phases Complètes :** 10/15 (67%)
 - **Phases En Cours :** 0/15 (0%)
-- **Phases Restantes :** 6/15 (40%)
+- **Phases Restantes :** 5/15 (33%)
 
 ### Répartition par Catégorie
 - **Core Gameplay :** ✅ 100% Complet
 - **Interface Utilisateur :** ✅ 100% Complet  
 - **Backend/Firebase :** ✅ 100% Complet
 - **Audio/Feedback :** ✅ 100% Complet
-- **Features Avancées :** ✅ 100% Complet (Défis + Modes)
+- **Features Avancées :** ✅ 100% Complet (Défis + Modes + Social)
 - **Polish/Déploiement :** 📋 0% Complet
 
 ---
@@ -264,4 +310,4 @@ _Aucune phase en cours actuellement_
 
 ---
 
-*Dernière mise à jour: 25 octobre 2025 - Branche ProfileOK*
+*Dernière mise à jour: 3 novembre 2025 - v1.4.0 Fonctionnalités Sociales*

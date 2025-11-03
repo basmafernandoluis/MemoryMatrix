@@ -278,6 +278,7 @@ export class FirestoreService {
         transaction.set(userDoc, {
           displayName: displayName.trim(),
           displayNameLowerCase: normalizedName,
+          displayNameLower: normalizedName, // Pour la recherche d'amis
           avatarEmoji,
           updatedAt: firestore.FieldValue.serverTimestamp(),
         }, { merge: true });
