@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -34,6 +34,9 @@ export default function App() {
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [activeChallengeId, setActiveChallengeId] = useState<string | undefined>(undefined);
+  // Notification navigation params
+  const [notificationTab, setNotificationTab] = useState<'pending' | 'active' | 'history' | undefined>(undefined);
+  const [notificationChallengeId, setNotificationChallengeId] = useState<string | undefined>(undefined);
 
   // Initialize audio and check onboarding status
   useEffect(() => {
@@ -68,7 +71,7 @@ export default function App() {
           setUserProgress(newProgress);
         }
         
-        // Initialize notifications
+        // Initialize notifications (callback will be set by separate useEffect)
         await notificationService.initialize(user.uid);
       }
       setIsLoading(false);
@@ -103,6 +106,41 @@ export default function App() {
       }
     }
   }, [currentUser, onboardingDone, isLoading, currentScreen]);
+
+  // Handle navigation from notifications
+  const handleNotificationNavigation = useCallback((screen: string, params?: any) => {
+    console.log('Notification navigation callback called:', { screen, params, currentScreen });
+    
+    // Map notification screen names to app screens
+    switch (screen) {
+      case 'friends':
+        console.log('Setting screen to friends');
+        setCurrentScreen('friends');
+        // TODO: If params.tab exists, set active tab in FriendsScreen
+        break;
+      
+      case 'friendChallenges':
+        console.log('Setting screen to friendChallenges with params:', params);
+        // Set notification params for FriendChallengesScreen
+        if (params?.tab) {
+          setNotificationTab(params.tab as 'pending' | 'active' | 'history');
+        }
+        if (params?.challengeId) {
+          setNotificationChallengeId(params.challengeId);
+        }
+        setCurrentScreen('friendChallenges');
+        break;
+      
+      default:
+        console.warn('Unknown notification screen:', screen);
+    }
+  }, [currentScreen]); // Dépendance sur currentScreen pour avoir accès à la valeur actuelle
+
+  // Update navigation callback whenever it changes
+  useEffect(() => {
+    console.log('Setting up notification navigation callback');
+    notificationService.setNavigationCallback(handleNotificationNavigation);
+  }, [handleNotificationNavigation]);
 
   const transitionToScreen = (screen: Screen) => {
     Animated.sequence([
@@ -156,7 +194,8 @@ export default function App() {
   };
 
   const handlePlayAgain = () => {
-    // Keep the same mode and challengeId if replaying a challenge
+    // Clear challengeId when replaying - don't resubmit to same challenge
+    setActiveChallengeId(undefined);
     transitionToScreen('game');
   };
 
@@ -218,6 +257,9 @@ export default function App() {
   };
 
   const handleCloseFriendChallenges = () => {
+    // Reset notification params when leaving screen
+    setNotificationTab(undefined);
+    setNotificationChallengeId(undefined);
     transitionToScreen('home');
   };
 
@@ -349,6 +391,8 @@ export default function App() {
             onStartChallenge={(challenge) => {
               handleStartGame(challenge.mode, challenge.id);
             }}
+            initialTab={notificationTab}
+            highlightChallengeId={notificationChallengeId}
           />
         )}
                 {currentScreen === 'game' && (

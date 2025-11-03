@@ -247,32 +247,22 @@ class FriendChallengesService {
         score
       );
 
-      // Si le défi est terminé, notifier les deux joueurs du résultat
+      // Si le défi est terminé, notifier l'adversaire du résultat
       if (updateData.status === 'completed' && updateData.winnerId) {
-        const challengerIsWinner = updateData.winnerId === challenge.challengerId;
-        const opponentIsWinner = updateData.winnerId === challenge.opponentId;
+        const isCurrentUserWinner = updateData.winnerId === userId;
         
         const scoreDiff = Math.abs(
           (updatedChallenge.challengerScore || 0) - (updatedChallenge.opponentScore || 0)
         );
 
-        // Notifier le challenger
+        // Notifier uniquement l'adversaire (pas soi-même)
+        // L'utilisateur actuel est le senderId (celui qui vient de jouer)
         await notificationService.notifyChallengeCompleted(
-          challenge.challengerId,
-          challenge.opponentId,
-          challenge.opponentName,
+          opponentId, // destinataire
+          userId, // expéditeur (joueur actuel)
+          playerName, // nom de l'expéditeur
           challengeId,
-          challengerIsWinner,
-          scoreDiff
-        );
-
-        // Notifier l'opponent
-        await notificationService.notifyChallengeCompleted(
-          challenge.opponentId,
-          challenge.challengerId,
-          challenge.challengerName,
-          challengeId,
-          opponentIsWinner,
+          !isCurrentUserWinner, // l'adversaire a gagné si on a perdu
           scoreDiff
         );
       }

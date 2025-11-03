@@ -29,6 +29,8 @@ interface FriendChallengesScreenProps {
   userProgress: UserProgress | null;
   onBack: () => void;
   onStartChallenge?: (challenge: FriendChallenge) => void;
+  initialTab?: TabType; // Onglet initial à afficher
+  highlightChallengeId?: string; // ID du défi à mettre en évidence
 }
 
 type TabType = 'pending' | 'active' | 'history';
@@ -45,8 +47,10 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   userProgress,
   onBack,
   onStartChallenge,
+  initialTab = 'active',
+  highlightChallengeId,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('active');
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [pendingChallenges, setPendingChallenges] = useState<FriendChallenge[]>([]);
   const [activeChallenges, setActiveChallenges] = useState<FriendChallenge[]>([]);
   const [completedChallenges, setCompletedChallenges] = useState<FriendChallenge[]>([]);
@@ -55,6 +59,13 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [stats, setStats] = useState({ totalChallenges: 0, wins: 0, losses: 0, winRate: 0 });
+
+  // Switch to initialTab when it changes (from notification navigation)
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   useEffect(() => {
     loadData();
@@ -159,9 +170,10 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     const modeData = GAME_MODES.find(m => m.mode === item.mode);
     const timeLeft = Math.max(0, item.expiresAt.getTime() - Date.now());
     const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+    const isHighlighted = highlightChallengeId === item.id;
 
     return (
-      <View style={styles.challengeCard}>
+      <View style={[styles.challengeCard, isHighlighted && styles.highlightedCard]}>
         <View style={styles.challengeHeader}>
           <Text style={styles.challengeAvatar}>{item.challengerAvatar}</Text>
           <View style={styles.challengeInfo}>
@@ -171,6 +183,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             </Text>
             <Text style={styles.expiresText}>Expire dans {hoursLeft}h</Text>
           </View>
+          {isHighlighted && <Text style={styles.newBadge}>🔔 Nouveau</Text>}
         </View>
         <View style={styles.challengeActions}>
           <TouchableOpacity
@@ -197,6 +210,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     const opponentScore = isChallenger ? item.opponentScore : item.challengerScore;
     const opponentName = isChallenger ? item.opponentName : item.challengerName;
     const opponentAvatar = isChallenger ? item.opponentAvatar : item.challengerAvatar;
+    const isHighlighted = highlightChallengeId === item.id;
 
     // Debug log
     console.log('Active Challenge Debug:', {
@@ -209,7 +223,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     });
 
     return (
-      <View style={styles.challengeCard}>
+      <View style={[styles.challengeCard, isHighlighted && styles.highlightedCard]}>
         <View style={styles.challengeHeader}>
           <Text style={styles.challengeAvatar}>{opponentAvatar}</Text>
           <View style={styles.challengeInfo}>
@@ -218,6 +232,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               {modeData?.icon} {modeData?.name}
             </Text>
           </View>
+          {isHighlighted && <Text style={styles.newBadge}>🔔 Nouveau</Text>}
         </View>
         <View style={styles.scoresContainer}>
           <View style={styles.scoreBox}>
@@ -234,13 +249,24 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             </Text>
           </View>
         </View>
-        {myScore === undefined && onStartChallenge && (
+        {/* Afficher le bouton "Jouer" seulement si :
+            1. Le joueur n'a pas encore de score
+            2. Le défi a été accepté (acceptedAt existe)
+            3. Le callback onStartChallenge existe
+        */}
+        {myScore === undefined && item.acceptedAt && onStartChallenge && (
           <TouchableOpacity
             style={styles.playButton}
             onPress={() => onStartChallenge(item)}
           >
             <Text style={styles.playButtonText}>🎮 Jouer maintenant</Text>
           </TouchableOpacity>
+        )}
+        {/* Si le défi n'est pas encore accepté */}
+        {myScore === undefined && !item.acceptedAt && (
+          <View style={styles.waitingContainer}>
+            <Text style={styles.waitingText}>⏳ En attente d'acceptation</Text>
+          </View>
         )}
       </View>
     );
@@ -630,6 +656,20 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
   },
+  newBadge: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#2196F3',
+    backgroundColor: 'rgba(33, 150, 243, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  highlightedCard: {
+    borderWidth: 2,
+    borderColor: '#2196F3',
+    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+  },
   challengeActions: {
     flexDirection: 'row',
     gap: 8,
@@ -690,6 +730,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#FFF',
+  },
+  waitingContainer: {
+    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 152, 0, 0.3)',
+  },
+  waitingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FF9800',
   },
   emptyState: {
     alignItems: 'center',
