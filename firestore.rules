@@ -89,5 +89,20 @@ service cloud.firestore {
         resource.data.challengerId == request.auth.uid
       );
     }
+    
+    // Notifications - Push notifications
+    match /notifications/{notificationId} {
+      // Lecture : uniquement le destinataire
+      allow read: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      
+      // Création : uniquement l'expéditeur (senderId = auth.uid)
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      
+      // Mise à jour : uniquement le destinataire (pour marquer comme lu)
+      allow update: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+      
+      // Suppression : uniquement le destinataire
+      allow delete: if isSignedIn() && resource.data.recipientId == request.auth.uid;
+    }
   }
 }

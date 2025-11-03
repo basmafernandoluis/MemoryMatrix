@@ -19,6 +19,7 @@ import { UserProgress, GameMode } from './src/types';
 import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
+import { notificationService } from './src/services/notificationService';
 
 type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges';
 
@@ -66,6 +67,9 @@ export default function App() {
           const newProgress = await firestoreService.initializeUser(user.uid);
           setUserProgress(newProgress);
         }
+        
+        // Initialize notifications
+        await notificationService.initialize(user.uid);
       }
       setIsLoading(false);
     });

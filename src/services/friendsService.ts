@@ -10,6 +10,7 @@
 
 import firestore from '@react-native-firebase/firestore';
 import { Friend, FriendRequest, UserSearchResult, UserProgress } from '../types';
+import { notificationService } from './notificationService';
 
 class FriendsService {
   private friendsCollection = firestore().collection('friends');
@@ -145,6 +146,14 @@ class FriendsService {
 
       const docRef = await this.friendRequestsCollection.add(requestData);
       
+      // Envoyer une notification
+      await notificationService.notifyFriendRequest(
+        toUserId,
+        fromUserId,
+        fromDisplayName,
+        docRef.id
+      );
+      
       return {
         id: docRef.id,
         ...requestData,
@@ -220,6 +229,13 @@ class FriendsService {
       });
 
       await batch.commit();
+      
+      // Envoyer une notification
+      await notificationService.notifyFriendAccepted(
+        requestData.fromUserId,
+        requestData.toUserId,
+        toUserData.displayName || `Guest_${requestData.toUserId.substring(0, 6)}`
+      );
     } catch (error) {
       console.error('Error accepting friend request:', error);
       throw error;

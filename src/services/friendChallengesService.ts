@@ -11,6 +11,7 @@
 
 import firestore from '@react-native-firebase/firestore';
 import { FriendChallenge, GameMode } from '../types';
+import { notificationService } from './notificationService';
 
 class FriendChallengesService {
   private challengesCollection = firestore().collection('friendChallenges');
@@ -57,6 +58,22 @@ class FriendChallengesService {
       };
 
       const docRef = await this.challengesCollection.add(challengeData);
+
+      // Envoyer une notification
+      const modeNames: Partial<Record<GameMode, string>> = {
+        classic: 'Classique',
+        survival: 'Survie',
+        timeAttack: 'Temps',
+        zen: 'Zen',
+      };
+      
+      await notificationService.notifyChallengeReceived(
+        opponentId,
+        challengerId,
+        challengerName,
+        docRef.id,
+        modeNames[mode] || mode
+      );
 
       return {
         id: docRef.id,
@@ -105,6 +122,14 @@ class FriendChallengesService {
         status: 'active',
         acceptedAt: new Date(),
       });
+
+      // Envoyer une notification
+      await notificationService.notifyChallengeAccepted(
+        challenge.challengerId,
+        userId,
+        challenge.opponentName,
+        challengeId
+      );
     } catch (error) {
       console.error('Error accepting challenge:', error);
       throw error;
@@ -209,6 +234,48 @@ class FriendChallengesService {
       }
 
       await this.challengesCollection.doc(challengeId).update(updateData);
+
+      // Notifier l'adversaire que le joueur a soumis son score
+      const opponentId = userId === challenge.challengerId ? challenge.opponentId : challenge.challengerId;
+      const playerName = userId === challenge.challengerId ? challenge.challengerName : challenge.opponentName;
+      
+      await notificationService.notifyChallengeScoreSubmitted(
+        opponentId,
+        userId,
+        playerName,
+        challengeId,
+        score
+      );
+
+      // Si le défi est terminé, notifier les deux joueurs du résultat
+      if (updateData.status === 'completed' && updateData.winnerId) {
+        const challengerIsWinner = updateData.winnerId === challenge.challengerId;
+        const opponentIsWinner = updateData.winnerId === challenge.opponentId;
+        
+        const scoreDiff = Math.abs(
+          (updatedChallenge.challengerScore || 0) - (updatedChallenge.opponentScore || 0)
+        );
+
+        // Notifier le challenger
+        await notificationService.notifyChallengeCompleted(
+          challenge.challengerId,
+          challenge.opponentId,
+          challenge.opponentName,
+          challengeId,
+          challengerIsWinner,
+          scoreDiff
+        );
+
+        // Notifier l'opponent
+        await notificationService.notifyChallengeCompleted(
+          challenge.opponentId,
+          challenge.challengerId,
+          challenge.challengerName,
+          challengeId,
+          opponentIsWinner,
+          scoreDiff
+        );
+      }
     } catch (error) {
       console.error('Error submitting challenge score:', error);
       throw error;
