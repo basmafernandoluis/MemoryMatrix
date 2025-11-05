@@ -59,7 +59,7 @@ export const sendPushNotification = functions.firestore
             channelId: 'memory_matrix_default',
             sound: 'default',
             priority: 'high',
-            clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+            // Pas de clickAction - laisser le comportement par défaut
           },
         },
         apns: {

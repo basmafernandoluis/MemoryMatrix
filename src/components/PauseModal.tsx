@@ -2,14 +2,27 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, Modal } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
 import { feedback } from '../utils/soundManager';
+import { BoostButton } from './BoostButton';
 
 interface PauseModalProps {
   visible: boolean;
   onResume: () => void;
   onQuit: () => void;
+  onAddLife?: () => void; // Callback pour ajouter une vie
+  onAddHint?: () => void; // Callback pour ajouter un indice
+  currentLives?: number;
+  currentHints?: number;
 }
 
-export const PauseModal: React.FC<PauseModalProps> = ({ visible, onResume, onQuit }) => {
+export const PauseModal: React.FC<PauseModalProps> = ({ 
+  visible, 
+  onResume, 
+  onQuit,
+  onAddLife,
+  onAddHint,
+  currentLives = 0,
+  currentHints = 0,
+}) => {
   const handleResume = async () => {
     await feedback.buttonPress();
     onResume();
@@ -29,6 +42,28 @@ export const PauseModal: React.FC<PauseModalProps> = ({ visible, onResume, onQui
       <View style={styles.overlay}>
         <View style={styles.modal}>
           <Text style={styles.title}>⏸️ PAUSE</Text>
+          
+          {/* Section Bonus */}
+          {(onAddLife || onAddHint) && (
+            <View style={styles.boostSection}>
+              <Text style={styles.boostTitle}>🎁 BONUS</Text>
+              <Text style={styles.boostSubtitle}>Regardez une pub pour obtenir des bonus</Text>
+              <View style={styles.boostButtons}>
+                {onAddLife && (
+                  <BoostButton 
+                    type="life" 
+                    onBoostGranted={onAddLife}
+                  />
+                )}
+                {onAddHint && (
+                  <BoostButton 
+                    type="hint" 
+                    onBoostGranted={onAddHint}
+                  />
+                )}
+              </View>
+            </View>
+          )}
           
           <View style={styles.buttonContainer}>
             <Pressable
@@ -81,6 +116,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     marginBottom: 30,
+  },
+  boostSection: {
+    width: '100%',
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+  },
+  boostTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  boostSubtitle: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  boostButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
   },
   buttonContainer: {
     width: '100%',

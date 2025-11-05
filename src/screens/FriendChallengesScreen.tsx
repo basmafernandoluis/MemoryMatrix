@@ -162,7 +162,18 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
       setSelectedFriend(null);
       loadData();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible de créer le défi');
+      const errorMessage = error.message || 'Impossible de créer le défi';
+      
+      // Message plus clair pour le cas du défi déjà en cours
+      if (errorMessage.includes('déjà en cours')) {
+        Alert.alert(
+          'Défi en cours',
+          `Vous avez déjà un défi actif avec ${friend.displayName}. Terminez-le avant d\'en créer un nouveau.`,
+          [{ text: 'OK', style: 'default' }]
+        );
+      } else {
+        Alert.alert('Erreur', errorMessage);
+      }
     }
   };
 

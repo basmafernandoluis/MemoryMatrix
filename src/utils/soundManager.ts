@@ -18,6 +18,7 @@ interface SoundCache {
   intro?: Audio.Sound;
   click?: Audio.Sound;
   bien2?: Audio.Sound;
+  coins?: Audio.Sound;
   alertefaill?: Audio.Sound;
   chrono?: Audio.Sound;
   passe?: Audio.Sound;
@@ -75,6 +76,13 @@ const preloadSounds = async () => {
       { shouldPlay: false, volume: 0.7 }
     );
     soundCache.bien2 = bien2Sound;
+
+    // Load coins sound (rewards)
+    const { sound: coinsSound } = await Audio.Sound.createAsync(
+      require('../../assets/Sound/coins.mp3'),
+      { shouldPlay: false, volume: 0.7 }
+    );
+    soundCache.coins = coinsSound;
 
     // Load game over sound (alertefaill)
     const { sound: alertefaillSound } = await Audio.Sound.createAsync(
@@ -278,6 +286,10 @@ export const playPasseSound = async () => {
   await playSound('passe');
 };
 
+export const playCoinsSound = async () => {
+  await playSound('coins');
+};
+
 export const playIntroSound = async () => {
   await playSound('intro');
 };
@@ -298,6 +310,12 @@ export const feedback = {
   // Correct sequence completion
   correct: async () => {
     await playCorrectSound();
+    await playHapticSuccess();
+  },
+  
+  // Reward earned (coins sound for rewarded ads)
+  reward: async () => {
+    await playCoinsSound();
     await playHapticSuccess();
   },
   

@@ -64,15 +64,26 @@ class NotificationService {
 
     // Notification cliquée (app en background)
     this.unsubscribeOnNotificationOpenedApp = messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log('Notification opened app from background:', remoteMessage);
+      console.log('========================================');
+      console.log('Notification opened app from BACKGROUND');
+      console.log('Full message:', JSON.stringify(remoteMessage, null, 2));
+      console.log('Data:', remoteMessage.data);
+      console.log('Notification:', remoteMessage.notification);
+      console.log('Has callback:', !!this.navigationCallback);
+      console.log('========================================');
       
-      // Si le callback n'est pas encore prêt, garder la notification en attente
-      if (!this.navigationCallback) {
-        console.log('Navigation callback not ready yet, storing notification for later');
-        this.pendingNotification = remoteMessage;
-      } else {
-        this.handleNotificationNavigation(remoteMessage);
-      }
+      // Attendre un délai plus long pour s'assurer que l'app est complètement prête
+      setTimeout(() => {
+        console.log('After delay - Has callback:', !!this.navigationCallback);
+        // Si le callback n'est pas encore prêt, garder la notification en attente
+        if (!this.navigationCallback) {
+          console.log('Navigation callback not ready yet, storing notification for later');
+          this.pendingNotification = remoteMessage;
+        } else {
+          console.log('Processing notification immediately');
+          this.handleNotificationNavigation(remoteMessage);
+        }
+      }, 1000); // Délai de 1000ms (1 seconde) pour s'assurer que l'app est montée
     });
 
     // Vérifier si l'app a été ouverte via une notification (app fermée)
@@ -80,15 +91,26 @@ class NotificationService {
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
-          console.log('App opened from quit state by notification:', remoteMessage);
+          console.log('========================================');
+          console.log('App opened from QUIT STATE by notification');
+          console.log('Full message:', JSON.stringify(remoteMessage, null, 2));
+          console.log('Data:', remoteMessage.data);
+          console.log('Notification:', remoteMessage.notification);
+          console.log('Has callback:', !!this.navigationCallback);
+          console.log('========================================');
           
-          // Si le callback n'est pas encore prêt, garder la notification en attente
-          if (!this.navigationCallback) {
-            console.log('Navigation callback not ready yet, storing notification for later');
-            this.pendingNotification = remoteMessage;
-          } else {
-            this.handleNotificationNavigation(remoteMessage);
-          }
+          // Attendre un délai plus long pour s'assurer que l'app est complètement prête
+          setTimeout(() => {
+            console.log('After delay - Has callback:', !!this.navigationCallback);
+            // Si le callback n'est pas encore prêt, garder la notification en attente
+            if (!this.navigationCallback) {
+              console.log('Navigation callback not ready yet, storing notification for later');
+              this.pendingNotification = remoteMessage;
+            } else {
+              console.log('Processing notification immediately');
+              this.handleNotificationNavigation(remoteMessage);
+            }
+          }, 1000); // Délai de 1000ms (1 seconde) pour s'assurer que l'app est montée
         }
       });
   }
@@ -243,8 +265,14 @@ class NotificationService {
     retryCount: number = 0
   ): void {
     const data = remoteMessage.data;
+    
+    console.log('=== handleNotificationNavigation ===');
+    console.log('Has data:', !!data);
+    console.log('Data keys:', data ? Object.keys(data) : 'none');
+    console.log('Full data:', data);
+    
     if (!data) {
-      console.log('No data in notification');
+      console.log('No data in notification, cannot navigate');
       return;
     }
 

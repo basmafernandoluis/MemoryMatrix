@@ -15,6 +15,7 @@ import { firestoreService } from '../services/firestore';
 import { DailyChallengeExtended, ChallengeProgress, UserProgress } from '../types';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS, FONT_SIZE } from '../constants/designTokens';
+import { BannerAdComponent } from '../components/BannerAdComponent';
 
 interface ChallengesScreenProps {
   userId: string;
@@ -213,6 +214,9 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
             ))}
           </View>
         </ScrollView>
+        
+        {/* Bannière publicitaire */}
+        <BannerAdComponent position="bottom" />
       </LinearGradient>
     </SafeAreaView>
   );
@@ -268,7 +272,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xxxl,
+    paddingBottom: 100, // Espace pour la bannière publicitaire
   },
   statsContainer: {
     flexDirection: 'row',

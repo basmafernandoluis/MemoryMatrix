@@ -38,6 +38,13 @@
             "requestPermission": true
           }
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7435856398879419~3521141326",
+          "iosAppId": "ca-app-pub-7435856398879419~3521141326"
+        }
       ]
     ]
   }

@@ -8,6 +8,7 @@ import { ConfettiEffect } from '../components/ConfettiEffect';
 import { ShineEffect } from '../components/ShineEffect';
 import { shareService } from '../services/shareService';
 import { friendChallengesService } from '../services/friendChallengesService';
+import { adManager } from '../services/adManager';
 
 interface GameOverScreenProps {
   score: number;
@@ -15,6 +16,7 @@ interface GameOverScreenProps {
   userProgress: UserProgress | null;
   onPlayAgain: () => void;
   onBackToHome: () => void;
+  onContinue?: () => void; // Nouveau: callback pour continuer avec une vie
   mode?: GameMode;
   rank?: number;
   challengeId?: string;
@@ -27,6 +29,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   userProgress,
   onPlayAgain,
   onBackToHome,
+  onContinue,
   mode = 'classic',
   rank,
   challengeId,
@@ -35,11 +38,36 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   const isNewHighScore = userProgress && score >= userProgress.highScore;
   const [showConfetti, setShowConfetti] = useState(false);
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
+  const [canContinue, setCanContinue] = useState(false);
+  const [rewardedAdAvailable, setRewardedAdAvailable] = useState(false);
+
+  // Vérifier si le mode permet de continuer (Classique, Chrono, Personnalisé)
+  const modesWithContinue: GameMode[] = ['classic', 'timeAttack', 'custom'];
+  const canOfferContinue = onContinue && modesWithContinue.includes(mode);
+
+  // En mode challenge, pas de rejouer (une seule partie par défi)
+  const isChallenge = !!challengeId;
+  const canPlayAgain = !isChallenge;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const bannerAnim = useRef(new Animated.Value(0)).current;
   const scoreScale = useRef(new Animated.Value(0)).current;
+
+  // Vérifier la disponibilité de la rewarded ad pour continuer
+  useEffect(() => {
+    if (canOfferContinue) {
+      const checkAdAvailability = () => {
+        setRewardedAdAvailable(adManager.isRewardedAvailable());
+      };
+      
+      checkAdAvailability();
+      // Vérifier toutes les 2 secondes si l'ad est prête
+      const interval = setInterval(checkAdAvailability, 2000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [canOfferContinue]);
 
   // Soumettre automatiquement le score si c'est un défi
   useEffect(() => {
@@ -140,6 +168,35 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
     }
   };
 
+  const handleContinue = async () => {
+    await feedback.buttonPress();
+    
+    if (!onContinue || !rewardedAdAvailable) {
+      Alert.alert(
+        "Publicité non disponible",
+        "La publicité récompensée n'est pas encore chargée. Veuillez réessayer dans quelques secondes.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
+    const success = await adManager.showRewarded(() => {
+      // Récompense gagnée: donner une vie supplémentaire
+      console.log('Rewarded ad watched, continuing game with extra life');
+      if (onContinue) {
+        onContinue();
+      }
+    });
+
+    if (!success) {
+      Alert.alert(
+        "Erreur",
+        "Impossible d'afficher la publicité. Veuillez réessayer.",
+        [{ text: "OK" }]
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ConfettiEffect active={showConfetti} particleCount={50} />
@@ -211,16 +268,25 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
         </View>
         
         <View style={styles.buttonContainer}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              styles.primaryButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={handlePlayAgain}
-          >
-            <Text style={styles.primaryButtonText}>🔄 REJOUER</Text>
-          </Pressable>
+          {canPlayAgain ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.primaryButton,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={handlePlayAgain}
+            >
+              <Text style={styles.primaryButtonText}>🔄 REJOUER</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.challengeInfoBox}>
+              <Text style={styles.challengeInfoIcon}>🎯</Text>
+              <Text style={styles.challengeInfoText}>
+                Mode Défi: Une seule tentative par défi
+              </Text>
+            </View>
+          )}
 
           <Pressable
             style={({ pressed }) => [
@@ -340,6 +406,42 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
+  buttonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  challengeInfoBox: {
+    backgroundColor: 'rgba(255, 193, 7, 0.15)',
+    borderWidth: 2,
+    borderColor: COLORS.warning,
+    borderRadius: 15,
+    padding: 16,
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  challengeInfoIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  challengeInfoText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.text,
+    textAlign: 'center',
+  },
+  continueButton: {
+    backgroundColor: '#FF6B6B',
+    borderWidth: 2,
+    borderColor: '#FF4757',
+  },
+  continueButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   primaryButton: {
     backgroundColor: COLORS.success,
   },
@@ -347,13 +449,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#2196F3',
   },
   secondaryButton: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: 'transparent',
     borderWidth: 2,
     borderColor: COLORS.primary,
-  },
-  buttonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.98 }],
   },
   primaryButtonText: {
     fontSize: 18,

@@ -9,6 +9,8 @@ import { getAchievementsWithStatus } from '../utils/achievements';
 import GameModeSelector from './GameModeSelector';
 import { SettingsModal } from '../components/SettingsModal';
 import UnlockModeAnimation from '../components/UnlockModeAnimation';
+import { BannerAdComponent, BannerSpacer } from '../components/BannerAdComponent';
+import firestore from '@react-native-firebase/firestore';
 
 interface HomeScreenProps {
   onStartGame: (mode?: GameMode) => void;
@@ -17,6 +19,7 @@ interface HomeScreenProps {
   onOpenChallenges: () => void;
   onOpenFriends?: () => void;
   userProgress: UserProgress | null;
+  currentUserId?: string | null;
   newlyUnlockedMode?: GameMode | null; // Mode qui vient d'être débloqué
 }
 
@@ -27,6 +30,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenChallenges,
   onOpenFriends,
   userProgress,
+  currentUserId = null,
   newlyUnlockedMode = null,
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -37,6 +41,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [unlockedMode, setUnlockedMode] = useState<GameMode | null>(null);
   const [showUnlockAnimation, setShowUnlockAnimation] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const dailyChallenge = userProgress?.dailyChallenge;
   const challengeProgress = dailyChallenge 
@@ -45,6 +50,46 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const achievements = userProgress ? getAchievementsWithStatus(userProgress) : [];
   const unlockedCount = achievements.filter((a: Achievement) => a.unlocked).length;
+
+  // Compter les notifications non lues (demandes d'amis + défis)
+  useEffect(() => {
+    if (!currentUserId) {
+      setNotificationCount(0);
+      return;
+    }
+
+    let friendRequestCount = 0;
+    let challengeCount = 0;
+
+    // Écouter les demandes d'amis en attente
+    const unsubscribeFriendRequests = firestore()
+      .collection('friendRequests')
+      .where('toUserId', '==', currentUserId)
+      .where('status', '==', 'pending')
+      .onSnapshot((snapshot) => {
+        if (snapshot) {
+          friendRequestCount = snapshot.size;
+          setNotificationCount(friendRequestCount + challengeCount);
+        }
+      });
+
+    // Écouter les défis en attente (séparément)
+    const unsubscribeChallenges = firestore()
+      .collection('challenges')
+      .where('opponentId', '==', currentUserId)
+      .where('status', '==', 'pending')
+      .onSnapshot((snapshot) => {
+        if (snapshot) {
+          challengeCount = snapshot.size;
+          setNotificationCount(friendRequestCount + challengeCount);
+        }
+      });
+
+    return () => {
+      unsubscribeFriendRequests();
+      unsubscribeChallenges();
+    };
+  }, [currentUserId]);
 
   // Afficher l'animation de déblocage si un mode a été débloqué
   useEffect(() => {
@@ -229,6 +274,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             >
               <Text style={styles.menuIconEmoji}>👥</Text>
               <Text style={styles.menuIconLabel}>Amis</Text>
+              {notificationCount > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.badgeText}>
+                    {notificationCount > 99 ? '99+' : notificationCount}
+                  </Text>
+                </View>
+              )}
             </Pressable>
           )}
 
@@ -268,46 +320,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         >
           <Text style={styles.instructionsButtonText}>❓ Comment jouer ?</Text>
         </Pressable>
-        
-        <View style={styles.achievementsSection}>
-          <Text style={styles.achievementsTitle}>
-            🏅 Succès ({unlockedCount}/{achievements.length})
-          </Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            style={styles.achievementsScroll}
-          >
-            {achievements.map((achievement: Achievement) => (
-              <View 
-                key={achievement.id} 
-                style={[
-                  styles.achievementCard,
-                  !achievement.unlocked && styles.achievementCardLocked,
-                ]}
-              >
-                <Text style={styles.achievementIcon}>{achievement.icon}</Text>
-                <Text style={[
-                  styles.achievementTitle,
-                  !achievement.unlocked && styles.achievementTitleLocked,
-                ]}>
-                  {achievement.title}
-                </Text>
-                <Text style={styles.achievementDescription}>
-                  {achievement.description}
-                </Text>
-                {achievement.target && !achievement.unlocked && (
-                  <Text style={styles.achievementProgress}>
-                    {achievement.progress}/{achievement.target}
-                  </Text>
-                )}
-                {achievement.unlocked && (
-                  <Text style={styles.achievementUnlocked}>✓</Text>
-                )}
-              </View>
-            ))}
-          </ScrollView>
-        </View>
       </Animated.View>
 
       {/* Instructions Modal */}
@@ -459,6 +471,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           setUnlockedMode(null);
         }}
       />
+
+      {/* Bannière publicitaire en bas */}
+      <BannerAdComponent position="bottom" />
     </SafeAreaView>
   );
 };
@@ -473,6 +488,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 15,
+    paddingBottom: 100, // Espace pour la bannière publicitaire (50px banner + 50px marge)
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
@@ -611,6 +627,25 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontWeight: FONT_WEIGHT.semibold,
     textAlign: 'center',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    borderWidth: 2,
+    borderColor: COLORS.background,
+  },
+  badgeText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: FONT_WEIGHT.bold,
   },
   leaderboardButton: {
     backgroundColor: COLORS.surface,

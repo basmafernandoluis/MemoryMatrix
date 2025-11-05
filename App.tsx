@@ -20,6 +20,7 @@ import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
 import { notificationService } from './src/services/notificationService';
+import { adManager } from './src/services/adManager';
 
 type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges';
 
@@ -34,14 +35,16 @@ export default function App() {
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [activeChallengeId, setActiveChallengeId] = useState<string | undefined>(undefined);
+  const [shouldContinueGame, setShouldContinueGame] = useState(false); // Pour le continue après rewarded ad
   // Notification navigation params
   const [notificationTab, setNotificationTab] = useState<'pending' | 'active' | 'history' | undefined>(undefined);
   const [notificationChallengeId, setNotificationChallengeId] = useState<string | undefined>(undefined);
 
-  // Initialize audio and check onboarding status
+  // Initialize audio, AdMob and check onboarding status
   useEffect(() => {
     const initialize = async () => {
       await initializeAudio();
+      await adManager.initialize(); // Initialiser AdMob
       const onboardingCompleted = await hasCompletedOnboarding();
       setOnboardingDone(onboardingCompleted);
     };
@@ -115,8 +118,8 @@ export default function App() {
     switch (screen) {
       case 'friends':
         console.log('Setting screen to friends');
-        setCurrentScreen('friends');
-        // TODO: If params.tab exists, set active tab in FriendsScreen
+        // Les paramètres du tab friend seront gérés directement dans FriendsScreen
+        transitionToScreen('friends'); // Utiliser transitionToScreen pour l'animation
         break;
       
       case 'friendChallenges':
@@ -128,7 +131,7 @@ export default function App() {
         if (params?.challengeId) {
           setNotificationChallengeId(params.challengeId);
         }
-        setCurrentScreen('friendChallenges');
+        transitionToScreen('friendChallenges'); // Utiliser transitionToScreen pour l'animation
         break;
       
       default:
@@ -167,6 +170,7 @@ export default function App() {
 
   const handleGameOver = async (score: number, level: number) => {
     setGameResult({ score, level });
+    setShouldContinueGame(false); // Reset continue flag
     
     // Update user progress in Firestore
     if (currentUser) {
@@ -193,9 +197,20 @@ export default function App() {
     transitionToScreen('gameover');
   };
 
-  const handlePlayAgain = () => {
+  const handleContinueGame = () => {
+    // Le joueur a regardé la rewarded ad, on retourne au jeu avec le flag "continue"
+    setShouldContinueGame(true);
+    transitionToScreen('game');
+  };
+
+  const handlePlayAgain = async () => {
     // Clear challengeId when replaying - don't resubmit to same challenge
     setActiveChallengeId(undefined);
+    
+    // Essayer de montrer un interstitiel avant de rejouer
+    // (transition naturelle entre deux parties)
+    await adManager.showInterstitial();
+    
     transitionToScreen('game');
   };
 
@@ -206,6 +221,10 @@ export default function App() {
     }
     // Clear the active challenge when going back to home
     setActiveChallengeId(undefined);
+    
+    // Essayer de montrer un interstitiel avant de retourner au menu
+    await adManager.showInterstitial();
+    
     transitionToScreen('home');
   };
 
@@ -350,6 +369,7 @@ export default function App() {
             onOpenChallenges={handleOpenChallenges}
             onOpenFriends={handleOpenFriends}
             userProgress={userProgress}
+            currentUserId={currentUser?.uid}
           />
         )}
         {currentScreen === 'leaderboard' && (
@@ -401,6 +421,8 @@ export default function App() {
             userProgress={userProgress}
             userId={currentUser?.uid ?? null}
             mode={selectedGameMode}
+            shouldContinue={shouldContinueGame}
+            onContinueComplete={() => setShouldContinueGame(false)}
           />
         )}
         {currentScreen === 'gameover' && (
@@ -410,6 +432,7 @@ export default function App() {
             userProgress={userProgress}
             onPlayAgain={handlePlayAgain}
             onBackToHome={handleBackToHome}
+            onContinue={handleContinueGame}
             mode={selectedGameMode}
             challengeId={activeChallengeId}
             userId={currentUser?.uid}

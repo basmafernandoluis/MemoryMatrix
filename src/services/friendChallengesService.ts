@@ -30,14 +30,20 @@ class FriendChallengesService {
     mode: GameMode
   ): Promise<FriendChallenge> {
     try {
-      // Vérifier qu'il n'y a pas déjà un défi actif entre ces deux joueurs
-      const existingChallenges = await this.challengesCollection
+      // Vérifier qu'il n'y a pas déjà un défi actif entre ces deux joueurs (dans les 2 sens)
+      const existingChallengesQuery1 = await this.challengesCollection
         .where('challengerId', '==', challengerId)
         .where('opponentId', '==', opponentId)
         .where('status', 'in', ['pending', 'active'])
         .get();
 
-      if (!existingChallenges.empty) {
+      const existingChallengesQuery2 = await this.challengesCollection
+        .where('challengerId', '==', opponentId)
+        .where('opponentId', '==', challengerId)
+        .where('status', 'in', ['pending', 'active'])
+        .get();
+
+      if (!existingChallengesQuery1.empty || !existingChallengesQuery2.empty) {
         throw new Error('Un défi est déjà en cours avec cet ami');
       }
 

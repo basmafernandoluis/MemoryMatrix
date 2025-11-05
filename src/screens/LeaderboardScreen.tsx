@@ -5,6 +5,7 @@ import { COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { LeaderboardEntry, LeaderboardPeriod, LeaderboardMode, leaderboardService } from '../services/leaderboard';
 import { feedback } from '../utils/soundManager';
+import { BannerAdComponent } from '../components/BannerAdComponent';
 
 interface LeaderboardScreenProps {
   onBack: () => void;
@@ -273,6 +274,9 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           )}
         </ScrollView>
       )}
+      
+      {/* Bannière publicitaire */}
+      <BannerAdComponent position="bottom" />
     </SafeAreaView>
   );
 };
@@ -426,7 +430,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 15,
-    paddingBottom: 20,
+    paddingBottom: 100, // Espace pour la bannière publicitaire
     paddingTop: 4,
   },
   scrollContentWithoutUserCard: {

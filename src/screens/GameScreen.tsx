@@ -5,6 +5,7 @@ import { GameHeader } from '../components/GameHeader';
 import { GameGrid } from '../components/GameGrid';
 import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
+import { ContinueModal } from '../components/ContinueModal';
 import { useGameLogicExtended } from '../hooks/useGameLogicExtended';
 import { useChallengeTracking } from '../hooks/useChallengeTracking';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
@@ -17,13 +18,17 @@ interface GameScreenProps {
   userId: string | null;
   userProgress?: UserProgress | null;
   mode?: GameMode;
+  shouldContinue?: boolean; // Indique si on doit continuer après rewarded ad
+  onContinueComplete?: () => void; // Callback après le continue
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({ 
   onGameOver, 
   userId, 
   userProgress: externalUserProgress,
-  mode = 'classic'
+  mode = 'classic',
+  shouldContinue = false,
+  onContinueComplete,
 }) => {
   const {
     gameState,
@@ -31,11 +36,17 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     gameStatus,
     userProgress,
     isPaused,
+    shouldShowContinueModal,
     startGame,
     handleCellClick,
     togglePause,
     finishShowingSequence,
     useHint,
+    continueGame, // Nouvelle fonction pour continuer après game over
+    addLife, // Ajouter une vie (bonus)
+    addHint, // Ajouter un indice (bonus)
+    declineContinue, // Refuser la pub -> Game Over
+    acceptContinue, // Accepter la pub
   } = useGameLogicExtended(mode);
 
   // Challenge tracking hook
@@ -51,6 +62,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     startGame(mode);
     challengeTracking.resetGameStats();
   }, [mode]);
+
+  // Handle continue after rewarded ad
+  useEffect(() => {
+    if (shouldContinue && gameState.isGameOver) {
+      const success = continueGame();
+      if (success && onContinueComplete) {
+        onContinueComplete(); // Reset le flag
+      }
+    }
+  }, [shouldContinue, gameState.isGameOver, continueGame, onContinueComplete]);
 
   // Track level changes
   useEffect(() => {
@@ -106,6 +127,23 @@ export const GameScreen: React.FC<GameScreenProps> = ({
       // Optionnel: feedback si l'indice ne peut pas être utilisé
       await feedback.wrong();
     }
+  };
+
+  // Handlers pour les bonus (vies et indices)
+  const handleAddLife = () => {
+    addLife();
+    // Jouer le son après un délai pour s'assurer que l'app est revenue au premier plan
+    setTimeout(() => {
+      feedback.reward();
+    }, 300);
+  };
+
+  const handleAddHint = () => {
+    addHint();
+    // Jouer le son après un délai pour s'assurer que l'app est revenue au premier plan
+    setTimeout(() => {
+      feedback.reward();
+    }, 300);
   };
 
   // Obtenir la valeur actuelle selon le mode pour les records
@@ -227,6 +265,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         visible={showPauseModal}
         onResume={handleResume}
         onQuit={handleQuit}
+        onAddLife={handleAddLife}
+        onAddHint={handleAddHint}
+        currentLives={gameState.lives}
+        currentHints={gameState.hintsRemaining}
+      />
+
+      <ContinueModal
+        visible={shouldShowContinueModal}
+        onContinue={acceptContinue}
+        onDecline={declineContinue}
       />
     </SafeAreaView>
   );

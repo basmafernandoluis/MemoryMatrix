@@ -51,6 +51,8 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     isHintReplay: false,
   });
 
+  const [shouldShowContinueModal, setShouldShowContinueModal] = useState(false);
+
   const [gameModeState, setGameModeState] = useState<GameModeState>({
     mode: initialMode,
     survivalStats: initialMode === 'survival' ? {
@@ -375,15 +377,14 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
         const newLives = gameState.lives - 1;
         
         if (newLives <= 0) {
-          // Game Over - Jouer le son alertefaill
-          feedback.gameOver();
+          // Au lieu de Game Over direct, afficher le modal de continuation
+          setShouldShowContinueModal(true);
           setGameState(prev => ({
             ...prev,
             lives: 0,
-            isGameOver: true,
+            // NE PAS mettre isGameOver à true encore
           }));
-          setGameStatus('gameover');
-          updateHighScore(gameState.score);
+          // Le game over sera déclenché si le joueur refuse la pub
         } else {
           setGameState(prev => ({
             ...prev,
@@ -443,17 +444,94 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     return false; // Impossible d'utiliser un indice
   }, [gameState, gameStatus, gameModeState.mode]);
 
+  // Continuer après game over (rewarded ad)
+  const continueGame = useCallback(() => {
+    if (gameState.isGameOver) {
+      // Redonne une vie et continue la partie au même niveau avec le même score
+      // IMPORTANT: On va REJOUER la séquence actuelle (pas recommencer au niveau 1)
+      setGameState(prev => ({
+        ...prev,
+        lives: 1, // Redonne une vie
+        isGameOver: false,
+        userSequence: [], // Reset uniquement la séquence utilisateur
+        isShowingSequence: true, // Va rejouer la séquence actuelle
+        // GARDE le score, le niveau, et la currentSequence
+      }));
+      setGameStatus('showing');
+      
+      // Son de récompense (coins)
+      feedback.reward();
+      
+      return true;
+    }
+    return false;
+  }, [gameState.isGameOver]);
+
+  // Ajouter une vie (bonus via rewarded ad)
+  const addLife = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      lives: prev.lives + 1,
+    }));
+    // Son joué avec délai depuis le composant appelant
+  }, []);
+
+  // Ajouter un indice (bonus via rewarded ad)
+  const addHint = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      hintsRemaining: prev.hintsRemaining + 1,
+    }));
+    // Son joué avec délai depuis le composant appelant
+  }, []);
+
+  // Gérer le refus de continuer (aller au game over)
+  const declineContinue = useCallback(() => {
+    setShouldShowContinueModal(false);
+    feedback.gameOver();
+    setGameState(prev => ({
+      ...prev,
+      isGameOver: true,
+    }));
+    setGameStatus('gameover');
+    updateHighScore(gameState.score);
+  }, [gameState.score]);
+
+  // Gérer l'acceptation de continuer (après avoir vu la pub)
+  const acceptContinue = useCallback(() => {
+    setShouldShowContinueModal(false);
+    // Redonne une vie et rejoue la séquence
+    setGameState(prev => ({
+      ...prev,
+      lives: 1,
+      userSequence: [],
+      isShowingSequence: true,
+    }));
+    setGameStatus('showing');
+    
+    // Jouer le son après un court délai pour s'assurer que l'app est au premier plan
+    setTimeout(() => {
+      feedback.reward();
+    }, 300);
+  }, []);
+
   return {
     gameState,
     gameModeState,
     gameStatus,
     userProgress,
     isPaused,
+    shouldShowContinueModal,
     startGame,
     nextLevel,
     handleCellClick,
     togglePause,
     finishShowingSequence,
     useHint,
+    continueGame, // Nouvelle fonction pour continuer après game over
+    addLife, // Ajouter une vie (bonus)
+    addHint, // Ajouter un indice (bonus)
+    declineContinue, // Refuser de continuer -> Game Over
+    acceptContinue, // Accepter de continuer -> Regarder pub
   };
 };

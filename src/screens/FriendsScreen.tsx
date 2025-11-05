@@ -23,6 +23,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { friendsService } from '../services/friendsService';
 import { Friend, FriendRequest, UserSearchResult, UserProgress } from '../types';
+import { BannerAdComponent } from '../components/BannerAdComponent';
 
 interface FriendsScreenProps {
   userId: string;
@@ -430,6 +431,9 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           )}
         </View>
       )}
+      
+      {/* Bannière publicitaire */}
+      <BannerAdComponent position="bottom" />
     </SafeAreaView>
   );
 };
@@ -508,6 +512,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 100, // Espace pour la bannière publicitaire
   },
   friendCard: {
     flexDirection: 'row',
