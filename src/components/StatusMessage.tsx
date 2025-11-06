@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
-import { GameStatus } from '../types';
+import { GameStatus, GameMode } from '../types';
 
 interface StatusMessageProps {
   gameStatus: GameStatus;
   isShowingSequence: boolean;
   sequenceLength: number;
   level?: number; // Add level prop for encouraging messages
+  mode?: GameMode; // Add mode to customize messages
 }
 
 export const StatusMessage: React.FC<StatusMessageProps> = ({
@@ -16,6 +17,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   isShowingSequence,
   sequenceLength,
   level = 1,
+  mode = 'classic',
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -66,12 +68,24 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   }, [gameStatus, fadeAnim, scaleAnim]);
   const getMessage = () => {
     if (gameStatus === 'showing' && isShowingSequence) {
+      if (mode === 'focusChallenge') {
+        return {
+          text: `🎯 Mémorise les ${sequenceLength} forme${sequenceLength > 1 ? 's' : ''} !`,
+          color: COLORS.primary,
+        };
+      }
       return {
         text: `Mémorise la séquence (${sequenceLength} case${sequenceLength > 1 ? 's' : ''})`,
         color: COLORS.primary,
       };
     }
     if (gameStatus === 'playing') {
+      if (mode === 'focusChallenge') {
+        return {
+          text: '🎯 Clique sur les formes dans l\'ordre !',
+          color: COLORS.text,
+        };
+      }
       return {
         text: 'À ton tour ! Reproduis la séquence',
         color: COLORS.text,

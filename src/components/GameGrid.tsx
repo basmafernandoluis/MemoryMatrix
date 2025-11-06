@@ -3,6 +3,7 @@ import { View, StyleSheet, Animated, Pressable } from 'react-native';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
 import { BORDER_RADIUS } from '../constants/designTokens';
 import { GameStatus } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 interface GridCellProps {
   index: number;
@@ -19,6 +20,7 @@ const GridCell: React.FC<GridCellProps> = ({
   onPress,
   gameStatus 
 }) => {
+  const { colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -54,15 +56,15 @@ const GridCell: React.FC<GridCellProps> = ({
 
   const getCellStyle = () => {
     if (isHighlighted) {
-      return { backgroundColor: COLORS.cellActive };
+      return { backgroundColor: colors.cellActive };
     }
     if (gameStatus === 'correct' && isInUserSequence) {
-      return { backgroundColor: COLORS.cellCorrect };
+      return { backgroundColor: colors.cellCorrect };
     }
     if (gameStatus === 'wrong' && isInUserSequence) {
-      return { backgroundColor: COLORS.cellWrong };
+      return { backgroundColor: colors.cellIncorrect };
     }
-    return { backgroundColor: COLORS.cellDefault };
+    return { backgroundColor: colors.cellInactive };
   };
 
   return (

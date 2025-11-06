@@ -27,6 +27,8 @@ export interface UserProgress {
   survivalBestStreak?: number; // Meilleur streak en mode survie
   timeAttackBestScore?: number; // Meilleur score en contre-la-montre (changé de time à score)
   zenBestAccuracy?: number; // Meilleure précision en mode zen
+  focusChallengeBest?: number; // Meilleur score en Focus Challenge
+  friendChallengeWins?: number; // Nombre de victoires en défis amis (pour débloquer Focus Challenge)
 }
 
 export interface DailyChallenge {
@@ -93,7 +95,7 @@ export interface CellPosition {
 }
 
 // Game Modes - Phase 10
-export type GameMode = 'classic' | 'survival' | 'timeAttack' | 'zen' | 'custom';
+export type GameMode = 'classic' | 'survival' | 'timeAttack' | 'zen' | 'custom' | 'focusChallenge';
 
 export interface GameModeConfig {
   mode: GameMode;
@@ -134,6 +136,14 @@ export interface ZenStats {
   averageAccuracy: number; // Précision moyenne
 }
 
+export interface FocusChallengeStats {
+  distractionLevel: number; // Niveau de distraction actuel (0-10)
+  complexityLevel: number; // Niveau de complexité des formes
+  dualTaskActive: boolean; // Double tâche activée
+  perfectFocus: number; // Nombre de niveaux réussis sans erreur malgré distractions
+  totalDistractions: number; // Nombre total de distractions subies
+}
+
 // Leaderboard Multi-Mode System
 export interface LeaderboardEntry {
   userId: string;
@@ -147,6 +157,7 @@ export interface LeaderboardEntry {
   survivalBest: number;
   timeAttackBest: number;
   zenBest: number;
+  focusChallengeBest: number;
   
   // Métadonnées
   gamesPlayed: number;
@@ -158,7 +169,7 @@ export interface LeaderboardEntry {
   level?: number; // Niveau atteint dans la partie
 }
 
-export type LeaderboardMode = 'global' | 'classic' | 'survival' | 'timeAttack' | 'zen';
+export type LeaderboardMode = 'global' | 'classic' | 'survival' | 'timeAttack' | 'zen' | 'focusChallenge';
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'alltime';
 
 // Social Features - Phase 13
@@ -214,6 +225,8 @@ export interface FriendChallenge {
   opponentScore?: number;
   opponentLevel?: number;
   winnerId?: string;
+  challengerRewardClaimed?: boolean; // Si le challenger a réclamé sa récompense
+  opponentRewardClaimed?: boolean; // Si l'opponent a réclamé sa récompense
   
   // Timestamps
   createdAt: Date;
@@ -237,4 +250,84 @@ export interface ShareResult {
   success: boolean;
   platform?: 'facebook' | 'twitter' | 'instagram' | 'whatsapp' | 'other';
   error?: string;
+}
+
+// Theme System - Phase 11
+
+export interface ThemeColors {
+  // Couleurs principales
+  primary: string;
+  primaryDark: string;
+  primaryLight: string;
+  secondary: string;
+  accent: string;
+  
+  // Couleurs de fond
+  background: string;
+  surface: string;
+  surfaceLight: string;
+  border: string;
+  
+  // Couleurs de texte
+  text: string;
+  textSecondary: string;
+  textDisabled: string;
+  
+  // Couleurs de jeu
+  cellActive: string;
+  cellInactive: string;
+  cellCorrect: string;
+  cellIncorrect: string;
+  
+  // États
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+  
+  // Effets
+  shadow: string;
+  overlay: string;
+  glow: string;
+}
+
+export interface ThemeEffects {
+  particlesEnabled: boolean;
+  particlesIntensity: 'low' | 'medium' | 'high';
+  confettiEnabled: boolean;
+  animationSpeed: 'slow' | 'normal' | 'fast';
+  glowEffects: boolean;
+  shakeEffects: boolean;
+}
+
+export type ThemeCategory = 'default' | 'premium' | 'seasonal' | 'custom';
+export type ThemeUnlockType = 'free' | 'coins' | 'xp' | 'level' | 'achievement';
+
+export interface ThemeUnlockRequirements {
+  type: ThemeUnlockType;
+  value?: number; // Coût en coins/xp ou niveau requis
+  achievementId?: string; // ID de l'achievement requis
+}
+
+export interface Theme {
+  id: string;
+  name: string;
+  description: string;
+  category: ThemeCategory;
+  colors: ThemeColors;
+  effects: ThemeEffects;
+  icon: string; // Emoji représentant le thème
+  preview: string; // Image preview (base64 ou URL)
+  unlockRequirements: ThemeUnlockRequirements;
+  isPremium: boolean;
+  isLimited?: boolean; // Pour thèmes saisonniers
+  availableFrom?: Date; // Date de début disponibilité
+  availableTo?: Date; // Date de fin disponibilité
+}
+
+export interface UserThemePreferences {
+  activeThemeId: string;
+  unlockedThemes: string[]; // IDs des thèmes débloqués
+  customThemes?: Theme[]; // Thèmes créés par l'utilisateur
+  effects: ThemeEffects; // Préférences d'effets visuels globales
 }

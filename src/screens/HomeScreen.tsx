@@ -11,6 +11,7 @@ import { SettingsModal } from '../components/SettingsModal';
 import UnlockModeAnimation from '../components/UnlockModeAnimation';
 import { BannerAdComponent, BannerSpacer } from '../components/BannerAdComponent';
 import firestore from '@react-native-firebase/firestore';
+import { useTheme } from '../context/ThemeContext';
 
 interface HomeScreenProps {
   onStartGame: (mode?: GameMode) => void;
@@ -33,6 +34,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   currentUserId = null,
   newlyUnlockedMode = null,
 }) => {
+  const { colors } = useTheme(); // Get theme colors
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -170,7 +172,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Animated.View 
         style={[
           styles.content, 
@@ -180,13 +182,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           }
         ]}
       >
-        <Text style={styles.title}>Memory Matrix</Text>
-        <Text style={styles.subtitle}>Challenge</Text>
+        <Text style={[styles.title, { color: colors.primary }]}>Memory Matrix</Text>
+        <Text style={[styles.subtitle, { color: colors.secondary }]}>Challenge</Text>
         
         {dailyChallenge && (
-          <View style={styles.dailyChallengeCard}>
-            <Text style={styles.challengeTitle}>🎯 Défi Quotidien</Text>
-            <Text style={styles.challengeTarget}>
+          <View style={[styles.dailyChallengeCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
+            <Text style={[styles.challengeTitle, { color: colors.text }]}>🎯 Défi Quotidien</Text>
+            <Text style={[styles.challengeTarget, { color: colors.textSecondary }]}>
               Objectif: {dailyChallenge.targetScore} points
             </Text>
             
@@ -194,13 +196,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View 
                 style={[
                   styles.progressBar, 
-                  { width: `${challengeProgress}%` },
-                  dailyChallenge.completed && styles.progressBarCompleted,
+                  { width: `${challengeProgress}%`, backgroundColor: colors.primary },
+                  dailyChallenge.completed && { backgroundColor: colors.success },
                 ]} 
               />
             </View>
             
-            <Text style={styles.challengeProgress}>
+            <Text style={[styles.challengeProgress, { color: colors.text }]}>
               {dailyChallenge.currentScore} / {dailyChallenge.targetScore}
               {dailyChallenge.completed && ' ✓ Complété !'}
             </Text>
@@ -210,19 +212,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <View style={styles.statsContainer}>
           {userProgress && (
             <>
-              <Animated.View style={[styles.statCard, { opacity: fadeAnim }]}>
-                <Text style={styles.statValue}>{userProgress.highScore}</Text>
-                <Text style={styles.statLabel}>Meilleur Score</Text>
+              <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
+                <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress.highScore}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meilleur Score</Text>
               </Animated.View>
               
-              <Animated.View style={[styles.statCard, { opacity: fadeAnim }]}>
-                <Text style={styles.statValue}>{userProgress.maxLevelReached}</Text>
-                <Text style={styles.statLabel}>Niveau Max</Text>
+              <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
+                <Text style={[styles.statValue, { color: colors.secondary }]}>{userProgress.maxLevelReached}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Niveau Max</Text>
               </Animated.View>
               
-              <Animated.View style={[styles.statCard, { opacity: fadeAnim }]}>
-                <Text style={styles.statValue}>{userProgress.totalGamesPlayed}</Text>
-                <Text style={styles.statLabel}>Parties Jouées</Text>
+              <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
+                <Text style={[styles.statValue, { color: colors.accent }]}>{userProgress.totalGamesPlayed}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Parties Jouées</Text>
               </Animated.View>
             </>
           )}
@@ -452,6 +454,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             maxLevelReached={userProgress?.maxLevelReached || 0}
             userXp={userProgress?.xp || 0}
             userCoins={userProgress?.coins || 0}
+            friendChallengeWins={userProgress?.friendChallengeWins || 0}
           />
         </Modal>
       )}

@@ -91,6 +91,7 @@ export class LeaderboardService {
           survivalBest: mode === 'survival' ? newModeBest : (existingData?.survivalBest || 0),
           timeAttackBest: mode === 'timeAttack' ? newModeBest : (existingData?.timeAttackBest || 0),
           zenBest: mode === 'zen' ? newModeBest : (existingData?.zenBest || 0),
+          focusChallengeBest: mode === 'focusChallenge' ? newModeBest : (existingData?.focusChallengeBest || 0),
           timestamp: firestore.FieldValue.serverTimestamp(),
           period: 'alltime',
           level, // Dernier niveau atteint
@@ -192,6 +193,7 @@ export class LeaderboardService {
             survivalBest: data.survivalBest || 0,
             timeAttackBest: data.timeAttackBest || 0,
             zenBest: data.zenBest || 0,
+            focusChallengeBest: data.focusChallengeBest || 0,
             gamesPlayed: data.gamesPlayed || 0,
             lastPlayed: data.lastPlayed?.toDate() || new Date(),
             timestamp: data.timestamp?.toDate() || new Date(),
@@ -344,6 +346,7 @@ export class LeaderboardService {
         survivalBest: data.survivalBest || 0,
         timeAttackBest: data.timeAttackBest || 0,
         zenBest: data.zenBest || 0,
+        focusChallengeBest: data.focusChallengeBest || 0,
         gamesPlayed: data.gamesPlayed || 0,
         lastPlayed: data.lastPlayed?.toDate() || new Date(),
         timestamp: data.timestamp?.toDate() || new Date(),

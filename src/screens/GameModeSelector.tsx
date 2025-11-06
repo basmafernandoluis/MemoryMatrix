@@ -4,7 +4,7 @@
  * Grid layout avec tous les modes visibles
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, BORDER_RADIUS, SHADOW, FONT_WEIGHT } from '../constants/designTokens';
 import { GameMode } from '../types';
 import { GAME_MODES, isModeUnlocked } from '../constants/gameModes';
+import { BackButton } from '../components/BackButton';
 import { playPasseSound } from '../utils/soundManager';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -30,6 +31,7 @@ interface GameModeSelectorProps {
   maxLevelReached: number;
   userXp?: number;
   userCoins?: number;
+  friendChallengeWins?: number;
 }
 
 export default function GameModeSelector({
@@ -38,12 +40,21 @@ export default function GameModeSelector({
   maxLevelReached,
   userXp = 0,
   userCoins = 0,
+  friendChallengeWins = 0,
 }: GameModeSelectorProps) {
-  const modes = Object.keys(GAME_MODES) as GameMode[];
+  // Order modes from easiest to hardest for better retention
+  const modeOrder: GameMode[] = ['classic', 'zen', 'custom', 'survival', 'timeAttack', 'focusChallenge'];
+  const modes = modeOrder.filter((m) => GAME_MODES[m]);
   const [unlockAnimation] = useState(new Animated.Value(0));
 
   const getUnlockText = (mode: GameMode): string => {
     const config = GAME_MODES[mode];
+    
+    // Cas spécial pour Focus Challenge
+    if (mode === 'focusChallenge') {
+      return `2 victoires contre amis (${friendChallengeWins}/2)`;
+    }
+    
     if (!config.unlockRequirements) return '';
     
     const req = config.unlockRequirements;
@@ -62,64 +73,85 @@ export default function GameModeSelector({
     return parts.join(' • ');
   };
 
-  const renderModeCard = (mode: GameMode) => {
+  const renderModeCard = (mode: GameMode, index: number) => {
     const config = GAME_MODES[mode];
-    const unlocked = isModeUnlocked(mode, maxLevelReached, userXp, userCoins);
+    const unlocked = isModeUnlocked(mode, maxLevelReached, userXp, userCoins, friendChallengeWins);
+    const cardScale = useRef(new Animated.Value(0.9)).current;
+    const cardOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+      const delay = 60 * index; // cascade entrée
+      Animated.parallel([
+        Animated.timing(cardOpacity, { toValue: 1, duration: 220, delay, useNativeDriver: true }),
+        Animated.spring(cardScale, { toValue: 1, delay, useNativeDriver: true, friction: 7, tension: 120 }),
+      ]).start();
+    }, []);
 
     return (
-      <TouchableOpacity
+      <Animated.View
         key={mode}
-        style={[styles.modeCard, !unlocked && styles.modeCardLocked]}
-        onPress={() => {
-          if (unlocked) {
-            playPasseSound();
-            onSelectMode(mode);
-          }
-        }}
-        activeOpacity={unlocked ? 0.7 : 1}
-        disabled={!unlocked}
+        style={[styles.animatedCard, { opacity: cardOpacity, transform: [{ scale: cardScale }] }]}
       >
-        {/* Icône */}
-        <Text style={styles.modeIcon}>{config.icon}</Text>
-        
-        {/* Nom du mode */}
-        <Text style={[
-          styles.modeTitle,
-          !unlocked && styles.modeTitleLocked,
-        ]}>
-          {config.name}
-        </Text>
-        
-        {/* Description */}
-        <Text style={styles.modeDescription}>{config.description}</Text>
-        
-        {/* Features compactes */}
-        <View style={styles.featuresCompact}>
-          {config.settings.hasLives !== false ? (
-            <Text style={styles.featureCompact}>❤️ 5</Text>
-          ) : (
-            <Text style={styles.featureCompact}>♾️</Text>
+        <TouchableOpacity
+          style={[styles.modeCard, !unlocked && styles.modeCardLocked]}
+          onPress={() => {
+            if (unlocked) {
+              playPasseSound();
+              onSelectMode(mode);
+            }
+          }}
+          activeOpacity={unlocked ? 0.7 : 1}
+          disabled={!unlocked}
+        >
+          {/* Icône */}
+          <Text style={styles.modeIcon}>{config.icon}</Text>
+          
+          {/* Nom du mode */}
+          <Text style={[
+            styles.modeTitle,
+            !unlocked && styles.modeTitleLocked,
+          ]}>
+            {config.name}
+          </Text>
+          
+          {/* Badge recommandé pour Classic et Zen */}
+          {(mode === 'classic' || mode === 'zen') && (
+            <View style={styles.recommendedBadge}>
+              <Text style={styles.recommendedText}>Recommandé</Text>
+            </View>
           )}
-          {config.settings.hasTimer && (
-            <Text style={styles.featureCompact}>⏱️ {config.settings.timerDuration}s</Text>
+          
+          {/* Description */}
+          <Text style={styles.modeDescription}>{config.description}</Text>
+          
+          {/* Features compactes */}
+          <View style={styles.featuresCompact}>
+            {config.settings.hasLives !== false ? (
+              <Text style={styles.featureCompact}>❤️ 5</Text>
+            ) : (
+              <Text style={styles.featureCompact}>♾️</Text>
+            )}
+            {config.settings.hasTimer && (
+              <Text style={styles.featureCompact}>⏱️ {config.settings.timerDuration}s</Text>
+            )}
+          </View>
+          
+          {/* Badge de déblocage */}
+          {!unlocked && (
+            <View style={styles.lockBadge}>
+              <Text style={styles.lockIcon}>🔒</Text>
+              <Text style={styles.lockText}>{getUnlockText(mode)}</Text>
+            </View>
           )}
-        </View>
-        
-        {/* Badge de déblocage */}
-        {!unlocked && (
-          <View style={styles.lockBadge}>
-            <Text style={styles.lockIcon}>🔒</Text>
-            <Text style={styles.lockText}>{getUnlockText(mode)}</Text>
-          </View>
-        )}
-        
-        {/* Checkmark si débloqué */}
-        {unlocked && (
-          <View style={styles.unlockedBadge}>
-            <Text style={styles.unlockedIcon}>✓</Text>
-          </View>
-        )}
-      </TouchableOpacity>
+          
+          {/* Checkmark si débloqué */}
+          {unlocked && (
+            <View style={styles.unlockedBadge}>
+              <Text style={styles.unlockedIcon}>✓</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
     );
   };
 
@@ -129,9 +161,7 @@ export default function GameModeSelector({
       <LinearGradient colors={[COLORS.primary, COLORS.secondary]} style={styles.background}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={onBack}>
-            <Text style={styles.backButtonText}>← Retour</Text>
-          </TouchableOpacity>
+          <BackButton onPress={onBack} color="#FFFFFF" backgroundColor="rgba(255,255,255,0.12)" />
           <Text style={styles.title}>Choisir un Mode</Text>
           <View style={styles.placeholder} />
         </View>
@@ -141,7 +171,7 @@ export default function GameModeSelector({
           contentContainerStyle={styles.modesGrid}
           showsVerticalScrollIndicator={false}
         >
-          {modes.map(mode => renderModeCard(mode))}
+          {modes.map((mode, i) => renderModeCard(mode, i))}
         </ScrollView>
 
         {/* Info */}
@@ -211,6 +241,9 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.success,
     ...SHADOW.medium,
+  },
+  animatedCard: {
+    width: (SCREEN_WIDTH - SPACING.md * 3) / 2,
   },
   modeCardLocked: {
     opacity: 0.6,
@@ -286,6 +319,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#FFFFFF',
     fontWeight: 'bold',
+  },
+  recommendedBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#ffbf47',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  recommendedText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#3a2600',
+    letterSpacing: 0.5,
   },
   
   // Footer info

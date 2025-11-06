@@ -33,6 +33,7 @@ export class FirestoreService {
         survivalBestStreak: data?.survivalBestStreak || 0,
         timeAttackBestScore: data?.timeAttackBestScore || 0,
         zenBestAccuracy: data?.zenBestAccuracy || 0,
+        friendChallengeWins: data?.friendChallengeWins || 0,
       };
     } catch (error) {
       console.error('Error getting user progress:', error);
@@ -49,6 +50,8 @@ export class FirestoreService {
         totalGamesPlayed: progress.totalGamesPlayed,
         achievements: progress.achievements,
         dailyChallenge: progress.dailyChallenge,
+        xp: progress.xp || 0,
+        coins: progress.coins || 0,
         updatedAt: firestore.FieldValue.serverTimestamp(),
       };
 
@@ -87,6 +90,8 @@ export class FirestoreService {
         dailyChallenge: currentProgress?.dailyChallenge,
         displayName: currentProgress?.displayName, // Preserve existing value
         avatarEmoji: currentProgress?.avatarEmoji, // Preserve existing value
+        xp: currentProgress?.xp || 0, // Preserve XP
+        coins: currentProgress?.coins || 0, // Preserve coins
       };
 
       // Check for new achievements
@@ -363,7 +368,15 @@ export class FirestoreService {
     coins: number
   ): Promise<UserProgress> {
     try {
+      console.log('💾 Getting current user progress for:', userId);
       const currentProgress = await this.getUserProgress(userId);
+      
+      console.log('📊 Current progress:', {
+        currentXP: currentProgress?.xp || 0,
+        currentCoins: currentProgress?.coins || 0,
+        addingXP: xp,
+        addingCoins: coins
+      });
       
       const updatedProgress: UserProgress = {
         ...currentProgress,
@@ -375,11 +388,18 @@ export class FirestoreService {
         coins: (currentProgress?.coins || 0) + coins,
       };
 
+      console.log('✏️ Saving updated progress:', {
+        newXP: updatedProgress.xp,
+        newCoins: updatedProgress.coins
+      });
+
       await this.saveUserProgress(userId, updatedProgress);
 
+      console.log('✅ Progress saved successfully');
+      
       return updatedProgress;
     } catch (error) {
-      console.error('Error claiming challenge reward:', error);
+      console.error('❌ Error claiming challenge reward:', error);
       throw error;
     }
   }
@@ -416,6 +436,29 @@ export class FirestoreService {
         .set(data, { merge: true });
     } catch (error) {
       console.error('Error updating mode records:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Increment friend challenge wins counter (for Focus Challenge unlock)
+   */
+  async incrementFriendChallengeWins(userId: string): Promise<void> {
+    try {
+      const currentProgress = await this.getUserProgress(userId);
+      const currentWins = currentProgress?.friendChallengeWins || 0;
+      
+      await firestore()
+        .collection(USERS_COLLECTION)
+        .doc(userId)
+        .update({
+          friendChallengeWins: currentWins + 1,
+          updatedAt: firestore.FieldValue.serverTimestamp(),
+        });
+      
+      console.log(`✅ Friend challenge wins incremented to ${currentWins + 1} for user ${userId}`);
+    } catch (error) {
+      console.error('Error incrementing friend challenge wins:', error);
       throw error;
     }
   }

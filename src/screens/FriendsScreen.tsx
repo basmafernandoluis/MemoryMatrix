@@ -24,6 +24,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { friendsService } from '../services/friendsService';
 import { Friend, FriendRequest, UserSearchResult, UserProgress } from '../types';
 import { BannerAdComponent } from '../components/BannerAdComponent';
+import { useTheme } from '../context/ThemeContext';
+import { BackButton } from '../components/BackButton';
 
 interface FriendsScreenProps {
   userId: string;
@@ -40,6 +42,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   onBack,
   onChallengeFriend,
 }) => {
+  const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('friends');
   const [friends, setFriends] = useState<Friend[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
@@ -190,25 +193,25 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   };
 
   const renderFriend = ({ item }: { item: Friend }) => (
-    <View style={styles.friendCard}>
+    <View style={[styles.friendCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.friendInfo}>
         <Text style={styles.friendAvatar}>{item.avatarEmoji}</Text>
         <View style={styles.friendDetails}>
-          <Text style={styles.friendName}>{item.displayName}</Text>
-          <Text style={styles.friendLevel}>Niveau {item.level}</Text>
+          <Text style={[styles.friendName, { color: colors.text }]}>{item.displayName}</Text>
+          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>Niveau {item.level}</Text>
         </View>
       </View>
       <View style={styles.friendActions}>
         {onChallengeFriend && (
           <TouchableOpacity
-            style={styles.challengeButton}
+            style={[styles.challengeButton, { backgroundColor: colors.primary }]}
             onPress={() => onChallengeFriend(item.userId)}
           >
             <Text style={styles.challengeButtonText}>⚔️</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          style={styles.removeButton}
+          style={[styles.removeButton, { backgroundColor: colors.error }]}
           onPress={() => handleRemoveFriend(item.userId, item.displayName)}
         >
           <Text style={styles.removeButtonText}>❌</Text>
@@ -218,25 +221,25 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   );
 
   const renderFriendRequest = ({ item }: { item: FriendRequest }) => (
-    <View style={styles.requestCard}>
+    <View style={[styles.requestCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.friendInfo}>
         <Text style={styles.friendAvatar}>{item.fromAvatarEmoji}</Text>
         <View style={styles.friendDetails}>
-          <Text style={styles.friendName}>{item.fromDisplayName}</Text>
-          <Text style={styles.requestDate}>
+          <Text style={[styles.friendName, { color: colors.text }]}>{item.fromDisplayName}</Text>
+          <Text style={[styles.requestDate, { color: colors.textSecondary }]}>
             {new Date(item.createdAt).toLocaleDateString('fr-FR')}
           </Text>
         </View>
       </View>
       <View style={styles.requestActions}>
         <TouchableOpacity
-          style={styles.acceptButton}
+          style={[styles.acceptButton, { backgroundColor: colors.success }]}
           onPress={() => handleAcceptRequest(item.id)}
         >
           <Text style={styles.acceptButtonText}>✓</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.rejectButton}
+          style={[styles.rejectButton, { backgroundColor: colors.error }]}
           onPress={() => handleRejectRequest(item.id)}
         >
           <Text style={styles.rejectButtonText}>✗</Text>
@@ -246,18 +249,18 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   );
 
   const renderSentRequest = ({ item }: { item: FriendRequest }) => (
-    <View style={styles.sentRequestCard}>
+    <View style={[styles.sentRequestCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.friendInfo}>
         <Text style={styles.friendAvatar}>⏳</Text>
         <View style={styles.friendDetails}>
-          <Text style={styles.friendName}>Envoyée</Text>
-          <Text style={styles.requestDate}>
+          <Text style={[styles.friendName, { color: colors.text }]}>Envoyée</Text>
+          <Text style={[styles.requestDate, { color: colors.textSecondary }]}>
             {new Date(item.createdAt).toLocaleDateString('fr-FR')}
           </Text>
         </View>
       </View>
       <TouchableOpacity
-        style={styles.cancelButton}
+        style={[styles.cancelButton, { backgroundColor: colors.error }]}
         onPress={() => handleCancelRequest(item.id)}
       >
         <Text style={styles.cancelButtonText}>Annuler</Text>
@@ -266,35 +269,35 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   );
 
   const renderSearchResult = ({ item }: { item: UserSearchResult }) => (
-    <View style={styles.searchCard}>
+    <View style={[styles.searchCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.friendInfo}>
         <Text style={styles.friendAvatar}>{item.avatarEmoji}</Text>
         <View style={styles.friendDetails}>
-          <Text style={styles.friendName}>{item.displayName}</Text>
-          <Text style={styles.friendLevel}>Niveau {item.level}</Text>
+          <Text style={[styles.friendName, { color: colors.text }]}>{item.displayName}</Text>
+          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>Niveau {item.level}</Text>
         </View>
       </View>
       {item.friendStatus === 'none' && (
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: colors.primary }]}
           onPress={() => handleSendFriendRequest(item.userId)}
         >
           <Text style={styles.addButtonText}>+ Ajouter</Text>
         </TouchableOpacity>
       )}
       {item.friendStatus === 'friend' && (
-        <View style={styles.friendBadge}>
+        <View style={[styles.friendBadge, { backgroundColor: colors.success }]}>
           <Text style={styles.friendBadgeText}>✓ Ami</Text>
         </View>
       )}
       {item.friendStatus === 'pending-sent' && (
-        <View style={styles.pendingBadge}>
+        <View style={[styles.pendingBadge, { backgroundColor: colors.warning }]}>
           <Text style={styles.pendingBadgeText}>⏳ En attente</Text>
         </View>
       )}
       {item.friendStatus === 'pending-received' && (
         <TouchableOpacity
-          style={styles.acceptButton}
+          style={[styles.acceptButton, { backgroundColor: colors.success }]}
           onPress={() => {
             // Trouver la demande correspondante
             const request = receivedRequests.find(r => r.fromUserId === item.userId);
@@ -308,44 +311,63 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Amis</Text>
+        <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surface} />
+        <Text style={[styles.title, { color: colors.text }]}>Amis</Text>
         <View style={styles.placeholder} />
       </View>
 
       {/* Tabs */}
       <View style={styles.tabs}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'friends' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'friends' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('friends')}
         >
-          <Text style={[styles.tabText, activeTab === 'friends' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'friends' ? '#FFFFFF' : colors.text }
+          ]}>
             Amis ({friends.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'requests' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'requests' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('requests')}
         >
-          <Text style={[styles.tabText, activeTab === 'requests' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'requests' ? '#FFFFFF' : colors.text }
+          ]}>
             Demandes ({receivedRequests.length})
           </Text>
           {receivedRequests.length > 0 && (
-            <View style={styles.notificationBadge}>
+            <View style={[styles.notificationBadge, { backgroundColor: colors.accent }]}>
               <Text style={styles.notificationText}>{receivedRequests.length}</Text>
             </View>
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'search' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'search' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('search')}
         >
-          <Text style={[styles.tabText, activeTab === 'search' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'search' ? '#FFFFFF' : colors.text }
+          ]}>
             Rechercher
           </Text>
         </TouchableOpacity>
@@ -355,12 +377,12 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       {activeTab === 'friends' && (
         <View style={styles.content}>
           {isLoading ? (
-            <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
           ) : friends.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>👥</Text>
-              <Text style={styles.emptyText}>Aucun ami pour le moment</Text>
-              <Text style={styles.emptySubtext}>
+              <Text style={[styles.emptyText, { color: colors.text }]}>Aucun ami pour le moment</Text>
+              <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
                 Recherchez des joueurs et ajoutez-les en amis !
               </Text>
             </View>
@@ -379,7 +401,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         <ScrollView style={styles.content} contentContainerStyle={styles.listContainer}>
           {receivedRequests.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Demandes reçues</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Demandes reçues</Text>
               {receivedRequests.map(request => (
                 <View key={request.id}>{renderFriendRequest({ item: request })}</View>
               ))}
@@ -387,7 +409,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           )}
           {sentRequests.length > 0 && (
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Demandes envoyées</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>Demandes envoyées</Text>
               {sentRequests.map(request => (
                 <View key={request.id}>{renderSentRequest({ item: request })}</View>
               ))}
@@ -396,7 +418,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           {receivedRequests.length === 0 && sentRequests.length === 0 && (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>📭</Text>
-              <Text style={styles.emptyText}>Aucune demande en attente</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>Aucune demande en attente</Text>
             </View>
           )}
         </ScrollView>
@@ -404,22 +426,22 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
 
       {activeTab === 'search' && (
         <View style={styles.content}>
-          <View style={styles.searchContainer}>
+          <View style={[styles.searchContainer, { backgroundColor: colors.surface }]}>
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: colors.text }]}
               placeholder="Rechercher un joueur..."
-              placeholderTextColor="#888"
+              placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
               autoCapitalize="none"
             />
           </View>
           {isSearching ? (
-            <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
           ) : searchResults.length === 0 && searchQuery.length >= 2 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>🔍</Text>
-              <Text style={styles.emptyText}>Aucun résultat</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>Aucun résultat</Text>
             </View>
           ) : (
             <FlatList

@@ -4,9 +4,16 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { GameState, GameStatus, UserProgress, GameMode, SurvivalStats, TimeAttackStats, ZenStats } from '../types';
+import { GameState, GameStatus, UserProgress, GameMode, SurvivalStats, TimeAttackStats, ZenStats, FocusChallengeStats } from '../types';
 import { GAME_CONFIG } from '../constants/gameConfig';
 import { GameEngine } from '../utils/GameEngine';
+
+// Types for Focus Challenge
+export type ShapeType = 'circle' | 'square' | 'triangle' | 'diamond' | 'hexagon' | 'star';
+export type ColorType = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange';
+export type CellData =
+  | { type: 'shape'; shape: ShapeType; color: ColorType }
+  | { type: 'char'; char: string; color: ColorType };
 import { 
   loadUserProgress, 
   updateHighScore, 
@@ -35,6 +42,7 @@ interface GameModeState {
   survivalStats?: SurvivalStats;
   timeAttackStats?: TimeAttackStats;
   zenStats?: ZenStats;
+  focusChallengeStats?: FocusChallengeStats;
 }
 
 export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
@@ -72,14 +80,63 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
       totalMoves: 0,
       averageAccuracy: 100,
     } : undefined,
+    focusChallengeStats: initialMode === 'focusChallenge' ? {
+      distractionLevel: 1,
+      complexityLevel: 1,
+      dualTaskActive: false,
+      perfectFocus: 0,
+      totalDistractions: 0,
+    } : undefined,
   });
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('idle');
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Focus Challenge state
+  const [cellData, setCellData] = useState<CellData[]>([]);
+  const [movingCells, setMovingCells] = useState<number[]>([]);
+
   // Timer pour le mode contre-la-montre
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper function to generate cell data for Focus Challenge
+  const generateCellData = useCallback((gridSize: number, level: number): CellData[] => {
+    const shapes: ShapeType[] = ['circle', 'square', 'triangle', 'diamond', 'hexagon', 'star'];
+    const colors: ColorType[] = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+    const totalCells = gridSize * gridSize;
+    const digits = ['0','1','2','3','4','5','6','7','8','9'];
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+    // Introduire progressivement chiffres/lettres à partir des niveaux avancés
+    // Probabilité de contenu alphanumérique augmente avec le niveau, max 60%
+    const alphaProb = Math.max(0, Math.min(0.6, (level - 7) * 0.1)); // lvl<=7: 0, lvl14+: 0.6
+
+    return Array.from({ length: totalCells }, () => {
+      const useAlpha = Math.random() < alphaProb;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      if (useAlpha) {
+        const pool = Math.random() < 0.5 ? digits : letters;
+        const char = pool[Math.floor(Math.random() * pool.length)];
+        return { type: 'char', char, color } as CellData;
+      }
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      return { type: 'shape', shape, color } as CellData;
+    });
+  }, []);
+
+  // Helper function to generate moving cells for Focus Challenge
+  const generateMovingCells = useCallback((level: number, totalCells: number): number[] => {
+    const numMoving = Math.min(Math.floor(level / 2) + 1, 5); // 1-5 moving cells
+    const moving: number[] = [];
+    while (moving.length < numMoving) {
+      const randomCell = Math.floor(Math.random() * totalCells);
+      if (!moving.includes(randomCell)) {
+        moving.push(randomCell);
+      }
+    }
+    return moving;
+  }, []);
 
   // Charger la progression utilisateur
   useEffect(() => {
@@ -158,12 +215,29 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
   const startGame = useCallback(async (mode: GameMode = 'classic') => {
     const config = getModeConfig(mode);
     const startLevel = config.settings.startingLevel || 1;
-    const sequence = GameEngine.generateSequence(startLevel);
+    // Déterminer la taille de grille utilisée pour générer des indices valides
+    const gridSizeForMode = mode === 'focusChallenge'
+      ? Math.min(startLevel + 1, 5) // En Focus Challenge, cap à 5x5
+      : GAME_CONFIG.GRID_SIZE; // Autres modes: grille fixe par défaut
+
+    // Générer une séquence avec des indices compatibles avec la grille du mode
+    const sequence = GameEngine.generateSequence(startLevel, gridSizeForMode);
 
     // Déterminer le nombre de vies selon le mode
     let initialLives = 5; // Par défaut : 5 vies (Classic)
     if (config.settings.hasLives === false) {
       initialLives = 999; // Vie infinie (Zen, Survival, TimeAttack)
+    }
+
+    // Generate cell data and moving cells for Focus Challenge
+    if (mode === 'focusChallenge') {
+      const gridSize = gridSizeForMode;
+      const totalCells = gridSize * gridSize;
+      setCellData(generateCellData(gridSize, startLevel));
+      setMovingCells(generateMovingCells(startLevel, totalCells));
+    } else {
+      setCellData([]);
+      setMovingCells([]);
     }
 
     setGameState({
@@ -198,6 +272,13 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
         totalMoves: 0,
         averageAccuracy: 100,
       } : undefined,
+      focusChallengeStats: mode === 'focusChallenge' ? {
+        distractionLevel: 1,
+        complexityLevel: 1,
+        dualTaskActive: false,
+        perfectFocus: 0,
+        totalDistractions: 0,
+      } : undefined,
     });
 
     setGameStatus('showing');
@@ -207,7 +288,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     if (progress) {
       setUserProgress(progress);
     }
-  }, []);
+  }, [generateCellData, generateMovingCells]);
 
   // Passer au niveau suivant
   const nextLevel = useCallback(async () => {
@@ -219,8 +300,19 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     if (gameModeState.mode === 'survival') {
       gridSize = getSurvivalDifficultyIncrease(newLevel);
     }
+    if (gameModeState.mode === 'focusChallenge') {
+      gridSize = Math.min(gridSize, 5); // Cap à 5x5
+    }
     
-    const sequence = GameEngine.generateSequence(gridSize);
+  // Générer la séquence avec le bon niveau ET la bonne taille de grille
+  const sequence = GameEngine.generateSequence(newLevel, gridSize);
+    
+    // Generate cell data and moving cells for Focus Challenge
+    if (gameModeState.mode === 'focusChallenge') {
+      const totalCells = gridSize * gridSize;
+      setCellData(generateCellData(gridSize, newLevel));
+      setMovingCells(generateMovingCells(newLevel, totalCells));
+    }
     
     // Stats de survie
     if (gameModeState.mode === 'survival' && gameModeState.survivalStats) {
@@ -265,7 +357,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     if (progress) {
       setUserProgress(progress);
     }
-  }, [gameState.level, gameModeState.mode, gameModeState.survivalStats, gameModeState.timeAttackStats]);
+  }, [gameState.level, gameModeState.mode, gameModeState.survivalStats, gameModeState.timeAttackStats, generateCellData, generateMovingCells]);
 
   // Gérer le clic sur une cellule
   const handleCellClick = useCallback((cellIndex: number) => {
@@ -533,5 +625,9 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     addHint, // Ajouter un indice (bonus)
     declineContinue, // Refuser de continuer -> Game Over
     acceptContinue, // Accepter de continuer -> Regarder pub
+    // Focus Challenge data
+    cellData,
+    movingCells,
+    distractionLevel: Math.min(gameState.level, 10), // 1-10 based on level
   };
 };

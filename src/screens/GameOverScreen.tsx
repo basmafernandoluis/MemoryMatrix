@@ -210,9 +210,37 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           },
         ]}
       >
-        <Text style={styles.gameOverText}>Game Over</Text>
+        {/* Titre personnalisé pour les défis */}
+        {isChallenge ? (
+          <Text style={styles.gameOverText}>🎯 Défi Terminé !</Text>
+        ) : (
+          <Text style={styles.gameOverText}>Game Over</Text>
+        )}
         
-        {isNewHighScore && score > 0 && (
+        {/* Bannière spéciale pour les défis */}
+        {isChallenge && scoreSubmitted && (
+          <Animated.View 
+            style={[
+              styles.challengeCompletedBanner,
+              {
+                opacity: bannerAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0.7, 1],
+                }),
+              },
+            ]}
+          >
+            <Text style={styles.challengeBannerText}>✅ Score enregistré !</Text>
+            <Text style={styles.challengeRewardText}>
+              Gagnant obtient 50 XP + 25 🪙
+            </Text>
+            <Text style={styles.challengeNavigationText}>
+              Onglet HISTORIQUE pour voir le résultat
+            </Text>
+          </Animated.View>
+        )}
+        
+        {isNewHighScore && score > 0 && !isChallenge && (
           <Animated.View 
             style={[
               styles.newRecordBanner,
@@ -344,6 +372,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.background,
     letterSpacing: 1,
+  },
+  challengeCompletedBanner: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 15,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  challengeBannerText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginBottom: 8,
+  },
+  challengeRewardText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFD700',
+    marginBottom: 4,
+  },
+  challengeNavigationText: {
+    fontSize: 12,
+    color: '#FFF',
+    opacity: 0.9,
+    fontStyle: 'italic',
   },
   scoreContainer: {
     backgroundColor: COLORS.surface,

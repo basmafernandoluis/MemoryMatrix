@@ -8,7 +8,7 @@
  * - Création de nouveaux défis
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -18,17 +18,23 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Animated,
+  Easing,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { friendChallengesService } from '../services/friendChallengesService';
 import { friendsService } from '../services/friendsService';
+import { firestoreService } from '../services/firestore';
 import { FriendChallenge, Friend, GameMode, UserProgress } from '../types';
+import { useTheme } from '../context/ThemeContext';
+import { BackButton } from '../components/BackButton';
 
 interface FriendChallengesScreenProps {
   userId: string;
   userProgress: UserProgress | null;
   onBack: () => void;
   onStartChallenge?: (challenge: FriendChallenge) => void;
+  onProfileUpdated?: (updatedProgress: UserProgress) => void;
   initialTab?: TabType; // Onglet initial à afficher
   highlightChallengeId?: string; // ID du défi à mettre en évidence
 }
@@ -47,9 +53,11 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   userProgress,
   onBack,
   onStartChallenge,
+  onProfileUpdated,
   initialTab = 'active',
   highlightChallengeId,
 }) => {
+  const { colors } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [pendingChallenges, setPendingChallenges] = useState<FriendChallenge[]>([]);
   const [activeChallenges, setActiveChallenges] = useState<FriendChallenge[]>([]);
@@ -59,6 +67,32 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [stats, setStats] = useState({ totalChallenges: 0, wins: 0, losses: 0, winRate: 0 });
+  
+  // Animated CTA (encourages creation when no active/pending challenges)
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const emphasizeCTA = pendingChallenges.length === 0 && activeChallenges.length === 0; // Plus de pulsation quand aucune activité
+
+  useEffect(() => {
+    const maxScale = emphasizeCTA ? 1.1 : 1.06;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: maxScale,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        })
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [emphasizeCTA, pulseAnim]);
 
   // Switch to initialTab when it changes (from notification navigation)
   useEffect(() => {
@@ -143,6 +177,36 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     );
   };
 
+  const handleClaimReward = async (challengeId: string) => {
+    try {
+      console.log('🎁 Claiming reward for challenge:', challengeId);
+      
+      await friendChallengesService.claimChallengeReward(userId, challengeId);
+      
+      console.log('✅ Reward claimed successfully');
+      
+      // Recharger le profil utilisateur AVANT de recharger les défis
+      if (onProfileUpdated) {
+        const updatedProgress = await firestoreService.getUserProgress(userId);
+        console.log('📊 Updated progress:', {
+          xp: updatedProgress?.xp,
+          coins: updatedProgress?.coins
+        });
+        if (updatedProgress) {
+          onProfileUpdated(updatedProgress);
+        }
+      }
+      
+      // Recharger les données pour afficher le badge "réclamé"
+      await loadData();
+      
+      Alert.alert('🎉 Récompense réclamée !', 'Vous avez reçu 50 XP et 25 coins !');
+    } catch (error: any) {
+      console.error('❌ Error claiming reward:', error);
+      Alert.alert('Erreur', error.message || 'Impossible de réclamer la récompense');
+    }
+  };
+
   const handleCreateChallenge = async (friend: Friend, mode: GameMode) => {
     try {
       if (!userProgress) return;
@@ -184,27 +248,33 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     const isHighlighted = highlightChallengeId === item.id;
 
     return (
-      <View style={[styles.challengeCard, isHighlighted && styles.highlightedCard]}>
+      <View style={[
+        styles.challengeCard,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+        isHighlighted && { borderColor: colors.primary, borderWidth: 2 }
+      ]}>
         <View style={styles.challengeHeader}>
-          <Text style={styles.challengeAvatar}>{item.challengerAvatar}</Text>
+          <View style={styles.avatarGlow}>
+            <Text style={styles.challengeAvatar}>{item.challengerAvatar}</Text>
+          </View>
           <View style={styles.challengeInfo}>
-            <Text style={styles.challengeName}>{item.challengerName}</Text>
-            <Text style={styles.challengeMode}>
+            <Text style={[styles.challengeName, { color: colors.text }]}>{item.challengerName}</Text>
+            <Text style={[styles.challengeMode, { color: colors.textSecondary }]}>
               {modeData?.icon} {modeData?.name}
             </Text>
-            <Text style={styles.expiresText}>Expire dans {hoursLeft}h</Text>
+            <Text style={[styles.expiresText, { color: colors.warning }]}>Expire dans {hoursLeft}h</Text>
           </View>
-          {isHighlighted && <Text style={styles.newBadge}>🔔 Nouveau</Text>}
+          {isHighlighted && <Text style={[styles.newBadge, { backgroundColor: colors.accent }]}>🔔 Nouveau</Text>}
         </View>
         <View style={styles.challengeActions}>
           <TouchableOpacity
-            style={styles.acceptChallengeButton}
+            style={[styles.acceptChallengeButton, { backgroundColor: colors.success }]}
             onPress={() => handleAcceptChallenge(item.id)}
           >
             <Text style={styles.acceptChallengeText}>✓ Accepter</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.rejectChallengeButton}
+            style={[styles.rejectChallengeButton, { backgroundColor: colors.error }]}
             onPress={() => handleRejectChallenge(item.id)}
           >
             <Text style={styles.rejectChallengeText}>✗</Text>
@@ -234,28 +304,34 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     });
 
     return (
-      <View style={[styles.challengeCard, isHighlighted && styles.highlightedCard]}>
+      <View style={[
+        styles.challengeCard,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+        isHighlighted && { borderColor: colors.primary, borderWidth: 2 }
+      ]}>
         <View style={styles.challengeHeader}>
-          <Text style={styles.challengeAvatar}>{opponentAvatar}</Text>
+          <View style={styles.avatarGlow}>
+            <Text style={styles.challengeAvatar}>{opponentAvatar}</Text>
+          </View>
           <View style={styles.challengeInfo}>
-            <Text style={styles.challengeName}>vs {opponentName}</Text>
-            <Text style={styles.challengeMode}>
+            <Text style={[styles.challengeName, { color: colors.text }]}>vs {opponentName}</Text>
+            <Text style={[styles.challengeMode, { color: colors.textSecondary }]}>
               {modeData?.icon} {modeData?.name}
             </Text>
           </View>
-          {isHighlighted && <Text style={styles.newBadge}>🔔 Nouveau</Text>}
+          {isHighlighted && <Text style={[styles.newBadge, { backgroundColor: colors.accent }]}>🔔 Nouveau</Text>}
         </View>
-        <View style={styles.scoresContainer}>
+        <View style={[styles.scoresContainer, { backgroundColor: colors.surfaceLight }]}>
           <View style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>Toi</Text>
-            <Text style={styles.scoreValue}>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>Toi</Text>
+            <Text style={[styles.scoreValue, { color: colors.primary }]}>
               {myScore !== undefined && myScore !== null ? myScore : '---'}
             </Text>
           </View>
-          <Text style={styles.vsText}>VS</Text>
+          <Text style={[styles.vsText, { color: colors.text }]}>VS</Text>
           <View style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>{opponentName}</Text>
-            <Text style={styles.scoreValue}>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>{opponentName}</Text>
+            <Text style={[styles.scoreValue, { color: colors.primary }]}>
               {opponentScore !== undefined && opponentScore !== null ? opponentScore : '---'}
             </Text>
           </View>
@@ -267,7 +343,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
         */}
         {myScore === undefined && item.acceptedAt && onStartChallenge && (
           <TouchableOpacity
-            style={styles.playButton}
+            style={[styles.playButton, { backgroundColor: colors.primary }]}
             onPress={() => onStartChallenge(item)}
           >
             <Text style={styles.playButtonText}>🎮 Jouer maintenant</Text>
@@ -275,8 +351,8 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
         )}
         {/* Si le défi n'est pas encore accepté */}
         {myScore === undefined && !item.acceptedAt && (
-          <View style={styles.waitingContainer}>
-            <Text style={styles.waitingText}>⏳ En attente d'acceptation</Text>
+          <View style={[styles.waitingContainer, { backgroundColor: colors.warning + '20' }]}>
+            <Text style={[styles.waitingText, { color: colors.warning }]}>⏳ En attente d'acceptation</Text>
           </View>
         )}
       </View>
@@ -293,29 +369,49 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     const opponentAvatar = isChallenger ? item.opponentAvatar : item.challengerAvatar;
 
     return (
-      <View style={[styles.challengeCard, isWinner && styles.winnerCard]}>
+      <View style={[
+        styles.challengeCard,
+        { backgroundColor: colors.surface, borderColor: colors.border },
+        isWinner && { borderColor: colors.success, borderWidth: 2 }
+      ]}>
         <View style={styles.challengeHeader}>
-          <Text style={styles.challengeAvatar}>{opponentAvatar}</Text>
+          <View style={styles.avatarGlow}>
+            <Text style={styles.challengeAvatar}>{opponentAvatar}</Text>
+          </View>
           <View style={styles.challengeInfo}>
-            <Text style={styles.challengeName}>vs {opponentName}</Text>
-            <Text style={styles.challengeMode}>
+            <Text style={[styles.challengeName, { color: colors.text }]}>vs {opponentName}</Text>
+            <Text style={[styles.challengeMode, { color: colors.textSecondary }]}>
               {modeData?.icon} {modeData?.name}
             </Text>
           </View>
-          {isWinner && <Text style={styles.winnerBadge}>🏆 Victoire</Text>}
-          {!isWinner && <Text style={styles.loserBadge}>❌ Défaite</Text>}
+          {isWinner && <Text style={[styles.winnerBadge, { backgroundColor: colors.success }]}>🏆 Victoire</Text>}
+          {!isWinner && <Text style={[styles.loserBadge, { backgroundColor: colors.error }]}>❌ Défaite</Text>}
         </View>
-        <View style={styles.scoresContainer}>
+        <View style={[styles.scoresContainer, { backgroundColor: colors.surfaceLight }]}>
           <View style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>Toi</Text>
-            <Text style={styles.scoreValue}>{myScore || 0}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>Toi</Text>
+            <Text style={[styles.scoreValue, { color: isWinner ? colors.success : colors.error }]}>{myScore || 0}</Text>
           </View>
-          <Text style={styles.vsText}>VS</Text>
+          <Text style={[styles.vsText, { color: colors.text }]}>VS</Text>
           <View style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>{opponentName}</Text>
-            <Text style={styles.scoreValue}>{opponentScore || 0}</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>{opponentName}</Text>
+            <Text style={[styles.scoreValue, { color: !isWinner ? colors.success : colors.error }]}>{opponentScore || 0}</Text>
           </View>
         </View>
+        {/* Bouton pour réclamer la récompense si gagnant et pas encore réclamée */}
+        {isWinner && !(isChallenger ? item.challengerRewardClaimed : item.opponentRewardClaimed) && (
+          <TouchableOpacity
+            style={[styles.claimRewardButton, { backgroundColor: colors.accent }]}
+            onPress={() => handleClaimReward(item.id)}
+          >
+            <Text style={styles.claimRewardText}>🎁 Réclamer 50 XP + 25 🪙</Text>
+          </TouchableOpacity>
+        )}
+        {isWinner && (isChallenger ? item.challengerRewardClaimed : item.opponentRewardClaimed) && (
+          <View style={[styles.rewardClaimedBadge, { backgroundColor: colors.success + '30' }]}>
+            <Text style={[styles.rewardClaimedText, { color: colors.success }]}>✓ Récompense réclamée</Text>
+          </View>
+        )}
       </View>
     );
   };
@@ -395,64 +491,97 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Défis entre amis</Text>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={() => setShowCreateModal(true)}
-        >
-          <Text style={styles.createButtonText}>+</Text>
-        </TouchableOpacity>
+      <View style={[styles.header, { backgroundColor: colors.surface }]}>
+        <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surfaceLight} />
+        <View style={styles.headerCenter}>
+          <Text style={[styles.title, { color: colors.text }]}>Défis entre amis</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Créez, acceptez et remportez des duels ⚔️</Text>
+        </View>
+        <Animated.View style={[styles.createCtaWrapper, { transform: [{ scale: pulseAnim }] }]}>
+          <TouchableOpacity
+            style={[styles.createCtaButton, { backgroundColor: colors.primary }]}
+            onPress={() => setShowCreateModal(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Créer un nouveau défi contre un ami"
+            accessibilityHint="Ouvre une fenêtre permettant de choisir un ami puis un mode de jeu"
+            activeOpacity={0.85}
+          >
+            <Text style={styles.createCtaIcon}>⚔️</Text>
+            <Text style={styles.createCtaText}>Nouveau défi</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
 
       {/* Stats */}
       <View style={styles.statsContainer}>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{stats.totalChallenges}</Text>
-          <Text style={styles.statLabel}>Défis</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={styles.statIcon}>📊</Text>
+          <Text style={[styles.statValue, { color: colors.primary }]}>{stats.totalChallenges}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Défis</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={[styles.statValue, styles.winValue]}>{stats.wins}</Text>
-          <Text style={styles.statLabel}>Victoires</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={styles.statIcon}>🏆</Text>
+          <Text style={[styles.statValue, styles.winValue, { color: colors.success }]}>{stats.wins}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Victoires</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={[styles.statValue, styles.loseValue]}>{stats.losses}</Text>
-          <Text style={styles.statLabel}>Défaites</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={styles.statIcon}>💥</Text>
+          <Text style={[styles.statValue, styles.loseValue, { color: colors.error }]}>{stats.losses}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Défaites</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{stats.winRate.toFixed(0)}%</Text>
-          <Text style={styles.statLabel}>Victoires</Text>
+        <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={styles.statIcon}>⚖️</Text>
+          <Text style={[styles.statValue, { color: colors.primary }]}>{stats.winRate.toFixed(0)}%</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Win Rate</Text>
         </View>
       </View>
 
       {/* Tabs */}
       <View style={styles.tabs}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'pending' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'pending' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('pending')}
         >
-          <Text style={[styles.tabText, activeTab === 'pending' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'pending' ? '#FFFFFF' : colors.text }
+          ]}>
             Reçus ({pendingChallenges.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'active' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'active' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('active')}
         >
-          <Text style={[styles.tabText, activeTab === 'active' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'active' ? '#FFFFFF' : colors.text }
+          ]}>
             Actifs ({activeChallenges.length})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'history' && styles.activeTab]}
+          style={[
+            styles.tab,
+            { backgroundColor: colors.surface },
+            activeTab === 'history' && { backgroundColor: colors.primary }
+          ]}
           onPress={() => setActiveTab('history')}
         >
-          <Text style={[styles.tabText, activeTab === 'history' && styles.activeTabText]}>
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'history' ? '#FFFFFF' : colors.text }
+          ]}>
             Historique
           </Text>
         </TouchableOpacity>
@@ -460,7 +589,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
 
       {/* Content */}
       {isLoading ? (
-        <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+        <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
       ) : (
         <View style={styles.content}>
           {activeTab === 'pending' && (
@@ -472,7 +601,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>📭</Text>
-                  <Text style={styles.emptyText}>Aucun défi en attente</Text>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi en attente</Text>
                 </View>
               }
             />
@@ -487,8 +616,8 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>🎮</Text>
-                  <Text style={styles.emptyText}>Aucun défi actif</Text>
-                  <Text style={styles.emptySubtext}>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi actif</Text>
+                  <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
                     Créez un défi ou acceptez-en un !
                   </Text>
                 </View>
@@ -505,7 +634,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>📊</Text>
-                  <Text style={styles.emptyText}>Aucun défi terminé</Text>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi terminé</Text>
                 </View>
               }
             />
@@ -531,6 +660,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#16213e',
   },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
   backButton: {
     padding: 8,
   },
@@ -543,18 +678,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#E0E0E0',
   },
-  createButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+  subtitle: {
+    fontSize: 12,
+    color: '#A0A0A0',
   },
-  createButtonText: {
-    fontSize: 24,
+  // New CTA styles (pill with icon + label)
+  createCtaWrapper: {
+    borderRadius: 999,
+    overflow: 'visible',
+  },
+  createCtaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    height: 40,
+    borderRadius: 999,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  createCtaIcon: {
+    fontSize: 16,
     color: '#FFF',
-    fontWeight: 'bold',
+    marginRight: 8,
+  },
+  createCtaText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFF',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -565,6 +718,10 @@ const styles = StyleSheet.create({
   },
   statBox: {
     alignItems: 'center',
+  },
+  statIcon: {
+    fontSize: 18,
+    marginBottom: 4,
   },
   statValue: {
     fontSize: 20,
@@ -629,6 +786,12 @@ const styles = StyleSheet.create({
   },
   challengeAvatar: {
     fontSize: 32,
+    marginRight: 12,
+  },
+  avatarGlow: {
+    padding: 6,
+    borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     marginRight: 12,
   },
   challengeInfo: {
@@ -858,5 +1021,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#FFF',
+  },
+  claimRewardButton: {
+    backgroundColor: '#FFD700',
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  claimRewardText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1a1a2e',
+  },
+  rewardClaimedBadge: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    paddingVertical: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  rewardClaimedText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4CAF50',
   },
 });

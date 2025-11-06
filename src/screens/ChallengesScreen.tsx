@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BackButton } from '../components/BackButton';
 import { ChallengeCard } from '../components/ChallengeCard';
 import { challengeService } from '../services/challengeService';
 import { firestoreService } from '../services/firestore';
@@ -152,15 +153,7 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
       <LinearGradient colors={[COLORS.background, COLORS.surface]} style={styles.gradient}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable 
-            onPress={onBack}
-            style={({ pressed }) => [
-              styles.backButton,
-              pressed && styles.backButtonPressed
-            ]}
-          >
-            <Text style={styles.backButtonText}>← Retour</Text>
-          </Pressable>
+          <BackButton onPress={onBack} color={COLORS.primary} backgroundColor={COLORS.surface} />
           <Text style={styles.headerTitle}>Défis Quotidiens</Text>
           <View style={styles.headerRight} />
         </View>

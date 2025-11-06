@@ -12,6 +12,7 @@
 import firestore from '@react-native-firebase/firestore';
 import { FriendChallenge, GameMode } from '../types';
 import { notificationService } from './notificationService';
+import { firestoreService } from './firestore';
 
 class FriendChallengesService {
   private challengesCollection = firestore().collection('friendChallenges');
@@ -271,9 +272,79 @@ class FriendChallengesService {
           !isCurrentUserWinner, // l'adversaire a gagné si on a perdu
           scoreDiff
         );
+        
+        // Si l'utilisateur actuel est le gagnant, récompenser immédiatement
+        // Sinon, l'adversaire sera récompensé quand il réclamera manuellement
+        if (isCurrentUserWinner) {
+          // Ne pas donner la récompense automatiquement
+          // Le joueur devra cliquer sur "Réclamer" dans l'historique
+          console.log(`🏆 User ${userId} won the challenge! Reward can be claimed from history.`);
+        }
       }
     } catch (error) {
       console.error('Error submitting challenge score:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Réclamer la récompense d'un défi gagné
+   */
+  async claimChallengeReward(userId: string, challengeId: string): Promise<void> {
+    try {
+      console.log('🔍 Fetching challenge:', challengeId);
+      const challengeDoc = await this.challengesCollection.doc(challengeId).get();
+      
+      if (!challengeDoc.exists) {
+        throw new Error('Défi introuvable');
+      }
+
+      const challenge = challengeDoc.data() as any;
+      const isChallenger = challenge.challengerId === userId;
+      const isOpponent = challenge.opponentId === userId;
+      
+      console.log('📋 Challenge data:', {
+        winnerId: challenge.winnerId,
+        userId,
+        isChallenger,
+        isOpponent,
+        challengerRewardClaimed: challenge.challengerRewardClaimed,
+        opponentRewardClaimed: challenge.opponentRewardClaimed
+      });
+
+      if (challenge.winnerId !== userId) {
+        throw new Error('Vous n\'êtes pas le gagnant de ce défi');
+      }
+
+      // Vérifier si le joueur actuel a déjà réclamé sa récompense
+      const hasClaimedReward = isChallenger 
+        ? challenge.challengerRewardClaimed 
+        : challenge.opponentRewardClaimed;
+
+      if (hasClaimedReward) {
+        throw new Error('Récompense déjà réclamée');
+      }
+
+      const REWARD_XP = 50;
+      const REWARD_COINS = 25;
+
+      console.log('💰 Adding reward to user:', { userId, REWARD_XP, REWARD_COINS });
+      await firestoreService.claimChallengeReward(userId, REWARD_XP, REWARD_COINS);
+      
+      // Incrémenter le compteur de victoires contre amis
+      console.log('🏆 Incrementing friend challenge wins count');
+      await firestoreService.incrementFriendChallengeWins(userId);
+      
+      console.log('✏️ Marking reward as claimed in Firestore');
+      // Marquer la récompense comme réclamée pour ce joueur spécifique
+      const fieldToUpdate = isChallenger ? 'challengerRewardClaimed' : 'opponentRewardClaimed';
+      await this.challengesCollection.doc(challengeId).update({
+        [fieldToUpdate]: true,
+      });
+
+      console.log(`✅ User ${userId} claimed reward: ${REWARD_XP} XP and ${REWARD_COINS} coins (field: ${fieldToUpdate})`);
+    } catch (error) {
+      console.error('❌ Error claiming challenge reward:', error);
       throw error;
     }
   }
@@ -555,6 +626,8 @@ class FriendChallengesService {
       opponentScore: data.opponentScore,
       opponentLevel: data.opponentLevel,
       winnerId: data.winnerId,
+      challengerRewardClaimed: data.challengerRewardClaimed || false,
+      opponentRewardClaimed: data.opponentRewardClaimed || false,
       createdAt: data.createdAt?.toDate() || new Date(),
       acceptedAt: data.acceptedAt?.toDate(),
       completedAt: data.completedAt?.toDate(),

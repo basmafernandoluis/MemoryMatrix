@@ -3,6 +3,8 @@ import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GameHeader } from '../components/GameHeader';
 import { GameGrid } from '../components/GameGrid';
+import { FocusGameGrid } from '../components/FocusGameGrid';
+import { DistractionEffect } from '../components/DistractionEffect';
 import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
 import { ContinueModal } from '../components/ContinueModal';
@@ -12,6 +14,7 @@ import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { UserProgress, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
+import { useTheme } from '../context/ThemeContext';
 
 interface GameScreenProps {
   onGameOver: (score: number, level: number) => void;
@@ -30,6 +33,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   shouldContinue = false,
   onContinueComplete,
 }) => {
+  const { colors } = useTheme(); // Get theme colors
   const {
     gameState,
     gameModeState,
@@ -47,6 +51,10 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     addHint, // Ajouter un indice (bonus)
     declineContinue, // Refuser la pub -> Game Over
     acceptContinue, // Accepter la pub
+    // Focus Challenge data
+    cellData,
+    movingCells,
+    distractionLevel,
   } = useGameLogicExtended(mode);
 
   // Challenge tracking hook
@@ -203,7 +211,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   }, [gameState.isShowingSequence, gameState.currentSequence, gameStatus, finishShowingSequence]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         <GameHeader
           level={gameState.level}
@@ -243,22 +251,59 @@ export const GameScreen: React.FC<GameScreenProps> = ({
             </Text>
           </View>
         )}
+        {mode === 'focusChallenge' && gameModeState.focusChallengeStats && (
+          <View style={styles.modeStats}>
+            <Text style={styles.modeStatsText}>
+              🎯 Distraction: Niveau {distractionLevel}
+            </Text>
+          </View>
+        )}
         
         <StatusMessage
           gameStatus={gameStatus}
           isShowingSequence={gameState.isShowingSequence}
           sequenceLength={gameState.currentSequence.length}
           level={gameState.level}
+          mode={mode}
         />
         
-        <GameGrid
-          currentSequence={gameState.currentSequence}
-          userSequence={gameState.userSequence}
-          onCellPress={handleCellClick}
-          isShowingSequence={gameState.isShowingSequence}
-          gameStatus={gameStatus}
-          highlightedCell={highlightedCell}
-        />
+        {mode === 'focusChallenge' ? (
+          <FocusGameGrid
+            gridSize={Math.min(gameState.level + 1, 5)}
+            onCellPress={handleCellClick}
+            highlightedCell={highlightedCell}
+            correctCells={
+              gameStatus === 'correct' 
+                ? gameState.userSequence 
+                : []
+            }
+            wrongCell={
+              gameStatus === 'wrong' && gameState.userSequence.length > 0
+                ? gameState.userSequence[gameState.userSequence.length - 1]
+                : null
+            }
+            isDisabled={gameState.isShowingSequence || gameState.isGameOver || gameStatus !== 'playing' || isPaused}
+            cellData={cellData}
+            movingCells={movingCells}
+            distractionLevel={distractionLevel}
+            isShowingSequence={gameState.isShowingSequence}
+            currentSequence={gameState.currentSequence}
+          />
+        ) : (
+          <GameGrid
+            currentSequence={gameState.currentSequence}
+            userSequence={gameState.userSequence}
+            onCellPress={handleCellClick}
+            isShowingSequence={gameState.isShowingSequence}
+            gameStatus={gameStatus}
+            highlightedCell={highlightedCell}
+          />
+        )}
+        
+        {/* Distraction effect for Focus Challenge */}
+        {mode === 'focusChallenge' && (
+          <DistractionEffect active={true} level={distractionLevel} />
+        )}
       </View>
       
       <PauseModal

@@ -112,6 +112,26 @@ export const GAME_MODES: Record<GameMode, GameModeConfigExtended> = {
       customSequenceLength: 5,
     },
   },
+
+  focusChallenge: {
+    mode: 'focusChallenge',
+    name: 'Focus Challenge',
+    description: 'Distractions, formes complexes, double tâche. Le défi ultime !',
+    icon: '🎯',
+    color: '#E74C3C',
+    unlocked: false,
+    unlockRequirements: {
+      // Débloqué après 2 victoires en défis amis
+      levelRequired: 0, // On utilisera friendChallengeWins à la place
+    },
+    settings: {
+      hasLives: true,
+      hasTimer: false,
+      hasTimeLimit: false,
+      difficultyProgression: 'fast',
+      startingLevel: 1,
+    },
+  },
 };
 
 /**
@@ -133,6 +153,10 @@ export const getScoreMultiplier = (mode: GameMode, level: number): number => {
     
     case 'custom':
       return 1.2;
+    
+    case 'focusChallenge':
+      // Multiplicateur élevé pour le mode le plus difficile
+      return 2.0 + Math.floor(level / 3) * 0.3;
     
     case 'classic':
     default:
@@ -165,13 +189,19 @@ export const isModeUnlocked = (
   mode: GameMode, 
   maxLevelReached: number,
   userXp: number = 0,
-  userCoins: number = 0
+  userCoins: number = 0,
+  friendChallengeWins: number = 0
 ): boolean => {
   const modeConfig = GAME_MODES[mode];
   
   // Mode classique toujours débloqué
   if (mode === 'classic') {
     return true;
+  }
+  
+  // Focus Challenge: débloqué après 2 victoires contre amis
+  if (mode === 'focusChallenge') {
+    return friendChallengeWins >= 2;
   }
   
   // Si pas de requirements, utiliser le flag unlocked

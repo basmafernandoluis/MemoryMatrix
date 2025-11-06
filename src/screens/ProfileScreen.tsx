@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Switch,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,8 +14,12 @@ import { UserProgress } from '../types';
 import { firebaseService } from '../services/firebase';
 import { firestoreService } from '../services/firestore';
 import { EditProfileModal } from '../components/EditProfileModal';
+import { ThemeSelector } from '../components/ThemeSelector';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
+import { useTheme } from '../context/ThemeContext';
+import { BackButton } from '../components/BackButton';
+import { themeService } from '../services/themeService';
 
 interface ProfileScreenProps {
   userProgress: UserProgress | null;
@@ -33,8 +38,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onSignOut,
   onProfileUpdated,
 }) => {
+  const { theme, userPreferences, colors } = useTheme();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isThemeSelectorVisible, setIsThemeSelectorVisible] = useState(false);
 
   const displayName = userProgress?.displayName || `Guest_${userId.substring(0, 6)}`;
   const avatarEmoji = userProgress?.avatarEmoji || '👤';
@@ -96,89 +103,173 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
   const achievementCount = userProgress?.achievements?.length || 0;
   const totalAchievements = 16; // Total achievements available (7 levels + 4 games + 5 scores)
+  
+  // Calculate level from XP
+  const calculateLevel = (xp: number): number => {
+    return Math.floor(xp / 100) + 1;
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <LinearGradient colors={['#1a1a2e', '#16213e', '#0f3460']} style={styles.container}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
+      <LinearGradient colors={[colors.background, colors.surface, colors.surfaceLight]} style={styles.container}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={onBack}>
-              <Text style={styles.backButtonText}>← Retour</Text>
-            </TouchableOpacity>
-            <Text style={styles.title}>Mon Profil</Text>
+            <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surface} />
+            <Text style={[styles.title, { color: colors.text }]}>Mon Profil</Text>
           </View>
 
         {/* User Info Card */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
+            <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
               <Text style={styles.avatarText}>{avatarEmoji}</Text>
             </View>
           </View>
-          <Text style={styles.username}>{displayName}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>{displayName}</Text>
           
           {/* Edit Profile Button */}
           <TouchableOpacity
-            style={styles.editButton}
+            style={[styles.editButton, { backgroundColor: colors.primary }]}
             onPress={() => setIsEditModalVisible(true)}
           >
             <Text style={styles.editButtonText}>✏️ Modifier mon profil</Text>
           </TouchableOpacity>
           
+          {/* Themes Button */}
+          <TouchableOpacity
+            style={[styles.editButton, { backgroundColor: colors.secondary }]}
+            onPress={() => setIsThemeSelectorVisible(true)}
+          >
+            <Text style={styles.editButtonText}>🎨 Thèmes</Text>
+          </TouchableOpacity>
+          
+          {/* Visual Effects Settings */}
+          <View style={styles.effectsSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>✨ Effets Visuels</Text>
+            
+            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>🎆 Particules</Text>
+              <Switch
+                value={userPreferences?.effects.particlesEnabled ?? true}
+                onValueChange={async (value) => {
+                  const newEffects = {
+                    ...userPreferences?.effects,
+                    ...theme.effects,
+                    particlesEnabled: value,
+                  };
+                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                }}
+                trackColor={{ false: '#767577', true: colors.primary }}
+                thumbColor={userPreferences?.effects.particlesEnabled ? '#fff' : '#f4f3f4'}
+              />
+            </View>
+            
+            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>🎊 Confetti</Text>
+              <Switch
+                value={userPreferences?.effects.confettiEnabled ?? true}
+                onValueChange={async (value) => {
+                  const newEffects = {
+                    ...userPreferences?.effects,
+                    ...theme.effects,
+                    confettiEnabled: value,
+                  };
+                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                }}
+                trackColor={{ false: '#767577', true: colors.primary }}
+                thumbColor={userPreferences?.effects.confettiEnabled ? '#fff' : '#f4f3f4'}
+              />
+            </View>
+            
+            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>✨ Effets Glow</Text>
+              <Switch
+                value={userPreferences?.effects.glowEffects ?? true}
+                onValueChange={async (value) => {
+                  const newEffects = {
+                    ...userPreferences?.effects,
+                    ...theme.effects,
+                    glowEffects: value,
+                  };
+                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                }}
+                trackColor={{ false: '#767577', true: colors.primary }}
+                thumbColor={userPreferences?.effects.glowEffects ? '#fff' : '#f4f3f4'}
+              />
+            </View>
+            
+            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>📳 Effets Shake</Text>
+              <Switch
+                value={userPreferences?.effects.shakeEffects ?? true}
+                onValueChange={async (value) => {
+                  const newEffects = {
+                    ...userPreferences?.effects,
+                    ...theme.effects,
+                    shakeEffects: value,
+                  };
+                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                }}
+                trackColor={{ false: '#767577', true: theme.colors.primary }}
+                thumbColor={userPreferences?.effects.shakeEffects ? '#fff' : '#f4f3f4'}
+              />
+            </View>
+          </View>
+          
           {/* XP and Coins Display */}
-          <View style={styles.currencyContainer}>
+          <View style={[styles.currencyContainer, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
             <View style={styles.currencyItem}>
               <Text style={styles.currencyIcon}>⭐</Text>
               <View style={styles.currencyInfo}>
-                <Text style={styles.currencyValue}>{userProgress?.xp || 0}</Text>
-                <Text style={styles.currencyLabel}>XP</Text>
+                <Text style={[styles.currencyValue, { color: colors.primary }]}>{userProgress?.xp || 0}</Text>
+                <Text style={[styles.currencyLabel, { color: colors.textSecondary }]}>XP</Text>
               </View>
             </View>
-            <View style={styles.currencyDivider} />
+            <View style={[styles.currencyDivider, { backgroundColor: colors.border }]} />
             <View style={styles.currencyItem}>
               <Text style={styles.currencyIcon}>🪙</Text>
               <View style={styles.currencyInfo}>
-                <Text style={styles.currencyValue}>{userProgress?.coins || 0}</Text>
-                <Text style={styles.currencyLabel}>Coins</Text>
+                <Text style={[styles.currencyValue, { color: colors.accent }]}>{userProgress?.coins || 0}</Text>
+                <Text style={[styles.currencyLabel, { color: colors.textSecondary }]}>Coins</Text>
               </View>
             </View>
           </View>
           
-          <Text style={styles.rewardsInfo}>
+          <Text style={[styles.rewardsInfo, { color: colors.textSecondary }]}>
             💡 Gagnez XP et Coins en complétant les défis quotidiens !
           </Text>
         </View>
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{userProgress?.highScore || 0}</Text>
-            <Text style={styles.statLabel}>Meilleur Score</Text>
+          <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.highScore || 0}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Meilleur Score</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{userProgress?.maxLevelReached || 1}</Text>
-            <Text style={styles.statLabel}>Niveau Max</Text>
+          <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.maxLevelReached || 1}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Niveau Max</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>{userProgress?.totalGamesPlayed || 0}</Text>
-            <Text style={styles.statLabel}>Parties Jouées</Text>
+          <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.totalGamesPlayed || 0}</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Parties Jouées</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>
+          <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.statValue, { color: colors.primary }]}>
               {achievementCount}/{totalAchievements}
             </Text>
-            <Text style={styles.statLabel}>Succès</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>Succès</Text>
           </View>
         </View>
 
         {/* Achievements Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🏆 Succès Débloqués</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>🏆 Succès Débloqués</Text>
           <View style={styles.achievementsContainer}>
             {userProgress?.achievements && userProgress.achievements.length > 0 ? (
               userProgress.achievements.map((achievement, index) => (
-                <View key={index} style={styles.achievementBadge}>
+                <View key={index} style={[styles.achievementBadge, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
                   <Text style={styles.achievementIcon}>
                     {achievement.includes('first_game') && '🎮'}
                     {achievement.includes('score_100') && '💯'}
@@ -187,13 +278,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                     {achievement.includes('level_5') && '🚀'}
                     {achievement.includes('games_10') && '🎯'}
                   </Text>
-                  <Text style={styles.achievementName}>
+                  <Text style={[styles.achievementName, { color: colors.text }]}>
                     {achievement.replace(/_/g, ' ').toUpperCase()}
                   </Text>
                 </View>
               ))
             ) : (
-              <Text style={styles.noAchievements}>
+              <Text style={[styles.noAchievements, { color: colors.textSecondary }]}>
                 Aucun succès débloqué. Jouez pour en obtenir !
               </Text>
             )}
@@ -203,7 +294,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         {/* Sign Out Button - Only for non-anonymous users */}
         {!isAnonymous && (
           <TouchableOpacity
-            style={[styles.signOutButton, isSigningOut && styles.signOutButtonDisabled]}
+            style={[styles.signOutButton, { backgroundColor: colors.error }, isSigningOut && styles.signOutButtonDisabled]}
             onPress={handleSignOut}
             disabled={isSigningOut}
           >
@@ -239,6 +330,22 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         currentAvatarEmoji={avatarEmoji}
         onSave={handleSaveProfile}
         onCancel={() => setIsEditModalVisible(false)}
+      />
+      
+      {/* Theme Selector Modal */}
+      <ThemeSelector
+        visible={isThemeSelectorVisible}
+        onClose={() => setIsThemeSelectorVisible(false)}
+        userCoins={userProgress?.coins || 0}
+        userXP={userProgress?.xp || 0}
+        userLevel={calculateLevel(userProgress?.xp || 0)}
+        onCoinsChanged={async () => {
+          // Reload user progress after purchasing a theme
+          const updatedProgress = await firestoreService.getUserProgress(userId);
+          if (updatedProgress) {
+            onProfileUpdated(updatedProgress);
+          }
+        }}
       />
     </LinearGradient>
     </SafeAreaView>
@@ -407,6 +514,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 15,
+  },
+  effectsSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 20,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  effectRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  effectLabel: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
   },
   achievementsContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

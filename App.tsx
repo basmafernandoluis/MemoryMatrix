@@ -21,6 +21,7 @@ import { firestoreService } from './src/services/firestore';
 import { leaderboardService } from './src/services/leaderboard';
 import { notificationService } from './src/services/notificationService';
 import { adManager } from './src/services/adManager';
+import { ThemeProvider } from './src/context/ThemeContext';
 
 type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges';
 
@@ -287,8 +288,15 @@ export default function App() {
     handleOpenFriendChallenges();
   };
 
-  const handleProfileUpdated = (updatedProgress: UserProgress) => {
+  const handleProfileUpdated = async (updatedProgress: UserProgress) => {
+    // Update local state immediately for responsiveness
     setUserProgress(updatedProgress);
+    
+    // Also reload from Firestore to ensure synchronization
+    if (currentUser) {
+      const freshProgress = await firestoreService.getUserProgress(currentUser.uid);
+      setUserProgress(freshProgress);
+    }
   };
 
   const handleSignOut = () => {
@@ -340,27 +348,28 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Memory Matrix</Text>
-            <Text style={styles.loadingText}>By AppWizards</Text>
-            <Text style={styles.loadingSubtext}>Chargement...</Text>
-          </View>
-        ) : showProfileSetup ? (
-          // Show empty screen while profile modal is displayed
-          <View style={styles.loadingContainer} />
-        ) : (
-          <>
-            {currentScreen === 'onboarding' && !onboardingDone && (
-              <OnboardingScreen onComplete={handleOnboardingComplete} />
-            )}
-            {currentScreen === 'login' && (
-              <LoginScreen 
-                onGuestLogin={handleGuestLogin}
-                isLoading={isLoading}
-              />
-            )}
+      <ThemeProvider>
+        <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <Text style={styles.loadingText}>Memory Matrix</Text>
+              <Text style={styles.loadingText}>By AppWizards</Text>
+              <Text style={styles.loadingSubtext}>Chargement...</Text>
+            </View>
+          ) : showProfileSetup ? (
+            // Show empty screen while profile modal is displayed
+            <View style={styles.loadingContainer} />
+          ) : (
+            <>
+              {currentScreen === 'onboarding' && !onboardingDone && (
+                <OnboardingScreen onComplete={handleOnboardingComplete} />
+              )}
+              {currentScreen === 'login' && (
+                <LoginScreen 
+                  onGuestLogin={handleGuestLogin}
+                  isLoading={isLoading}
+                />
+              )}
         {currentScreen === 'home' && (
           <HomeScreen 
             onStartGame={handleStartGame}
@@ -411,6 +420,7 @@ export default function App() {
             onStartChallenge={(challenge) => {
               handleStartGame(challenge.mode, challenge.id);
             }}
+            onProfileUpdated={handleProfileUpdated}
             initialTab={notificationTab}
             highlightChallengeId={notificationChallengeId}
           />
@@ -450,6 +460,7 @@ export default function App() {
           onCancel={handleProfileSetupSkip}
         />
       </Animated.View>
+      </ThemeProvider>
       <StatusBar style="light" />
     </SafeAreaProvider>
   );

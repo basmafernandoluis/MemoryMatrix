@@ -1,9 +1,9 @@
 # 📋 Suivi de l'Avancement - Memory Matrix
 
 ## 🎯 État Général du Projet
-**Date de mise à jour :** 3 novembre 2025  
+**Date de mise à jour :** 5 novembre 2025  
 **Branche actuelle :** 1erDeploimenet  
-**Version :** 1.4.0 (Fonctionnalités Sociales)  
+**Version :** 1.5.0 (Monétisation et Notifications)  
 
 ---
 
@@ -111,17 +111,8 @@ _Aucune phase en cours actuellement_
 
 ## 📋 PHASES À DÉVELOPPER
 
-###  Phase 10: Modes de Jeu Avancés (100%) ✅ COMPLÉTÉE
-- [x] Mode survie (vie infinie, difficulté croissante)
-- [x] Mode contre-la-montre
-- [x] Mode zen (sans limite de temps)
-- [x] Mode défi personnalisé
-- [x] Sélecteur de mode dans le menu
-- [x] Système de déblocage progressif
-- [x] Animation de déblocage
-
-### 🎨 Phase 11: Thèmes et Personnalisation (0%)
-- [ ] Système de thèmes déblocables
+### 🎨 Phase 11: Thèmes et Personnalisation (0%) 🎯 EN COURS
+- [ ] Système de thèmes déblocables (coins ou XP)
 - [ ] Thèmes saisonniers
 - [ ] Personnalisation des couleurs
 - [ ] Effets visuels personnalisables
@@ -139,16 +130,63 @@ _Aucune phase en cours actuellement_
 - [x] Système d'amis (recherche, demandes, acceptation, suppression)
 - [x] Défis entre amis (création, acceptation, soumission scores, historique)
 - [x] Partage de scores sur réseaux sociaux (Share API native)
+- [x] **Système de notifications push (Firebase Cloud Messaging)**
+- [x] **Notifications temps réel (demandes d'amis, défis, résultats)**
+- [x] **Badge de notification sur bouton "Amis"**
+- [x] **Navigation depuis notifications (foreground/background/quit)**
 - [x] Service friendsService.ts (420 lignes)
 - [x] Service friendChallengesService.ts (485 lignes)
 - [x] Service shareService.ts (310 lignes)
+- [x] **Service notificationService.ts (550 lignes)**
+- [x] **Firebase Functions pour envoi automatique**
 - [x] Interface FriendsScreen.tsx (670 lignes, 3 onglets)
 - [x] Interface FriendChallengesScreen.tsx (550 lignes, stats + 3 onglets)
 - [x] Bouton partage dans GameOverScreen
 - [x] Navigation intégrée (App.tsx + HomeScreen)
 - [x] Types TypeScript complets
 - [x] Documentation SOCIAL_FEATURES.md
+- [x] **Documentation ACTIVATION_NOTIFICATIONS.md**
 
+### � Phase 16: Monétisation (AdMob) (100%) ✅ COMPLÉTÉE
+- [x] **Configuration AdMob (ID app production)**
+- [x] **Bannières publicitaires (4 écrans: Home, Challenges, Leaderboard, Friends)**
+- [x] **Publicités interstitielles (entre parties)**
+- [x] **Publicités récompensées (continue game, bonus vie/hint)**
+- [x] **Service adManager.ts avec gestion test/production**
+- [x] **ContinueModal pour offrir continuation après défaite**
+- [x] **BoostButton dans PauseModal (acheter vies/hints avec pub)**
+- [x] **Espacement automatique du contenu (paddingBottom: 100)**
+- [x] **Gestion des erreurs et états de chargement**
+- [x] **Mode défi: restriction replay + info box**
+- [x] **Logs de debugging et monitoring**
+
+---
+
+## 🚧 PHASES EN COURS
+
+### 🎨 Phase 11: Thèmes et Personnalisation (100%) ✅ COMPLÉTÉE
+- [ ] Système de thèmes déblocables (coins ou XP)
+- [ ] Thèmes saisonniers
+- [ ] Personnalisation des couleurs
+- [ ] Effets visuels personnalisables
+- [ ] Sauvegarde des préférences
+
+---
+
+## ✅ PHASES RÉCEMMENT COMPLETÉES
+
+### 💰 Phase 16: Monétisation AdMob (v1.5.0) ✨
+- [x] Intégration complète react-native-google-mobile-ads
+- [x] Bannières adaptatives sur 4 écrans principaux
+- [x] Publicités interstitielles entre sessions de jeu
+- [x] Publicités récompensées: Continue (0 vies) + Boost (pause)
+- [x] Système de déblocage UX-friendly
+- [x] Gestion intelligente du chevauchement UI
+- [x] Fix sons en arrière-plan (300ms delay)
+- [x] Messages d'erreur améliorés (défi en cours)
+- [x] Badge notifications temps réel sur HomeScreen
+- [x] Protection anti-doublon défis (requêtes bidirectionnelles)
+- [x] Fix navigation notifications background (AndroidManifest + Firebase Functions)
 
 ### 🔧 Phase 14: Optimisations et Polish (0%)
 - [ ] Optimisation des performances
@@ -168,7 +206,21 @@ _Aucune phase en cours actuellement_
 
 ## 🔄 PROCHAINES ÉTAPES PRIORITAIRES
 
-### ✅ Récemment Complété (31 octobre 2025)
+### ✅ Récemment Complété (5 novembre 2025)
+1. ✅ **Intégration AdMob complète** - COMPLÉTÉ
+   - Bannières sur 4 écrans
+   - Interstitiels entre parties
+   - Pubs récompensées (Continue + Boost)
+2. ✅ **Notifications Push Firebase** - COMPLÉTÉ
+   - Service notification temps réel
+   - Firebase Functions automatiques
+   - Badge sur bouton Amis
+   - Navigation depuis background/quit
+3. ✅ **Corrections UX critiques** - COMPLÉTÉ
+   - Badge notification HomeScreen
+   - Message d'erreur défi en cours
+   - Fix navigation notifications background
+   - Protection anti-doublon défis
 1. ✅ **Équilibrage du gameplay** - COMPLÉTÉ
    - Vies augmentées de 3 à 5
    - Mode Time Attack sans vies (jeu continu 120s)
@@ -206,36 +258,20 @@ _Aucune phase en cours actuellement_
    - Bouton Partage dans GameOverScreen
    - Structure Firestore optimisée avec index
 
-### À Court Terme (Semaine 1-2)
-1. **Créer les index Firestore requis**
-   - Index pour recherche d'utilisateurs (displayNameLower)
-   - Index pour demandes d'amis (toUserId, fromUserId, status, createdAt)
-   - Index pour défis (challengerId, opponentId, status, createdAt/completedAt/expiresAt)
-   - Total: 9 index à créer dans Firebase Console
-2. **Migrer displayNameLower pour utilisateurs existants**
-   - Script de migration pour ajouter le champ aux profils
-   - Ou attendre que les utilisateurs modifient leur profil
-3. **Tester fonctionnalités sociales**
-   - Recherche et ajout d'amis
-   - Création et acceptation de défis
-   - Partage de scores sur différentes plateformes
-   - Notifications temps réel
-4. **Implémenter classement Zen par précision**
-   - Sauvegarder zenBestAccuracy automatiquement
-   - Créer LeaderboardMode 'zen' basé sur précision
-   - Afficher top 100 joueurs les plus précis
-2. **Bouton "Débloquer maintenant" pour mode Custom**
-   - Modal de confirmation avec coût (500 XP + 100 Coins)
-   - Déduction des ressources
-   - Animation de déblocage immédiate
-3. **Créer boutique de Coins**
-   - Acheter hints (50 coins)
-   - Débloquer thèmes (100-500 coins)
-   - Acheter avatars premium (200 coins)
-4. **Afficher records mondiaux par mode**
-   - Meilleur streak Survie mondial
-   - Meilleur score Time Attack mondial
-   - Meilleure précision Zen mondiale
+### À Court Terme (Semaine 1-2) 🎨
+1. **Phase 11: Système de Thèmes** 🎯 PRIORITÉ
+   - Créer thèmes par défaut (Dark, Light, Neon, Nature)
+   - Système de déblocage (Coins/XP)
+   - Sélecteur de thèmes dans ProfileScreen
+   - Thèmes saisonniers (Noël, Halloween, etc.)
+2. **Personnalisation avancée**
+   - Couleurs personnalisables (primaire, secondaire, accent)
+   - Effets visuels (particules, intensité animations)
+   - Preview temps réel
+3. **Persistance préférences**
+   - Sauvegarder thème sélectionné
+   - Synchroniser Firestore + AsyncStorage
+   - Appliquer au démarrage
 
 ### À Moyen Terme (Semaine 3-4)
 1. **Migration données utilisateurs existants**
@@ -261,9 +297,9 @@ _Aucune phase en cours actuellement_
 
 ## 📊 MÉTRIQUES D'AVANCEMENT
 
-- **Phases Complètes :** 10/15 (67%)
-- **Phases En Cours :** 0/15 (0%)
-- **Phases Restantes :** 5/15 (33%)
+- **Phases Complètes :** 12/17 (71%)
+- **Phases En Cours :** 1/17 (6%)
+- **Phases Restantes :** 4/17 (23%)
 
 ### Répartition par Catégorie
 - **Core Gameplay :** ✅ 100% Complet
@@ -271,6 +307,8 @@ _Aucune phase en cours actuellement_
 - **Backend/Firebase :** ✅ 100% Complet
 - **Audio/Feedback :** ✅ 100% Complet
 - **Features Avancées :** ✅ 100% Complet (Défis + Modes + Social)
+- **Monétisation :** ✅ 100% Complet (AdMob intégré)
+- **Personnalisation :** 🚧 0% Complet (En cours)
 - **Polish/Déploiement :** 📋 0% Complet
 
 ---
@@ -310,4 +348,4 @@ _Aucune phase en cours actuellement_
 
 ---
 
-*Dernière mise à jour: 3 novembre 2025 - v1.4.0 Fonctionnalités Sociales*
+*Dernière mise à jour: 5 novembre 2025 - v1.5.0 Monétisation et Notifications*

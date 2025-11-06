@@ -20,6 +20,7 @@ interface WorldRecordsCache {
   timeAttack: WorldRecord | null;
   zen: WorldRecord | null;
   custom: WorldRecord | null;
+  focusChallenge: WorldRecord | null;
   lastUpdated: number;
 }
 
@@ -30,6 +31,7 @@ let recordsCache: WorldRecordsCache = {
   timeAttack: null,
   zen: null,
   custom: null,
+  focusChallenge: null,
   lastUpdated: 0,
 };
 
@@ -63,6 +65,9 @@ export const getWorldRecordForMode = async (mode: GameMode): Promise<WorldRecord
         break;
       case 'custom':
         orderByField = 'globalScore';
+        break;
+      case 'focusChallenge':
+        orderByField = 'focusChallengeBest';
         break;
     }
 
@@ -116,6 +121,7 @@ export const getAllWorldRecords = async (): Promise<WorldRecordsCache> => {
       timeAttack: records[2],
       zen: records[3],
       custom: records[4],
+      focusChallenge: records[5] || null,
       lastUpdated: Date.now(),
     };
 
@@ -151,6 +157,9 @@ export const subscribeToWorldRecord = (
         break;
       case 'custom':
         orderByField = 'globalScore';
+        break;
+      case 'focusChallenge':
+        orderByField = 'focusChallengeBest';
         break;
     }
 
@@ -212,6 +221,8 @@ export const getPersonalBestForMode = (
       return userProgress.zenBestAccuracy || 0;
     case 'custom':
       return userProgress.highScore || 0;
+    case 'focusChallenge':
+      return userProgress.focusChallengeBest || 0;
     default:
       return 0;
   }
@@ -226,6 +237,8 @@ export const formatRecord = (mode: GameMode, value: number): string => {
       return `${value.toFixed(1)}%`; // Précision en %
     case 'survival':
       return `${value} niveaux`; // Streak
+    case 'focusChallenge':
+      return `${value} pts 🎯`;
     default:
       return `${value} pts`; // Score
   }
@@ -246,6 +259,8 @@ export const getRecordLabel = (mode: GameMode): string => {
       return 'Meilleure Précision';
     case 'custom':
       return 'Meilleur Score';
+    case 'focusChallenge':
+      return 'Meilleur Focus Score';
     default:
       return 'Record';
   }
@@ -261,6 +276,7 @@ export const clearRecordsCache = (): void => {
     timeAttack: null,
     zen: null,
     custom: null,
+    focusChallenge: null,
     lastUpdated: 0,
   };
 };

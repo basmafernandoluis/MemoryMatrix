@@ -39,6 +39,7 @@ C:\MemoryMatrix\presentations\playstore\
 - [x] **6 captures téléphone** : Format 9:16, 1080x1920px
 - [x] **Feature Graphic** : 1024x500px
 - [x] **Promo Graphic** : 180x120px (optionnel)
+- [x] **Politique de confidentialité** : URL fournie
 
 ---
 
@@ -93,6 +94,7 @@ Memory Matrix est un jeu de mémorisation de grilles pensé pour progresser jour
 • Défis quotidiens renouvelés : objectifs de rapidité, précision, endurance et score
 • Succès et récompenses: pièces, XP et streaks journaliers
 • Classement mondial pour comparer vos meilleurs scores
+• Nouveaux **Défis entre amis** : Lancez des duels avec vos amis et comparez vos scores.
 
 👤 PROFIL & ONBOARDING
 • Onboarding enrichi (8 écrans) pour bien démarrer
@@ -253,6 +255,36 @@ Nouveautés :
 
 Amusez-vous bien ! 🧠✨
 ```
+
+---
+
+## 📝 Notes de Version
+
+### Version 1.1 - Nouveautés
+
+🎮 **Améliorations de Gameplay**
+- Ajout de 5 vies au lieu de 3 pour rendre le jeu plus accessible.
+- Mode Contre-la-Montre amélioré : 120 secondes sans game over.
+- Système de classement équilibré et sans doublons.
+- Records persistés par mode (Survie, Time Attack, Zen).
+- **Nouveau mode déblocable** : Débloquez un mode spécial après avoir remporté 2 défis entre amis.
+
+🏆 **Progression et Récompenses**
+- XP et Coins visibles directement dans votre profil.
+- Défis quotidiens avec des récompenses exclusives.
+- **Défis entre amis** : Lancez des duels avec vos amis et comparez vos scores.
+
+✨ **Interface et Expérience Utilisateur**
+- Interface utilisateur améliorée avec des animations fluides.
+- Bouton "Nouveau défi" plus intuitif et animé.
+- Ajout d'animations pour les badges de statut d'amitié.
+
+🐛 **Corrections de Bugs**
+- Résolution d'un problème où certaines séquences n'étaient pas visibles.
+- Correction d'un bug lié à l'ordre des hooks dans les badges animés.
+- Amélioration de la stabilité générale et des performances.
+
+🚀 **Téléchargez la mise à jour et découvrez toutes les nouveautés !**
 
 ---
 
