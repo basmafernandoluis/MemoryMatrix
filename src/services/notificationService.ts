@@ -11,6 +11,7 @@
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import firestore from '@react-native-firebase/firestore';
 import { Platform, Alert } from 'react-native';
+import { i18n } from './i18nService';
 
 export type NotificationType = 
   | 'friend_request'
@@ -148,21 +149,106 @@ class NotificationService {
     // Notification reçue en foreground
     this.unsubscribeOnMessage = messaging().onMessage(async (remoteMessage) => {
       console.log('Notification received (foreground):', remoteMessage);
+      console.log('Notification data:', remoteMessage.data);
+      console.log('Notification data.type:', remoteMessage.data?.type);
+      console.log('Current i18n locale:', i18n.locale);
       
-      if (remoteMessage.notification) {
+      if (remoteMessage.notification || remoteMessage.data) {
+        // Construire le message localisé basé sur les données
+        const data = remoteMessage.data || {};
+        const notifType = data.type as string;
+        let title = i18n.t('notifications.title');
+        let body = '';
+        
+        console.log('Processing notification type:', notifType);
+        
+        // Déterminer le titre et le body basés sur le type de notification
+        switch (notifType) {
+          case 'challenge_received':
+            console.log('Case: challenge_received');
+            title = i18n.t('notifications.challengeReceived');
+            body = i18n.t('notifications.challengeReceivedBody', { 
+              name: data.fromName || data.senderName || 'Un joueur', 
+              mode: data.mode || 'Classique' 
+            });
+            break;
+          case 'challenge_accepted':
+            console.log('Case: challenge_accepted');
+            title = i18n.t('notifications.challengeAccepted');
+            body = i18n.t('notifications.challengeAcceptedBody', { 
+              name: data.fromName || data.senderName || 'Un joueur' 
+            });
+            break;
+          case 'opponent_played':
+          case 'challenge_score_submitted':
+            console.log('Case: opponent_played / challenge_score_submitted');
+            title = i18n.t('notifications.opponentPlayed');
+            body = i18n.t('notifications.opponentPlayedBody', { 
+              name: data.fromName || data.senderName || 'Un joueur',
+              score: data.score || '0'
+            });
+            break;
+          case 'challenge_completed':
+            console.log('Case: challenge_completed');
+            const wonValue = String(data.won);
+            const won = wonValue === 'true' || wonValue === 'True';
+            if (won) {
+              title = i18n.t('notifications.victory');
+              body = i18n.t('notifications.victoryBody', { 
+                name: data.opponentName || data.senderName || 'votre adversaire' 
+              });
+            } else {
+              title = i18n.t('notifications.defeat');
+              body = i18n.t('notifications.defeatBody', { 
+                name: data.opponentName || data.senderName || 'votre adversaire',
+                points: data.points || data.score || '0'
+              });
+            }
+            break;
+          case 'friend_request':
+            console.log('Case: friend_request');
+            title = i18n.t('notifications.friendRequest');
+            body = i18n.t('notifications.friendRequestBody', { 
+              name: data.fromName || data.senderName || 'Un joueur' 
+            });
+            break;
+          case 'friend_accepted':
+            console.log('Case: friend_accepted');
+            title = i18n.t('notifications.friendAccepted');
+            body = i18n.t('notifications.friendAcceptedBody', { 
+              name: data.fromName || data.senderName || 'Un joueur' 
+            });
+            break;
+          default:
+            // Utiliser le titre/body de la notification si présents, sinon message générique
+            console.log('Case: default - Unknown notification type');
+            console.log('Using fallback - notification.title:', remoteMessage.notification?.title);
+            console.log('Using fallback - notification.body:', remoteMessage.notification?.body);
+            
+            // Si on a un titre/body du serveur, construire un message localisé générique
+            if (remoteMessage.notification?.title || remoteMessage.notification?.body) {
+              title = i18n.t('notifications.title');
+              body = remoteMessage.notification?.body || i18n.t('notifications.newNotification');
+            }
+        }
+        
+        console.log('Final alert - title:', title);
+        console.log('Final alert - body:', body);
+        
         Alert.alert(
-          remoteMessage.notification.title || 'Notification',
-          remoteMessage.notification.body || '',
+          title,
+          body,
           [
-            { text: 'Ignorer', style: 'cancel' },
+            { text: i18n.t('notifications.dismiss'), style: 'cancel' },
             { 
-              text: 'Voir', 
+              text: i18n.t('notifications.view'), 
               onPress: () => {
-                console.log('User tapped "Voir" in foreground alert');
+                console.log('User tapped "View" in foreground alert');
                 this.handleNotificationNavigation(remoteMessage);
               }
             }
-          ]
+          ],
+          { cancelable: true }
         );
       }
     });
@@ -384,8 +470,8 @@ class NotificationService {
   ): Promise<void> {
     await this.sendNotification(opponentId, {
       type: 'challenge_received',
-      title: 'Nouveau défi ! 🎮',
-      body: `${challengerName} vous défie en mode ${mode}`,
+      title: i18n.t('notifications.challengeReceived'),
+      body: i18n.t('notifications.challengeReceivedBody', { name: challengerName, mode }),
       senderId: challengerId,
       senderName: challengerName,
       challengeId,
@@ -400,8 +486,8 @@ class NotificationService {
   ): Promise<void> {
     await this.sendNotification(challengerId, {
       type: 'challenge_accepted',
-      title: 'Défi accepté ! ✅',
-      body: `${opponentName} a accepté votre défi`,
+      title: i18n.t('notifications.challengeAccepted'),
+      body: i18n.t('notifications.challengeAcceptedBody', { name: opponentName }),
       senderId: opponentId,
       senderName: opponentName,
       challengeId,
@@ -417,8 +503,8 @@ class NotificationService {
   ): Promise<void> {
     await this.sendNotification(recipientId, {
       type: 'challenge_score_submitted',
-      title: 'Adversaire a joué ! ⚡',
-      body: `${playerName} a terminé avec ${score} points`,
+      title: i18n.t('notifications.opponentPlayed'),
+      body: i18n.t('notifications.opponentPlayedBody', { name: playerName, score }),
       senderId: playerId,
       senderName: playerName,
       challengeId,
@@ -434,10 +520,15 @@ class NotificationService {
     isWinner: boolean,
     scoreDifference?: number
   ): Promise<void> {
-    const title = isWinner ? 'Victoire ! 🏆' : 'Défaite 😔';
+    const title = isWinner 
+      ? i18n.t('notifications.victory') 
+      : i18n.t('notifications.defeat');
     const body = isWinner
-      ? `Vous avez battu ${opponentName} !`
-      : `${opponentName} vous a battu${scoreDifference ? ` de ${scoreDifference} points` : ''}`;
+      ? i18n.t('notifications.victoryBody', { name: opponentName })
+      : i18n.t('notifications.defeatBody', { 
+          name: opponentName, 
+          points: scoreDifference || 0 
+        });
 
     await this.sendNotification(recipientId, {
       type: 'challenge_completed',
@@ -461,8 +552,8 @@ class NotificationService {
   ): Promise<void> {
     await this.sendNotification(toUserId, {
       type: 'friend_request',
-      title: 'Nouvelle demande d\'ami 👥',
-      body: `${fromUserName} souhaite devenir votre ami`,
+      title: i18n.t('notifications.friendRequest'),
+      body: i18n.t('notifications.friendRequestBody', { name: fromUserName }),
       senderId: fromUserId,
       senderName: fromUserName,
       requestId,
@@ -476,8 +567,8 @@ class NotificationService {
   ): Promise<void> {
     await this.sendNotification(toUserId, {
       type: 'friend_accepted',
-      title: 'Demande acceptée ! ✅',
-      body: `${fromUserName} a accepté votre demande d'ami`,
+      title: i18n.t('notifications.friendAccepted'),
+      body: i18n.t('notifications.friendAcceptedBody', { name: fromUserName }),
       senderId: fromUserId,
       senderName: fromUserName,
     });

@@ -17,6 +17,7 @@ import { DailyChallengeExtended, ChallengeProgress, UserProgress } from '../type
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS, FONT_SIZE } from '../constants/designTokens';
 import { BannerAdComponent } from '../components/BannerAdComponent';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ChallengesScreenProps {
   userId: string;
@@ -29,6 +30,7 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
   onBack,
   onRewardClaimed,
 }) => {
+  const { t } = useTranslation();
   const [dailyChallenges, setDailyChallenges] = useState<DailyChallengeExtended | null>(null);
   const [challengeProgress, setChallengeProgress] = useState<ChallengeProgress | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,12 +129,12 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
     const now = Date.now();
     const remaining = dailyChallenges.expiresAt - now;
     
-    if (remaining <= 0) return 'Expiré';
+    if (remaining <= 0) return t('challenges.expired');
     
     const hours = Math.floor(remaining / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
     
-    return `${hours}h ${minutes}m restantes`;
+    return t('challenges.timeFormat', { hours, minutes });
   };
 
   if (loading) {
@@ -141,7 +143,7 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
         <LinearGradient colors={[COLORS.background, COLORS.surface]} style={styles.gradient}>
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Chargement des défis...</Text>
+            <Text style={styles.loadingText}>{t('challenges.loading')}</Text>
           </View>
         </LinearGradient>
       </SafeAreaView>
@@ -154,7 +156,7 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
         {/* Header */}
         <View style={styles.header}>
           <BackButton onPress={onBack} color={COLORS.primary} backgroundColor={COLORS.surface} />
-          <Text style={styles.headerTitle}>Défis Quotidiens</Text>
+          <Text style={styles.headerTitle}>{t('challenges.title')}</Text>
           <View style={styles.headerRight} />
         </View>
 
@@ -168,24 +170,24 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
             <View style={styles.statBox}>
               <Text style={styles.statIcon}>🔥</Text>
               <Text style={styles.statValue}>{challengeProgress?.streak || 0}</Text>
-              <Text style={styles.statLabel}>Série</Text>
+              <Text style={styles.statLabel}>{t('challenges.streak')}</Text>
             </View>
             <View style={styles.statBox}>
               <Text style={styles.statIcon}>🏆</Text>
               <Text style={styles.statValue}>{challengeProgress?.totalChallengesCompleted || 0}</Text>
-              <Text style={styles.statLabel}>Complétés</Text>
+              <Text style={styles.statLabel}>{t('challenges.completed')}</Text>
             </View>
             <View style={styles.statBox}>
               <Text style={styles.statIcon}>⏰</Text>
               <Text style={styles.statValue}>{getTimeRemaining()}</Text>
-              <Text style={styles.statLabel}>Temps restant</Text>
+              <Text style={styles.statLabel}>{t('challenges.timeRemaining')}</Text>
             </View>
           </View>
 
           {/* Info Banner */}
           <View style={styles.infoBanner}>
             <Text style={styles.infoText}>
-              💡 Complétez les défis en jouant des parties normales. Les défis se renouvellent chaque jour !
+              {t('challenges.infoBanner')}
             </Text>
           </View>
 
@@ -237,12 +239,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
+    minHeight: 60,
   },
   backButton: {
     paddingVertical: SPACING.sm,
-    paddingRight: SPACING.md,
+    paddingRight: SPACING.sm,
+    flexShrink: 0,
   },
   backButtonPressed: {
     opacity: 0.6,
@@ -253,12 +257,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   headerTitle: {
-    fontSize: FONT_SIZE.xxl,
+    fontSize: FONT_SIZE.xl,
     fontWeight: '700',
     color: '#fff',
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: SPACING.sm,
   },
   headerRight: {
-    width: 60,
+    width: 50,
+    flexShrink: 0,
   },
   scrollView: {
     flex: 1,

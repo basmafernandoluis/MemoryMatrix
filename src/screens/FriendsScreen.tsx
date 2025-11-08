@@ -26,6 +26,7 @@ import { Friend, FriendRequest, UserSearchResult, UserProgress } from '../types'
 import { BannerAdComponent } from '../components/BannerAdComponent';
 import { useTheme } from '../context/ThemeContext';
 import { BackButton } from '../components/BackButton';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface FriendsScreenProps {
   userId: string;
@@ -43,6 +44,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   onChallengeFriend,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('friends');
   const [friends, setFriends] = useState<Friend[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
@@ -88,7 +90,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       setFriends(friendsList);
     } catch (error) {
       console.error('Error loading friends:', error);
-      Alert.alert('Erreur', 'Impossible de charger la liste d\'amis');
+      Alert.alert(t('common.error'), t('friends.errors.loadFriends'));
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +116,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       setSearchResults(results);
     } catch (error) {
       console.error('Error searching users:', error);
-      Alert.alert('Erreur', 'Erreur lors de la recherche');
+      Alert.alert(t('common.error'), t('friends.errors.searchError'));
     } finally {
       setIsSearching(false);
     }
@@ -131,24 +133,24 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         targetUserId
       );
 
-      Alert.alert('Succès', 'Demande d\'ami envoyée !');
+      Alert.alert(t('common.success'), t('friends.success.requestSent'));
       
       // Rafraîchir la recherche
       performSearch();
       loadFriendRequests();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible d\'envoyer la demande');
+      Alert.alert(t('common.error'), error.message || t('friends.errors.sendRequestError'));
     }
   };
 
   const handleAcceptRequest = async (requestId: string) => {
     try {
       await friendsService.acceptFriendRequest(userId, requestId);
-      Alert.alert('Succès', 'Demande acceptée !');
+      Alert.alert(t('common.success'), t('friends.success.requestAccepted'));
       loadFriends();
       loadFriendRequests();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible d\'accepter la demande');
+      Alert.alert(t('common.error'), error.message || t('friends.errors.acceptError'));
     }
   };
 
@@ -157,7 +159,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       await friendsService.rejectFriendRequest(userId, requestId);
       loadFriendRequests();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible de refuser la demande');
+      Alert.alert(t('common.error'), error.message || t('friends.errors.rejectError'));
     }
   };
 
@@ -166,25 +168,25 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       await friendsService.cancelFriendRequest(userId, requestId);
       loadFriendRequests();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible d\'annuler la demande');
+      Alert.alert(t('common.error'), error.message || t('friends.errors.rejectError'));
     }
   };
 
   const handleRemoveFriend = async (friendId: string, friendName: string) => {
     Alert.alert(
-      'Supprimer ami',
-      `Voulez-vous vraiment supprimer ${friendName} de vos amis ?`,
+      t('friends.remove'),
+      `${t('common.confirm')} ${friendName} ?`,
       [
-        { text: 'Annuler', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Supprimer',
+          text: t('friends.remove'),
           style: 'destructive',
           onPress: async () => {
             try {
               await friendsService.removeFriend(userId, friendId);
               loadFriends();
             } catch (error: any) {
-              Alert.alert('Erreur', error.message || 'Impossible de supprimer l\'ami');
+              Alert.alert(t('common.error'), error.message || t('friends.errors.removeError'));
             }
           },
         },
@@ -198,7 +200,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         <Text style={styles.friendAvatar}>{item.avatarEmoji}</Text>
         <View style={styles.friendDetails}>
           <Text style={[styles.friendName, { color: colors.text }]}>{item.displayName}</Text>
-          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>Niveau {item.level}</Text>
+          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>{t('leaderboard.level', { level: item.level })}</Text>
         </View>
       </View>
       <View style={styles.friendActions}>
@@ -263,7 +265,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         style={[styles.cancelButton, { backgroundColor: colors.error }]}
         onPress={() => handleCancelRequest(item.id)}
       >
-        <Text style={styles.cancelButtonText}>Annuler</Text>
+        <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -274,7 +276,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         <Text style={styles.friendAvatar}>{item.avatarEmoji}</Text>
         <View style={styles.friendDetails}>
           <Text style={[styles.friendName, { color: colors.text }]}>{item.displayName}</Text>
-          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>Niveau {item.level}</Text>
+          <Text style={[styles.friendLevel, { color: colors.textSecondary }]}>{t('leaderboard.level', { level: item.level })}</Text>
         </View>
       </View>
       {item.friendStatus === 'none' && (
@@ -282,17 +284,17 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           style={[styles.addButton, { backgroundColor: colors.primary }]}
           onPress={() => handleSendFriendRequest(item.userId)}
         >
-          <Text style={styles.addButtonText}>+ Ajouter</Text>
+          <Text style={styles.addButtonText}>{t('friends.sendRequest')}</Text>
         </TouchableOpacity>
       )}
       {item.friendStatus === 'friend' && (
         <View style={[styles.friendBadge, { backgroundColor: colors.success }]}>
-          <Text style={styles.friendBadgeText}>✓ Ami</Text>
+          <Text style={styles.friendBadgeText}>✓ {t('friends.friendAdded')}</Text>
         </View>
       )}
       {item.friendStatus === 'pending-sent' && (
         <View style={[styles.pendingBadge, { backgroundColor: colors.warning }]}>
-          <Text style={styles.pendingBadgeText}>⏳ En attente</Text>
+          <Text style={styles.pendingBadgeText}>{t('friends.requestSent')}</Text>
         </View>
       )}
       {item.friendStatus === 'pending-received' && (
@@ -304,7 +306,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
             if (request) handleAcceptRequest(request.id);
           }}
         >
-          <Text style={styles.acceptButtonText}>✓ Accepter</Text>
+          <Text style={styles.acceptButtonText}>✓ {t('friends.accept')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -333,7 +335,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'friends' ? '#FFFFFF' : colors.text }
           ]}>
-            Amis ({friends.length})
+            {t('friends.tabs.friends', { count: friends.length })}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -348,7 +350,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'requests' ? '#FFFFFF' : colors.text }
           ]}>
-            Demandes ({receivedRequests.length})
+            {t('friends.tabs.requests', { count: receivedRequests.length })}
           </Text>
           {receivedRequests.length > 0 && (
             <View style={[styles.notificationBadge, { backgroundColor: colors.accent }]}>
@@ -368,7 +370,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'search' ? '#FFFFFF' : colors.text }
           ]}>
-            Rechercher
+            {t('friends.tabs.search')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -381,9 +383,9 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           ) : friends.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>👥</Text>
-              <Text style={[styles.emptyText, { color: colors.text }]}>Aucun ami pour le moment</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>{t('friends.emptyFriends')}</Text>
               <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                Recherchez des joueurs et ajoutez-les en amis !
+                {t('friends.emptyFriendsDesc')}
               </Text>
             </View>
           ) : (
@@ -401,7 +403,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
         <ScrollView style={styles.content} contentContainerStyle={styles.listContainer}>
           {receivedRequests.length > 0 && (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Demandes reçues</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('friends.requestsReceived')}</Text>
               {receivedRequests.map(request => (
                 <View key={request.id}>{renderFriendRequest({ item: request })}</View>
               ))}
@@ -409,7 +411,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           )}
           {sentRequests.length > 0 && (
             <View style={styles.section}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Demandes envoyées</Text>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('friends.requestsSent')}</Text>
               {sentRequests.map(request => (
                 <View key={request.id}>{renderSentRequest({ item: request })}</View>
               ))}
@@ -418,7 +420,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           {receivedRequests.length === 0 && sentRequests.length === 0 && (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>📭</Text>
-              <Text style={[styles.emptyText, { color: colors.text }]}>Aucune demande en attente</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>{t('friends.emptyRequests')}</Text>
             </View>
           )}
         </ScrollView>
@@ -429,7 +431,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           <View style={[styles.searchContainer, { backgroundColor: colors.surface }]}>
             <TextInput
               style={[styles.searchInput, { color: colors.text }]}
-              placeholder="Rechercher un joueur..."
+              placeholder={t('friends.searchPlaceholder')}
               placeholderTextColor={colors.textSecondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -441,7 +443,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
           ) : searchResults.length === 0 && searchQuery.length >= 2 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>🔍</Text>
-              <Text style={[styles.emptyText, { color: colors.text }]}>Aucun résultat</Text>
+              <Text style={[styles.emptyText, { color: colors.text }]}>{t('friends.noResults')}</Text>
             </View>
           ) : (
             <FlatList

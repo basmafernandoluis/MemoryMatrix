@@ -1,0 +1,438 @@
+{
+  "common": {
+    "play": "العب",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "ok": "موافق",
+    "yes": "نعم",
+    "no": "لا",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجاح",
+    "warning": "تحذير",
+    "tryAgain": "حاول مرة أخرى",
+    "share": "مشاركة",
+    "settings": "الإعدادات"
+  },
+  
+  "home": {
+    "title": "Memory Matrix",
+    "subtitle": "التحدي",
+    "welcome": "مرحباً",
+    "play": "العب",
+    "playButton": "العب",
+    "modesButton": "أوضاع اللعب",
+    "leaderboard": "لوحة المتصدرين",
+    "leaderboardButton": "لوحة المتصدرين",
+    "challenges": "التحديات",
+    "challengesButton": "التحديات اليومية",
+    "profile": "الملف الشخصي",
+    "profileButton": "الملف الشخصي",
+    "friends": "الأصدقاء",
+    "friendsButton": "الأصدقاء",
+    "friendChallengesButton": "تحديات الأصدقاء",
+    "settings": "الإعدادات",
+    "settingsButton": "الإعدادات",
+    "dailyChallenge": "التحدي اليومي",
+    "challengeTarget": "الهدف: {{target}} نقطة",
+    "completed": "مكتمل!",
+    "highScore": "أعلى نقاط",
+    "maxLevel": "أقصى مستوى",
+    "gamesPlayed": "الألعاب الملعوبة",
+    "instructionsTitle": "كيفية اللعب",
+    "instruction1": "راقب التسلسل المضيء",
+    "instruction2": "احفظ المواقع",
+    "instruction3": "أعد التسلسل",
+    "instruction4": "تقدم وحسّن نقاطك!",
+    "dailyChallengeTitle": "التحديات اليومية",
+    "dailyChallengeSubtitle": "تحديات جديدة كل يوم"
+  },
+
+  "modes": {
+    "title": "اختر وضعاً",
+    "subtitle": "اختر أسلوب لعبك",
+    "classic": "كلاسيكي",
+    "classicDesc": "وضع قياسي بأرواح محدودة",
+    "survival": "البقاء",
+    "survivalDesc": "كم من الوقت ستصمد?",
+    "timeAttack": "سباق الوقت",
+    "timeAttackDesc": "120 ثانية لتسجيل الحد الأقصى",
+    "zen": "زن",
+    "zenDesc": "استرخِ بدون ضغط",
+    "focus": "تحدي التركيز",
+    "focusDesc": "احفظ مع المشتتات والألوان",
+    "recommended": "موصى به",
+    "locked": "مقفل",
+    "unlockHint": "اربح تحديين مع الأصدقاء لفتحه",
+    "lives": "{{count}} أرواح",
+    "infiniteLives": "أرواح لا نهائية",
+    "timedMode": "موقوت"
+  },
+
+  "game": {
+    "level": "المستوى {{level}}",
+    "score": "النقاط",
+    "lives": "الأرواح",
+    "time": "الوقت",
+    "paused": "متوقف",
+    "resume": "استئناف",
+    "restart": "إعادة تشغيل",
+    "quit": "خروج",
+    "memorize": "احفظ!",
+    "memorizeSequence": "احفظ التسلسل!",
+    "memorizeFocusShapes": "ركز على الأشكال المضيئة!",
+    "yourTurn": "دورك!",
+    "clickShapesInOrder": "اضغط على الأشكال بالترتيب",
+    "ready": "استعد!",
+    "correct": "صحيح!",
+    "wrong": "خطأ!",
+    "excellent": "ممتاز!",
+    "tryAgain": "حاول مرة أخرى!",
+    "perfect": "مثالي!",
+    "goodJob": "أحسنت!",
+    "level5": "المستوى 5! بداية رائعة!",
+    "level10": "المستوى 10! استمر!",
+    "level15": "المستوى 15! رائع!",
+    "level20": "المستوى 20! أنت محترف!",
+    "level25": "المستوى 25! لا يمكن إيقافك!",
+    "level30": "المستوى 30! أسطورة!",
+    "gameOver": "انتهت اللعبة",
+    "newHighScore": "رقم قياسي جديد!",
+    "finalScore": "النقاط النهائية",
+    "playAgain": "العب مرة أخرى",
+    "backToMenu": "القائمة الرئيسية",
+    "pauseTitle": "إيقاف مؤقت",
+    "quitConfirm": "هل تريد الخروج حقاً?",
+    "restartConfirm": "هل تريد إعادة التشغيل?"
+  },
+
+  "challenges": {
+    "title": "التحديات اليومية",
+    "subtitle": "أكمل تحديات اليوم",
+    "streak": "السلسلة",
+    "completed": "مكتمل",
+    "timeRemaining": "الوقت المتبقي",
+    "expired": "منتهي",
+    "claimReward": "اطلب {{xp}} نقطة خبرة + {{coins}} 🪙",
+    "rewarded": "تم الحصول على المكافأة",
+    "inProgress": "قيد التقدم",
+    "locked": "مقفل",
+    "unlockAt": "يفتح في {{time}}",
+    "easy": "سهل",
+    "medium": "متوسط",
+    "hard": "صعب",
+    "daily": "يومي",
+    "weekly": "أسبوعي",
+    "description": {
+      "reachLevel": "اصل إلى المستوى {{level}}",
+      "score": "احصل على {{score}} نقطة",
+      "noMistakes": "بدون أخطاء حتى المستوى {{level}}",
+      "timeAttack": "احصل على {{score}} في سباق الوقت",
+      "survival": "اصمد {{time}} ثانية",
+      "combo": "حقق سلسلة {{combo}}",
+      "perfectRound": "{{count}} جولات مثالية متتالية"
+    }
+  },
+
+  "friends": {
+    "title": "الأصدقاء",
+    "addFriend": "إضافة صديق",
+    "friendCode": "كود الصديق",
+    "yourCode": "كودك",
+    "enterCode": "أدخل الكود",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "lastSeen": "آخر ظهور {{time}}",
+    "noFriends": "لا يوجد أصدقاء بعد",
+    "noFriendsDesc": "شارك كودك أو أضف كود صديق",
+    "copyCode": "نسخ الكود",
+    "codeCopied": "تم نسخ الكود!",
+    "friendAdded": "تمت إضافة الصديق!",
+    "friendRemoved": "تمت إزالة الصديق",
+    "invalidCode": "كود غير صالح",
+    "alreadyFriends": "أنتما أصدقاء بالفعل",
+    "cannotAddSelf": "لا يمكنك إضافة نفسك",
+    "level": "مستوى {{level}}",
+    "highScore": "الأعلى: {{score}}"
+  },
+
+  "friendChallenges": {
+    "title": "تحديات الأصدقاء",
+    "subtitle": "تنافس مع أصدقائك",
+    "newChallenge": "تحدي جديد",
+    "active": "نشط",
+    "pending": "معلق",
+    "completed": "مكتمل",
+    "createChallenge": "إنشاء تحدي",
+    "selectFriend": "اختر صديقاً",
+    "selectMode": "اختر وضعاً",
+    "sendChallenge": "إرسال تحدي",
+    "accept": "قبول",
+    "decline": "رفض",
+    "youWin": "فزت!",
+    "youLose": "خسرت",
+    "waiting": "في انتظار {{name}}",
+    "yourScore": "نقاطك",
+    "theirScore": "نقاطه",
+    "playNow": "العب الآن",
+    "viewResult": "عرض النتيجة",
+    "challengeExpired": "انتهى التحدي",
+    "expiresIn": "ينتهي في {{time}}",
+    "noChallenges": "لا توجد تحديات نشطة",
+    "noChallengesDesc": "أنشئ تحدياً للتنافس مع الأصدقاء",
+    "challengeSent": "تم إرسال التحدي!",
+    "challengeAccepted": "تم قبول التحدي!",
+    "challengeDeclined": "تم رفض التحدي",
+    "winStreak": "سلسلة: {{count}} فوز"
+  },
+
+  "leaderboard": {
+    "title": "لوحة المتصدرين",
+    "global": "عالمي",
+    "friends": "الأصدقاء",
+    "daily": "يومي",
+    "weekly": "أسبوعي",
+    "allTime": "طوال الوقت",
+    "rank": "#{{rank}}",
+    "you": "أنت",
+    "level": "مستوى {{level}}",
+    "score": "{{score}} نقطة",
+    "noData": "لا توجد بيانات متاحة",
+    "topPlayers": "أفضل اللاعبين",
+    "loading": "جاري تحميل لوحة المتصدرين..."
+  },
+
+  "profile": {
+    "title": "الملف الشخصي",
+    "stats": "الإحصائيات",
+    "achievements": "الإنجازات",
+    "themes": "المظاهر",
+    "visualEffects": "المؤثرات البصرية",
+    "particles": "الجزيئات",
+    "confetti": "الكونفيتي",
+    "glowEffects": "مؤثرات التوهج",
+    "shakeEffects": "مؤثرات الاهتزاز",
+    "earnRewards": "اربح نقاط الخبرة والعملات لفتح المظاهر",
+    "edit": "تعديل الملف الشخصي",
+    "signOut": "تسجيل الخروج",
+    "signingOut": "جاري تسجيل الخروج...",
+    "signOutConfirm": "هل أنت متأكد من تسجيل الخروج؟",
+    "level": "المستوى {{level}}",
+    "xp": "{{current}} / {{next}} نقطة خبرة",
+    "nextLevel": "المستوى التالي في {{xp}} نقطة خبرة",
+    "gamesPlayed": "الألعاب الملعوبة",
+    "totalScore": "مجموع النقاط",
+    "highScore": "أعلى نقاط",
+    "maxLevel": "أقصى مستوى",
+    "avgScore": "المتوسط",
+    "winRate": "معدل الفوز",
+    "playTime": "وقت اللعب",
+    "perfectGames": "ألعاب مثالية",
+    "currentStreak": "السلسلة الحالية",
+    "bestStreak": "أفضل سلسلة",
+    "friendsCount": "الأصدقاء",
+    "challengesWon": "التحديات المكسوبة",
+    "unlockedAchievements": "الإنجازات المفتوحة",
+    "noAchievements": "لم يتم فتح أي إنجازات بعد. استمر في اللعب!",
+    "anonymousInfo": "يتم حفظ تقدمك محلياً على هذا الجهاز.",
+    "anonymousTip": "لا تسجل الخروج إذا كنت تريد الاحتفاظ بتقدمك.",
+    "editProfile": "تعديل الملف الشخصي",
+    "displayName": "الاسم المعروض",
+    "avatar": "الصورة الرمزية",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "nameTooShort": "الاسم قصير جداً",
+    "nameTooLong": "الاسم طويل جداً",
+    "profileUpdated": "تم تحديث الملف الشخصي!"
+  },
+
+  "settings": {
+    "title": "الإعدادات",
+    "general": "عام",
+    "gameplay": "طريقة اللعب",
+    "audio": "الصوت",
+    "notifications": "الإشعارات",
+    "about": "حول",
+    "language": "اللغة",
+    "selectLanguage": "اختر لغتك",
+    "sound": "الصوت",
+    "soundDescription": "مؤثرات صوتية في اللعبة",
+    "music": "الموسيقى",
+    "vibration": "الاهتزاز",
+    "hapticFeedback": "الاستجابة اللمسية",
+    "hapticsDescription": "ردود فعل لمسية",
+    "animations": "الحركات",
+    "difficulty": "الصعوبة",
+    "theme": "المظهر",
+    "darkMode": "الوضع الداكن",
+    "dailyReminder": "التذكير اليومي",
+    "friendRequests": "طلبات الصداقة",
+    "challengeInvites": "دعوات التحدي",
+    "version": "الإصدار {{version}}",
+    "credits": "الاعتمادات",
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "support": "الدعم",
+    "rateApp": "تقييم التطبيق",
+    "shareApp": "مشاركة التطبيق"
+  },
+
+  "onboarding": {
+    "skip": "تخطي",
+    "next": "التالي",
+    "start": "ابدأ",
+    "slide1": {
+      "title": "مرحباً بك في Memory Matrix",
+      "description": "درّب ذاكرتك بهذه اللعبة الممتعة. احفظ التسلسلات، تقدم في المستويات، وتحدّى أصدقاءك."
+    },
+    "slide2": {
+      "title": "تحدي التركيز",
+      "description": "وضع خاص مع مشتتات وألوان متعددة. يُفتح بالفوز في تحديين مع الأصدقاء."
+    },
+    "slide3": {
+      "title": "أوضاع لعب متعددة",
+      "description": "كلاسيكي، البقاء، سباق الوقت أو زن. كل وضع يقدم تجربة فريدة."
+    },
+    "slide4": {
+      "title": "نظام الأرواح",
+      "description": "لديك 5 أرواح. كل خطأ يكلفك روحاً. بدون أرواح = انتهت اللعبة!"
+    },
+    "slide5": {
+      "title": "التقدم والمستويات",
+      "description": "اكسب نقاط الخبرة، تقدم في المستويات وافتح ميزات جديدة. كل مستوى يزيد الصعوبة."
+    },
+    "slide6": {
+      "title": "الإنجازات",
+      "description": "أكمل تحديات خاصة لتكسب إنجازات فريدة ومكافآت حصرية."
+    },
+    "slide7": {
+      "title": "تحديات الأصدقاء",
+      "description": "أضف أصدقاء بكودهم وأنشئ تحديات مخصصة. تنافس وقارن النقاط."
+    },
+    "slide8": {
+      "title": "التحديات اليومية",
+      "description": "تحديات جديدة كل يوم. أكمل السلاسل لتعظيم مكافآتك."
+    },
+    "slide9": {
+      "title": "المؤثرات الصوتية",
+      "description": "استمتع بأصوات غامرة. اضبطها في الإعدادات حسب تفضيلاتك."
+    }
+  },
+
+  "achievements": {
+    "title": "الإنجازات",
+    "unlocked": "مفتوح",
+    "locked": "مقفل",
+    "progress": "التقدم",
+    "reward": "المكافأة: {{xp}} نقطة خبرة",
+    "firstWin": {
+      "name": "الفوز الأول",
+      "description": "أكمل لعبتك الأولى"
+    },
+    "speedRunner": {
+      "name": "عداء السرعة",
+      "description": "احصل على 500 نقطة في سباق الوقت"
+    },
+    "survivor": {
+      "name": "الناجي",
+      "description": "اصمد 5 دقائق في وضع البقاء"
+    },
+    "perfectionist": {
+      "name": "الكمالي",
+      "description": "10 جولات مثالية في لعبة واحدة"
+    },
+    "friendlyCompetitor": {
+      "name": "المنافس الودود",
+      "description": "اربح 5 تحديات مع الأصدقاء"
+    },
+    "dailyDedication": {
+      "name": "التفاني اليومي",
+      "description": "سلسلة 7 أيام في التحديات"
+    },
+    "levelMaster": {
+      "name": "سيد المستويات",
+      "description": "اصل إلى المستوى 20"
+    },
+    "scoreHunter": {
+      "name": "صياد النقاط",
+      "description": "احصل على 1000 نقطة في لعبة واحدة"
+    },
+    "memoryMaster": {
+      "name": "سيد الذاكرة",
+      "description": "أكمل جميع الأوضاع"
+    },
+    "socialButterfly": {
+      "name": "الفراشة الاجتماعية",
+      "description": "أضف 10 أصدقاء"
+    },
+    "challenger": {
+      "name": "المتحدي",
+      "description": "أنشئ 20 تحدياً"
+    },
+    "unstoppable": {
+      "name": "لا يُقهر",
+      "description": "سلسلة 10 انتصارات في التحديات"
+    },
+    "zenMaster": {
+      "name": "سيد الزن",
+      "description": "العب 50 لعبة في وضع الزن"
+    },
+    "achievementHunter": {
+      "name": "صياد الإنجازات",
+      "description": "افتح 10 إنجازات"
+    },
+    "legend": {
+      "name": "الأسطورة",
+      "description": "اصل إلى المستوى 50"
+    },
+    "noMistakes": {
+      "name": "بلا أخطاء",
+      "description": "أكمل المستوى 10 بدون أخطاء"
+    }
+  },
+
+  "errors": {
+    "networkError": "خطأ في الاتصال",
+    "serverError": "خطأ في الخادم",
+    "authError": "خطأ في المصادقة",
+    "notFound": "غير موجود",
+    "permissionDenied": "الإذن مرفوض",
+    "unknown": "خطأ غير معروف",
+    "signOutFailed": "فشل تسجيل الخروج. حاول مرة أخرى من فضلك.",
+    "tryAgainLater": "حاول لاحقاً",
+    "checkConnection": "تحقق من اتصالك"
+  },
+
+  "notifications": {
+    "friendRequest": "{{name}} يريد أن يكون صديقك",
+    "challengeReceived": "{{name}} تحداك",
+    "challengeWon": "فزت في التحدي ضد {{name}}!",
+    "challengeLost": "{{name}} فاز في التحدي",
+    "dailyChallengeReady": "تحديات يومية جديدة متاحة!",
+    "achievementUnlocked": "إنجاز مفتوح: {{achievement}}!",
+    "levelUp": "وصلت إلى المستوى {{level}}!",
+    "streakReminder": "لا تفقد سلسلتك {{days}} أيام!"
+  },
+
+  "tips": {
+    "title": "نصيحة اليوم",
+    "tip1": "ركز على مركز الشبكة لالتقاط التسلسل كاملاً",
+    "tip2": "تدرب في وضع الزن للتحسن بدون ضغط",
+    "tip3": "الأصوات تساعد في حفظ التسلسلات",
+    "tip4": "خذ فترات راحة منتظمة للحفاظ على تركيزك",
+    "tip5": "تحدّى الأصدقاء لكسب المزيد من نقاط الخبرة",
+    "tip6": "أكمل التحديات اليومية لمكافآت إضافية",
+    "tip7": "وضع سباق الوقت مثالي لسلاسل النقاط",
+    "tip8": "ابحث عن أنماط في التسلسلات",
+    "tip9": "الممارسة المنتظمة تحسن ذاكرتك",
+    "tip10": "افتح تحدي التركيز للتحدي النهائي"
+  }
+}

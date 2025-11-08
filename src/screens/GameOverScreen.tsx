@@ -9,6 +9,7 @@ import { ShineEffect } from '../components/ShineEffect';
 import { shareService } from '../services/shareService';
 import { friendChallengesService } from '../services/friendChallengesService';
 import { adManager } from '../services/adManager';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface GameOverScreenProps {
   score: number;
@@ -35,6 +36,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   challengeId,
   userId,
 }) => {
+  const { t } = useTranslation();
   const isNewHighScore = userProgress && score >= userProgress.highScore;
   const [showConfetti, setShowConfetti] = useState(false);
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
@@ -161,7 +163,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
       });
 
       if (result.success) {
-        Alert.alert('Succès', 'Score partagé !');
+        Alert.alert(t('common.success'), t('game.successShared'));
       }
     } catch (error) {
       console.error('Error sharing score:', error);
@@ -173,9 +175,9 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
     
     if (!onContinue || !rewardedAdAvailable) {
       Alert.alert(
-        "Publicité non disponible",
+        t('errors.notFound'),
         "La publicité récompensée n'est pas encore chargée. Veuillez réessayer dans quelques secondes.",
-        [{ text: "OK" }]
+        [{ text: t('common.ok') }]
       );
       return;
     }
@@ -190,9 +192,9 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
 
     if (!success) {
       Alert.alert(
-        "Erreur",
+        t('common.error'),
         "Impossible d'afficher la publicité. Veuillez réessayer.",
-        [{ text: "OK" }]
+        [{ text: t('common.ok') }]
       );
     }
   };
@@ -210,138 +212,138 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
           },
         ]}
       >
-        {/* Titre personnalisé pour les défis */}
-        {isChallenge ? (
-          <Text style={styles.gameOverText}>🎯 Défi Terminé !</Text>
-        ) : (
-          <Text style={styles.gameOverText}>Game Over</Text>
-        )}
-        
-        {/* Bannière spéciale pour les défis */}
-        {isChallenge && scoreSubmitted && (
-          <Animated.View 
-            style={[
-              styles.challengeCompletedBanner,
-              {
-                opacity: bannerAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.7, 1],
-                }),
-              },
-            ]}
-          >
-            <Text style={styles.challengeBannerText}>✅ Score enregistré !</Text>
-            <Text style={styles.challengeRewardText}>
-              Gagnant obtient 50 XP + 25 🪙
-            </Text>
-            <Text style={styles.challengeNavigationText}>
-              Onglet HISTORIQUE pour voir le résultat
-            </Text>
-          </Animated.View>
-        )}
-        
-        {isNewHighScore && score > 0 && !isChallenge && (
-          <Animated.View 
-            style={[
-              styles.newRecordBanner,
-              {
-                opacity: bannerAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0.7, 1],
-                }),
-                transform: [
-                  {
-                    scale: bannerAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 1.05],
-                    }),
-                  },
-                ],
-              },
-            ]}
-          >
-            <Text style={styles.newRecordText}>🏆 NOUVEAU RECORD ! 🏆</Text>
-          </Animated.View>
-        )}
-        
-        <Animated.View 
-          style={[
-            styles.scoreContainer,
-            { transform: [{ scale: scoreScale }] },
-          ]}
-        >
-          {isNewHighScore && score > 0 && (
-            <ShineEffect active={true} size={150} color="#FFD700" />
+          {/* Titre personnalisé pour les défis */}
+          {isChallenge ? (
+            <Text style={styles.gameOverText}>🎯 {t('game.challengeCompleted')}</Text>
+          ) : (
+            <Text style={styles.gameOverText}>{t('game.gameOver')}</Text>
           )}
-          <Text style={styles.scoreLabel}>Score Final</Text>
-          <Text style={styles.scoreValue}>{score}</Text>
-          <Text style={styles.levelText}>Niveau atteint: {level}</Text>
-        </Animated.View>
-        
-        <View style={styles.statsGrid}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProgress?.highScore || 0}</Text>
-            <Text style={styles.statLabel}>Meilleur Score</Text>
+          
+          {/* Bannière spéciale pour les défis */}
+          {isChallenge && scoreSubmitted && (
+            <Animated.View 
+              style={[
+                styles.challengeCompletedBanner,
+                {
+                  opacity: bannerAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.7, 1],
+                  }),
+                },
+              ]}
+            >
+              <Text style={styles.challengeBannerText}>✅ {t('game.scoreSubmitted')}</Text>
+              <Text style={styles.challengeRewardText}>
+                {t('game.challengeReward')}
+              </Text>
+              <Text style={styles.challengeNavigationText}>
+                {t('game.challengeCheckHistory')}
+              </Text>
+            </Animated.View>
+          )}
+          
+          {isNewHighScore && score > 0 && !isChallenge && (
+            <Animated.View 
+              style={[
+                styles.newRecordBanner,
+                {
+                  opacity: bannerAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.7, 1],
+                  }),
+                  transform: [
+                    {
+                      scale: bannerAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.05],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
+              <Text style={styles.newRecordText}>🏆 {t('game.newRecord')} 🏆</Text>
+            </Animated.View>
+          )}
+          
+          <Animated.View 
+            style={[
+              styles.scoreContainer,
+              { transform: [{ scale: scoreScale }] },
+            ]}
+          >
+            {isNewHighScore && score > 0 && (
+              <ShineEffect active={true} size={150} color="#FFD700" />
+            )}
+            <Text style={styles.scoreLabel}>{t('game.finalScore')}</Text>
+            <Text style={styles.scoreValue}>{score}</Text>
+            <Text style={styles.levelText}>{t('game.levelReached', { level })}</Text>
+          </Animated.View>
+          
+          <View style={styles.statsGrid}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProgress?.highScore || 0}</Text>
+              <Text style={styles.statLabel}>{t('game.bestScore')}</Text>
+            </View>
+            
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProgress?.maxLevelReached || 1}</Text>
+              <Text style={styles.statLabel}>{t('profile.maxLevel')}</Text>
+            </View>
+            
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{userProgress?.totalGamesPlayed || 0}</Text>
+              <Text style={styles.statLabel}>{t('profile.gamesPlayed')}</Text>
+            </View>
           </View>
           
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProgress?.maxLevelReached || 1}</Text>
-            <Text style={styles.statLabel}>Niveau Max</Text>
-          </View>
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{userProgress?.totalGamesPlayed || 0}</Text>
-            <Text style={styles.statLabel}>Parties Jouées</Text>
-          </View>
-        </View>
-        
-        <View style={styles.buttonContainer}>
-          {canPlayAgain ? (
+          <View style={styles.buttonContainer}>
+            {canPlayAgain ? (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.primaryButton,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={handlePlayAgain}
+              >
+                <Text style={styles.primaryButtonText}>🔄 {t('game.replayButton')}</Text>
+              </Pressable>
+            ) : (
+              <View style={styles.challengeInfoBox}>
+                <Text style={styles.challengeInfoIcon}>🎯</Text>
+                <Text style={styles.challengeInfoText}>
+                  {t('game.challengeOneTry')}
+                </Text>
+              </View>
+            )}
+
             <Pressable
               style={({ pressed }) => [
                 styles.button,
-                styles.primaryButton,
+                styles.shareButton,
                 pressed && styles.buttonPressed,
               ]}
-              onPress={handlePlayAgain}
+              onPress={handleShare}
             >
-              <Text style={styles.primaryButtonText}>🔄 REJOUER</Text>
+              <Text style={styles.shareButtonText}>📤 {t('game.shareScore')}</Text>
             </Pressable>
-          ) : (
-            <View style={styles.challengeInfoBox}>
-              <Text style={styles.challengeInfoIcon}>🎯</Text>
-              <Text style={styles.challengeInfoText}>
-                Mode Défi: Une seule tentative par défi
-              </Text>
-            </View>
-          )}
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              styles.shareButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={handleShare}
-          >
-            <Text style={styles.shareButtonText}>📤 PARTAGER</Text>
-          </Pressable>
-          
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              styles.secondaryButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={handleBackToHome}
-          >
-            <Text style={styles.secondaryButtonText}>🏠 ACCUEIL</Text>
-          </Pressable>
-        </View>
-      </Animated.View>
-    </SafeAreaView>
-  );
-};
+            
+            <Pressable
+              style={({ pressed }) => [
+                styles.button,
+                styles.secondaryButton,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={handleBackToHome}
+            >
+              <Text style={styles.secondaryButtonText}>🏠 {t('game.homeButton')}</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </SafeAreaView>
+    );
+  };
 
 const styles = StyleSheet.create({
   container: {
@@ -350,115 +352,115 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 15,
+    padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   gameOverText: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: 'bold',
     color: COLORS.error,
-    marginBottom: 15,
+    marginBottom: 8,
   },
   newRecordBanner: {
     backgroundColor: COLORS.warning,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginBottom: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginBottom: 8,
   },
   newRecordText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: COLORS.background,
     letterSpacing: 1,
   },
   challengeCompletedBanner: {
     backgroundColor: '#4CAF50',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 15,
-    marginBottom: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    marginBottom: 8,
     alignItems: 'center',
   },
   challengeBannerText: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#FFF',
-    marginBottom: 8,
-  },
-  challengeRewardText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFD700',
     marginBottom: 4,
   },
+  challengeRewardText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#FFD700',
+    marginBottom: 2,
+  },
   challengeNavigationText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#FFF',
     opacity: 0.9,
     fontStyle: 'italic',
   },
   scoreContainer: {
     backgroundColor: COLORS.surface,
-    padding: 20,
-    borderRadius: 15,
+    padding: 12,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 20,
-    minWidth: 200,
+    marginBottom: 12,
+    minWidth: 180,
   },
   scoreLabel: {
-    fontSize: 14,
+    fontSize: 12,
     color: COLORS.textSecondary,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   scoreValue: {
-    fontSize: 48,
+    fontSize: 42,
     fontWeight: 'bold',
     color: COLORS.primary,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   levelText: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.textSecondary,
   },
   statsGrid: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 25,
+    gap: 8,
+    marginBottom: 12,
   },
   statItem: {
     backgroundColor: COLORS.surface,
-    padding: 12,
-    borderRadius: 10,
-    minWidth: 80,
+    padding: 8,
+    borderRadius: 8,
+    minWidth: 70,
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
   buttonContainer: {
     width: '100%',
-    gap: 12,
-    paddingHorizontal: 20,
+    gap: 8,
+    paddingHorizontal: 16,
   },
   button: {
-    paddingVertical: 14,
-    borderRadius: 20,
+    paddingVertical: 11,
+    borderRadius: 16,
     alignItems: 'center',
-    elevation: 3,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   buttonPressed: {
     opacity: 0.7,

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { Pressable, Text, StyleSheet, View } from 'react-native';
 import { adManager } from '../services/adManager';
 import { COLORS } from '../constants/gameConfig';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface BoostButtonProps {
   type: 'life' | 'hint';
@@ -20,6 +21,7 @@ export const BoostButton: React.FC<BoostButtonProps> = ({
   disabled = false,
   style,
 }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isAvailable, setIsAvailable] = useState(false);
 
@@ -67,9 +69,9 @@ export const BoostButton: React.FC<BoostButtonProps> = ({
   const getLabel = () => {
     switch (type) {
       case 'life':
-        return '+1 Vie';
+        return t('game.boost.life');
       case 'hint':
-        return '+1 Indice';
+        return t('game.boost.hint');
       default:
         return 'Bonus';
     }

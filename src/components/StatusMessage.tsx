@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
 import { GameStatus, GameMode } from '../types';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface StatusMessageProps {
   gameStatus: GameStatus;
@@ -19,6 +20,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
   level = 1,
   mode = 'classic',
 }) => {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const previousStatus = useRef<GameStatus>(gameStatus);
@@ -70,60 +72,60 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
     if (gameStatus === 'showing' && isShowingSequence) {
       if (mode === 'focusChallenge') {
         return {
-          text: `🎯 Mémorise les ${sequenceLength} forme${sequenceLength > 1 ? 's' : ''} !`,
+          text: t('game.memorizeFocusShapes', { count: sequenceLength }),
           color: COLORS.primary,
         };
       }
       return {
-        text: `Mémorise la séquence (${sequenceLength} case${sequenceLength > 1 ? 's' : ''})`,
+        text: t('game.memorizeSequence', { count: sequenceLength }),
         color: COLORS.primary,
       };
     }
     if (gameStatus === 'playing') {
       if (mode === 'focusChallenge') {
         return {
-          text: '🎯 Clique sur les formes dans l\'ordre !',
+          text: t('game.clickShapesInOrder'),
           color: COLORS.text,
         };
       }
       return {
-        text: 'À ton tour ! Reproduis la séquence',
+        text: t('game.yourTurn'),
         color: COLORS.text,
       };
     }
     if (gameStatus === 'correct') {
       // Encouraging messages based on milestones
       if (level === 5) {
-        return { text: '🎯 Niveau 5 ! Tu es sur la bonne voie !', color: COLORS.success };
+        return { text: t('game.level5'), color: COLORS.success };
       }
       if (level === 10) {
-        return { text: '🏆 Niveau 10 ! Tu es un Maître !', color: COLORS.warning };
+        return { text: t('game.level10'), color: COLORS.warning };
       }
       if (level === 15) {
-        return { text: '🏅 Niveau 15 ! Champion !', color: COLORS.warning };
+        return { text: t('game.level15'), color: COLORS.warning };
       }
       if (level === 20) {
-        return { text: '🏆 Niveau 20 ! Expert confirmé !', color: COLORS.warning };
+        return { text: t('game.level20'), color: COLORS.warning };
       }
       if (level === 25) {
-        return { text: '👑 Niveau 25 ! Tu es une Légende !', color: COLORS.warning };
+        return { text: t('game.level25'), color: COLORS.warning };
       }
       if (level === 30) {
-        return { text: '💎 NIVEAU 30 ! GÉNIE ABSOLU !', color: COLORS.warning };
+        return { text: t('game.level30'), color: COLORS.warning };
       }
       return {
-        text: '✓ Excellent ! Continue comme ça !',
+        text: t('game.excellent'),
         color: COLORS.success,
       };
     }
     if (gameStatus === 'wrong') {
       return {
-        text: '✗ Pas grave ! Réessaye, tu vas y arriver !',
+        text: t('game.tryAgain'),
         color: COLORS.error,
       };
     }
     return {
-      text: 'Prêt à jouer ?',
+      text: t('game.ready'),
       color: COLORS.textSecondary,
     };
   };

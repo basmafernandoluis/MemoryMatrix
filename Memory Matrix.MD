@@ -1,7 +1,37 @@
 
 ---
 
-## 🎯 Features d'Engagement
+## � Système d'Internationalisation (i18n)
+
+### Langues Supportées (8)
+- 🇫🇷 **Français** - Langue par défaut
+- 🇬🇧 **English** - Anglais
+- 🇪🇸 **Español** - Espagnol
+- 🇩🇪 **Deutsch** - Allemand
+- 🇯🇵 **日本語** - Japonais
+- 🇸🇦 **العربية** - Arabe (RTL)
+- 🇨🇳 **中文** - Chinois simplifié
+- 🇵🇹 **Português** - Portugais
+
+### Fonctionnalités i18n
+- ✅ **Détection automatique** de la langue système
+- ✅ **Changement dynamique** sans redémarrage
+- ✅ **Persistance** de la préférence utilisateur
+- ✅ **Support RTL** pour l'arabe
+- ✅ **4000+ traductions** (500+ par langue)
+- ✅ **Interface de sélection** élégante
+- ✅ **Interpolation** pour contenus dynamiques
+
+### Documentation i18n
+- 📘 `I18N_IMPLEMENTATION_GUIDE.md` - Guide technique complet
+- 📗 `I18N_MIGRATION_GUIDE.md` - Guide de migration écran par écran
+- 📙 `I18N_DEPLOYMENT_SUMMARY.md` - Résumé du déploiement
+- 📕 `I18N_QUICK_COMMANDS.md` - Commandes rapides
+- 📊 `I18N_IMPLEMENTATION_STATUS.md` - État d'avancement
+
+---
+
+## �🎯 Features d'Engagement
 
 ### Défis Quotidiens
 - **Défi du jour** : objectif unique quotidien

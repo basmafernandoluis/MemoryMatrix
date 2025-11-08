@@ -22,6 +22,7 @@ import { GameMode } from '../types';
 import { GAME_MODES, isModeUnlocked } from '../constants/gameModes';
 import { BackButton } from '../components/BackButton';
 import { playPasseSound } from '../utils/soundManager';
+import { useTranslation } from '../hooks/useTranslation';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -42,6 +43,7 @@ export default function GameModeSelector({
   userCoins = 0,
   friendChallengeWins = 0,
 }: GameModeSelectorProps) {
+  const { t } = useTranslation();
   // Order modes from easiest to hardest for better retention
   const modeOrder: GameMode[] = ['classic', 'zen', 'custom', 'survival', 'timeAttack', 'focusChallenge'];
   const modes = modeOrder.filter((m) => GAME_MODES[m]);
@@ -52,7 +54,7 @@ export default function GameModeSelector({
     
     // Cas spécial pour Focus Challenge
     if (mode === 'focusChallenge') {
-      return `2 victoires contre amis (${friendChallengeWins}/2)`;
+      return t('modes.unlockFriendWins', { count: 2, current: friendChallengeWins });
     }
     
     if (!config.unlockRequirements) return '';
@@ -61,7 +63,7 @@ export default function GameModeSelector({
     const parts: string[] = [];
     
     if (req.levelRequired) {
-      parts.push(`Niveau ${req.levelRequired}`);
+      parts.push(t('modes.unlockLevel', { level: req.levelRequired }));
     }
     if (req.xpCost) {
       parts.push(`${req.xpCost} XP`);
@@ -78,6 +80,31 @@ export default function GameModeSelector({
     const unlocked = isModeUnlocked(mode, maxLevelReached, userXp, userCoins, friendChallengeWins);
     const cardScale = useRef(new Animated.Value(0.9)).current;
     const cardOpacity = useRef(new Animated.Value(0)).current;
+
+    // Traduire le nom et la description du mode
+    const getModeName = (): string => {
+      switch (mode) {
+        case 'classic': return t('modes.classic');
+        case 'survival': return t('modes.survival');
+        case 'timeAttack': return t('modes.timeAttack');
+        case 'zen': return t('modes.zen');
+        case 'focusChallenge': return t('modes.focus');
+        case 'custom': return t('modes.custom');
+        default: return config.name;
+      }
+    };
+
+    const getModeDescription = (): string => {
+      switch (mode) {
+        case 'classic': return t('modes.classicDesc');
+        case 'survival': return t('modes.survivalDesc');
+        case 'timeAttack': return t('modes.timeAttackDesc');
+        case 'zen': return t('modes.zenDesc');
+        case 'focusChallenge': return t('modes.focusDesc');
+        case 'custom': return t('modes.customDesc');
+        default: return config.description;
+      }
+    };
 
     useEffect(() => {
       const delay = 60 * index; // cascade entrée
@@ -111,18 +138,18 @@ export default function GameModeSelector({
             styles.modeTitle,
             !unlocked && styles.modeTitleLocked,
           ]}>
-            {config.name}
+            {getModeName()}
           </Text>
           
           {/* Badge recommandé pour Classic et Zen */}
           {(mode === 'classic' || mode === 'zen') && (
             <View style={styles.recommendedBadge}>
-              <Text style={styles.recommendedText}>Recommandé</Text>
+              <Text style={styles.recommendedText}>{t('modes.recommended')}</Text>
             </View>
           )}
           
           {/* Description */}
-          <Text style={styles.modeDescription}>{config.description}</Text>
+          <Text style={styles.modeDescription}>{getModeDescription()}</Text>
           
           {/* Features compactes */}
           <View style={styles.featuresCompact}>
@@ -162,7 +189,7 @@ export default function GameModeSelector({
         {/* Header */}
         <View style={styles.header}>
           <BackButton onPress={onBack} color="#FFFFFF" backgroundColor="rgba(255,255,255,0.12)" />
-          <Text style={styles.title}>Choisir un Mode</Text>
+          <Text style={styles.title}>{t('modes.title')}</Text>
           <View style={styles.placeholder} />
         </View>
 
@@ -178,7 +205,7 @@ export default function GameModeSelector({
         <View style={styles.infoFooter}>
           <Text style={styles.infoIcon}>💡</Text>
           <Text style={styles.infoText}>
-            Complétez les niveaux pour débloquer les modes !
+            {t('modes.unlockInfo')}
           </Text>
         </View>
       </LinearGradient>

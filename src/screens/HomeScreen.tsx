@@ -12,6 +12,7 @@ import UnlockModeAnimation from '../components/UnlockModeAnimation';
 import { BannerAdComponent, BannerSpacer } from '../components/BannerAdComponent';
 import firestore from '@react-native-firebase/firestore';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface HomeScreenProps {
   onStartGame: (mode?: GameMode) => void;
@@ -19,6 +20,7 @@ interface HomeScreenProps {
   onOpenProfile: () => void;
   onOpenChallenges: () => void;
   onOpenFriends?: () => void;
+  onOpenLanguageSelection?: () => void;
   userProgress: UserProgress | null;
   currentUserId?: string | null;
   newlyUnlockedMode?: GameMode | null; // Mode qui vient d'être débloqué
@@ -30,11 +32,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenProfile,
   onOpenChallenges,
   onOpenFriends,
+  onOpenLanguageSelection,
   userProgress,
   currentUserId = null,
   newlyUnlockedMode = null,
 }) => {
   const { colors } = useTheme(); // Get theme colors
+  const { t } = useTranslation(); // Get translation function
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -182,14 +186,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           }
         ]}
       >
-        <Text style={[styles.title, { color: colors.primary }]}>Memory Matrix</Text>
-        <Text style={[styles.subtitle, { color: colors.secondary }]}>Challenge</Text>
+        <Text style={[styles.title, { color: colors.primary }]}>{t('home.title')}</Text>
+        <Text style={[styles.subtitle, { color: colors.secondary }]}>{t('home.subtitle')}</Text>
         
         {dailyChallenge && (
           <View style={[styles.dailyChallengeCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
-            <Text style={[styles.challengeTitle, { color: colors.text }]}>🎯 Défi Quotidien</Text>
+            <Text style={[styles.challengeTitle, { color: colors.text }]}>🎯 {t('home.dailyChallenge')}</Text>
             <Text style={[styles.challengeTarget, { color: colors.textSecondary }]}>
-              Objectif: {dailyChallenge.targetScore} points
+              {t('home.challengeTarget', { target: dailyChallenge.targetScore })}
             </Text>
             
             <View style={styles.progressBarContainer}>
@@ -204,7 +208,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             
             <Text style={[styles.challengeProgress, { color: colors.text }]}>
               {dailyChallenge.currentScore} / {dailyChallenge.targetScore}
-              {dailyChallenge.completed && ' ✓ Complété !'}
+              {dailyChallenge.completed && ` ✓ ${t('home.completed')}`}
             </Text>
           </View>
         )}
@@ -214,17 +218,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <>
               <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
                 <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress.highScore}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meilleur Score</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('home.highScore')}</Text>
               </Animated.View>
               
               <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
                 <Text style={[styles.statValue, { color: colors.secondary }]}>{userProgress.maxLevelReached}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Niveau Max</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('home.maxLevel')}</Text>
               </Animated.View>
               
               <Animated.View style={[styles.statCard, { opacity: fadeAnim, backgroundColor: colors.surface }]}>
                 <Text style={[styles.statValue, { color: colors.accent }]}>{userProgress.totalGamesPlayed}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Parties Jouées</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('home.gamesPlayed')}</Text>
               </Animated.View>
             </>
           )}
@@ -238,7 +242,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             ]}
             onPress={handleStartGame}
           >
-            <Text style={styles.playButtonText}>▶ JOUER</Text>
+            <Text style={styles.playButtonText}>▶ {t('home.play')}</Text>
           </Pressable>
         </Animated.View>
 
@@ -252,7 +256,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onPress={handleOpenLeaderboard}
           >
             <Text style={styles.menuIconEmoji}>🏆</Text>
-            <Text style={styles.menuIconLabel}>Classement</Text>
+            <Text style={styles.menuIconLabel}>{t('home.leaderboard')}</Text>
           </Pressable>
 
           <Pressable
@@ -263,7 +267,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onPress={handleOpenChallenges}
           >
             <Text style={styles.menuIconEmoji}>🎯</Text>
-            <Text style={styles.menuIconLabel}>Défis</Text>
+            <Text style={styles.menuIconLabel}>{t('home.challenges')}</Text>
           </Pressable>
 
           {onOpenFriends && (
@@ -275,7 +279,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               onPress={handleOpenFriends}
             >
               <Text style={styles.menuIconEmoji}>👥</Text>
-              <Text style={styles.menuIconLabel}>Amis</Text>
+              <Text style={styles.menuIconLabel}>{t('home.friends')}</Text>
               {notificationCount > 0 && (
                 <View style={styles.notificationBadge}>
                   <Text style={styles.badgeText}>
@@ -294,7 +298,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onPress={handleOpenProfile}
           >
             <Text style={styles.menuIconEmoji}>👤</Text>
-            <Text style={styles.menuIconLabel}>Profil</Text>
+            <Text style={styles.menuIconLabel}>{t('home.profile')}</Text>
           </Pressable>
 
           <Pressable
@@ -305,7 +309,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             onPress={handleOpenSettings}
           >
             <Text style={styles.menuIconEmoji}>⚙️</Text>
-            <Text style={styles.menuIconLabel}>Paramètres</Text>
+            <Text style={styles.menuIconLabel}>{t('home.settings')}</Text>
           </Pressable>
         </View>
         
@@ -320,7 +324,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             setShowInstructions(true);
           }}
         >
-          <Text style={styles.instructionsButtonText}>❓ Comment jouer ?</Text>
+          <Text style={styles.instructionsButtonText}>❓ {t('home.instructionsTitle')}</Text>
         </Pressable>
       </Animated.View>
 
@@ -339,7 +343,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             style={styles.modalContent}
             onPress={(e) => e.stopPropagation()}
           >
-            <Text style={styles.modalTitle}>📚 Comment jouer ?</Text>
+            <Text style={styles.modalTitle}>📚 {t('home.instructionsTitle')}</Text>
             
             <ScrollView 
               style={styles.instructionsScrollView}
@@ -463,6 +467,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       <SettingsModal 
         visible={showSettings}
         onClose={() => setShowSettings(false)}
+        onOpenLanguageSelection={onOpenLanguageSelection}
       />
 
       {/* Unlock Mode Animation */}

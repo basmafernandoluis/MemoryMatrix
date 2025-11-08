@@ -20,6 +20,7 @@ import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
 import { useTheme } from '../context/ThemeContext';
 import { BackButton } from '../components/BackButton';
 import { themeService } from '../services/themeService';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ProfileScreenProps {
   userProgress: UserProgress | null;
@@ -39,6 +40,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onProfileUpdated,
 }) => {
   const { theme, userPreferences, colors } = useTheme();
+  const { t } = useTranslation();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isThemeSelectorVisible, setIsThemeSelectorVisible] = useState(false);
@@ -59,7 +61,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       onProfileUpdated(updatedProgress);
       
       setIsEditModalVisible(false);
-      Alert.alert('Succès', 'Profil mis à jour !');
+      Alert.alert(t('common.success'), t('profile.profileUpdated'));
     } catch (error) {
       throw error;
     }
@@ -67,15 +69,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
   const handleSignOut = () => {
     Alert.alert(
-      'Déconnexion',
-      'Êtes-vous sûr de vouloir vous déconnecter ?',
+      t('profile.signOut'),
+      t('profile.signOutConfirm'),
       [
         {
-          text: 'Annuler',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Déconnexion',
+          text: t('profile.signOut'),
           style: 'destructive',
           onPress: async () => {
             setIsSigningOut(true);
@@ -84,7 +86,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               onSignOut();
             } catch (error) {
               console.error('Error signing out:', error);
-              Alert.alert('Erreur', 'Impossible de se déconnecter');
+              Alert.alert(t('common.error'), t('errors.signOutFailed'));
               setIsSigningOut(false);
             }
           },
@@ -116,7 +118,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           {/* Header */}
           <View style={styles.header}>
             <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surface} />
-            <Text style={[styles.title, { color: colors.text }]}>Mon Profil</Text>
+            <Text style={[styles.title, { color: colors.text }]}>{t('profile.title')}</Text>
           </View>
 
         {/* User Info Card */}
@@ -133,7 +135,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             style={[styles.editButton, { backgroundColor: colors.primary }]}
             onPress={() => setIsEditModalVisible(true)}
           >
-            <Text style={styles.editButtonText}>✏️ Modifier mon profil</Text>
+            <Text style={styles.editButtonText}>✏️ {t('profile.editProfile')}</Text>
           </TouchableOpacity>
           
           {/* Themes Button */}
@@ -141,15 +143,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             style={[styles.editButton, { backgroundColor: colors.secondary }]}
             onPress={() => setIsThemeSelectorVisible(true)}
           >
-            <Text style={styles.editButtonText}>🎨 Thèmes</Text>
+            <Text style={styles.editButtonText}>🎨 {t('profile.themes')}</Text>
           </TouchableOpacity>
           
           {/* Visual Effects Settings */}
           <View style={styles.effectsSection}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>✨ Effets Visuels</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>✨ {t('profile.visualEffects')}</Text>
             
             <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>🎆 Particules</Text>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>🎆 {t('profile.particles')}</Text>
               <Switch
                 value={userPreferences?.effects.particlesEnabled ?? true}
                 onValueChange={async (value) => {
@@ -166,7 +168,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
             
             <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>🎊 Confetti</Text>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>🎊 {t('profile.confetti')}</Text>
               <Switch
                 value={userPreferences?.effects.confettiEnabled ?? true}
                 onValueChange={async (value) => {
@@ -183,7 +185,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
             
             <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>✨ Effets Glow</Text>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>✨ {t('profile.glowEffects')}</Text>
               <Switch
                 value={userPreferences?.effects.glowEffects ?? true}
                 onValueChange={async (value) => {
@@ -200,7 +202,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </View>
             
             <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>📳 Effets Shake</Text>
+              <Text style={[styles.effectLabel, { color: colors.text }]}>📳 {t('profile.shakeEffects')}</Text>
               <Switch
                 value={userPreferences?.effects.shakeEffects ?? true}
                 onValueChange={async (value) => {
@@ -237,7 +239,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </View>
           
           <Text style={[styles.rewardsInfo, { color: colors.textSecondary }]}>
-            💡 Gagnez XP et Coins en complétant les défis quotidiens !
+            💡 {t('profile.earnRewards')}
           </Text>
         </View>
 
@@ -245,27 +247,27 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.highScore || 0}</Text>
-            <Text style={[styles.statLabel, { color: colors.text }]}>Meilleur Score</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>{t('profile.highScore')}</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.maxLevelReached || 1}</Text>
-            <Text style={[styles.statLabel, { color: colors.text }]}>Niveau Max</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>{t('profile.maxLevel')}</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.statValue, { color: colors.primary }]}>{userProgress?.totalGamesPlayed || 0}</Text>
-            <Text style={[styles.statLabel, { color: colors.text }]}>Parties Jouées</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>{t('profile.gamesPlayed')}</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.statValue, { color: colors.primary }]}>
               {achievementCount}/{totalAchievements}
             </Text>
-            <Text style={[styles.statLabel, { color: colors.text }]}>Succès</Text>
+            <Text style={[styles.statLabel, { color: colors.text }]}>{t('profile.achievements')}</Text>
           </View>
         </View>
 
         {/* Achievements Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>🏆 Succès Débloqués</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>🏆 {t('profile.unlockedAchievements')}</Text>
           <View style={styles.achievementsContainer}>
             {userProgress?.achievements && userProgress.achievements.length > 0 ? (
               userProgress.achievements.map((achievement, index) => (
@@ -285,7 +287,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               ))
             ) : (
               <Text style={[styles.noAchievements, { color: colors.textSecondary }]}>
-                Aucun succès débloqué. Jouez pour en obtenir !
+                {t('profile.noAchievements')}
               </Text>
             )}
           </View>
@@ -299,7 +301,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             disabled={isSigningOut}
           >
             <Text style={styles.signOutButtonText}>
-              {isSigningOut ? 'Déconnexion...' : '🚪 Se Déconnecter'}
+              {isSigningOut ? t('profile.signingOut') : `🚪 ${t('profile.signOut')}`}
             </Text>
           </TouchableOpacity>
         )}
@@ -309,10 +311,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <View style={styles.anonymousInfo}>
             <Text style={styles.anonymousIcon}>💡</Text>
             <Text style={styles.anonymousText}>
-              Votre profil est sauvegardé sur cet appareil
+              {t('profile.anonymousInfo')}
             </Text>
             <Text style={styles.anonymousTextSmall}>
-              Astuce : Ne vous déconnectez pas pour conserver vos données !
+              {t('profile.anonymousTip')}
             </Text>
           </View>
         )}

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Modal } from 'react-native';
 import { COLORS } from '../constants/gameConfig';
 import { feedback } from '../utils/soundManager';
 import { BoostButton } from './BoostButton';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface PauseModalProps {
   visible: boolean;
@@ -23,6 +24,8 @@ export const PauseModal: React.FC<PauseModalProps> = ({
   currentLives = 0,
   currentHints = 0,
 }) => {
+  const { t } = useTranslation();
+  
   const handleResume = async () => {
     await feedback.buttonPress();
     onResume();
@@ -41,13 +44,13 @@ export const PauseModal: React.FC<PauseModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <Text style={styles.title}>⏸️ PAUSE</Text>
+          <Text style={styles.title}>⏸️ {t('game.pause')}</Text>
           
           {/* Section Bonus */}
           {(onAddLife || onAddHint) && (
             <View style={styles.boostSection}>
-              <Text style={styles.boostTitle}>🎁 BONUS</Text>
-              <Text style={styles.boostSubtitle}>Regardez une pub pour obtenir des bonus</Text>
+              <Text style={styles.boostTitle}>🎁 {t('game.bonusTitle')}</Text>
+              <Text style={styles.boostSubtitle}>{t('game.bonusSubtitle')}</Text>
               <View style={styles.boostButtons}>
                 {onAddLife && (
                   <BoostButton 
@@ -74,7 +77,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
               ]}
               onPress={handleResume}
             >
-              <Text style={styles.resumeButtonText}>▶️ REPRENDRE</Text>
+              <Text style={styles.resumeButtonText}>▶️ {t('game.resumeButton')}</Text>
             </Pressable>
             
             <Pressable
@@ -85,7 +88,7 @@ export const PauseModal: React.FC<PauseModalProps> = ({
               ]}
               onPress={handleQuit}
             >
-              <Text style={styles.quitButtonText}>🏠 QUITTER</Text>
+              <Text style={styles.quitButtonText}>🏠 {t('game.quitButton')}</Text>
             </Pressable>
           </View>
         </View>

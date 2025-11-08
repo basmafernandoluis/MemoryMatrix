@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Animated, ActivityIndicator } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { feedback } from '../utils/soundManager';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface LoginScreenProps {
   onGuestLogin: () => void;
@@ -10,6 +11,7 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoading }) => {
+  const { t } = useTranslation();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -60,7 +62,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoadin
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Connexion...</Text>
+          <Text style={styles.loadingText}>{t('login.connecting')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -78,29 +80,29 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoadin
         ]}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Memory Matrix</Text>
-          <Text style={styles.subtitle}>Challenge</Text>
+          <Text style={styles.title}>{t('login.title')}</Text>
+          <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
           <Text style={styles.tagline}>
-            Teste ta mémoire, améliore ton score ! 🧠
+            {t('login.tagline')}
           </Text>
         </View>
 
         <View style={styles.features}>
           <View style={styles.featureItem}>
             <Text style={styles.featureIcon}>🎮</Text>
-            <Text style={styles.featureText}>Gameplay addictif</Text>
+            <Text style={styles.featureText}>{t('login.features.gameplay')}</Text>
           </View>
           <View style={styles.featureItem}>
             <Text style={styles.featureIcon}>🏆</Text>
-            <Text style={styles.featureText}>Défis quotidiens</Text>
+            <Text style={styles.featureText}>{t('login.features.dailyChallenges')}</Text>
           </View>
           <View style={styles.featureItem}>
             <Text style={styles.featureIcon}>⭐</Text>
-            <Text style={styles.featureText}>Succès à débloquer</Text>
+            <Text style={styles.featureText}>{t('login.features.achievements')}</Text>
           </View>
           <View style={styles.featureItem}>
             <Text style={styles.featureIcon}>☁️</Text>
-            <Text style={styles.featureText}>Progrès sauvegardés</Text>
+            <Text style={styles.featureText}>{t('login.features.savedProgress')}</Text>
           </View>
         </View>
 
@@ -114,14 +116,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoadin
               ]}
               onPress={handleGuestLogin}
             >
-              <Text style={styles.guestButtonText}>👤 COMMENCER</Text>
-              <Text style={styles.buttonSubtext}>Jouer en mode invité</Text>
+              <Text style={styles.guestButtonText}>{t('login.guestButton')}</Text>
+              <Text style={styles.buttonSubtext}>{t('login.guestSubtext')}</Text>
             </Pressable>
           </Animated.View>
         </View>
 
         <Text style={styles.disclaimer}>
-          Tes progrès seront sauvegardés automatiquement
+          {t('login.disclaimer')}
         </Text>
       </Animated.View>
     </SafeAreaView>

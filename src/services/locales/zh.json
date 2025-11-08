@@ -1,0 +1,438 @@
+{
+  "common": {
+    "play": "开始游戏",
+    "back": "返回",
+    "continue": "继续",
+    "cancel": "取消",
+    "confirm": "确认",
+    "ok": "确定",
+    "yes": "是",
+    "no": "否",
+    "close": "关闭",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "warning": "警告",
+    "tryAgain": "重试",
+    "share": "分享",
+    "settings": "设置"
+  },
+  
+  "home": {
+    "title": "Memory Matrix",
+    "subtitle": "挑战",
+    "welcome": "欢迎",
+    "play": "开始",
+    "playButton": "开始游戏",
+    "modesButton": "游戏模式",
+    "leaderboard": "排行榜",
+    "leaderboardButton": "排行榜",
+    "challenges": "挑战",
+    "challengesButton": "每日挑战",
+    "profile": "个人资料",
+    "profileButton": "个人资料",
+    "friends": "好友",
+    "friendsButton": "好友",
+    "friendChallengesButton": "好友对战",
+    "settings": "设置",
+    "settingsButton": "设置",
+    "dailyChallenge": "每日挑战",
+    "challengeTarget": "目标：{{target}} 分",
+    "completed": "完成！",
+    "highScore": "最高分",
+    "maxLevel": "最高等级",
+    "gamesPlayed": "游戏次数",
+    "instructionsTitle": "如何游玩",
+    "instruction1": "观察发光的序列",
+    "instruction2": "记住位置",
+    "instruction3": "重现序列",
+    "instruction4": "进步并提高你的分数!",
+    "dailyChallengeTitle": "每日挑战",
+    "dailyChallengeSubtitle": "每天都有新挑战"
+  },
+
+  "modes": {
+    "title": "选择模式",
+    "subtitle": "选择你的游戏风格",
+    "classic": "经典",
+    "classicDesc": "有限生命的标准模式",
+    "survival": "生存",
+    "survivalDesc": "你能坚持多久?",
+    "timeAttack": "限时模式",
+    "timeAttackDesc": "120秒内获得最高分",
+    "zen": "禅",
+    "zenDesc": "无压力放松",
+    "focus": "专注挑战",
+    "focusDesc": "在干扰和颜色中记忆",
+    "recommended": "推荐",
+    "locked": "已锁定",
+    "unlockHint": "赢得2场好友对战以解锁",
+    "lives": "{{count}}条生命",
+    "infiniteLives": "无限生命",
+    "timedMode": "计时"
+  },
+
+  "game": {
+    "level": "第{{level}}关",
+    "score": "得分",
+    "lives": "生命",
+    "time": "时间",
+    "paused": "暂停",
+    "resume": "继续",
+    "restart": "重新开始",
+    "quit": "退出",
+    "memorize": "记住!",
+    "memorizeSequence": "记住序列！",
+    "memorizeFocusShapes": "专注于发光的形状！",
+    "yourTurn": "轮到你了!",
+    "clickShapesInOrder": "按顺序点击形状",
+    "ready": "准备好！",
+    "correct": "正确!",
+    "wrong": "错误!",
+    "excellent": "优秀!",
+    "tryAgain": "再试一次！",
+    "perfect": "完美!",
+    "goodJob": "干得好!",
+    "level5": "第5关！开局不错！",
+    "level10": "第10关！继续保持！",
+    "level15": "第15关！太棒了！",
+    "level20": "第20关！你是大师！",
+    "level25": "第25关！势不可挡！",
+    "level30": "第30关！传奇！",
+    "gameOver": "游戏结束",
+    "newHighScore": "新纪录!",
+    "finalScore": "最终得分",
+    "playAgain": "再玩一次",
+    "backToMenu": "主菜单",
+    "pauseTitle": "暂停",
+    "quitConfirm": "确定要退出吗?",
+    "restartConfirm": "要重新开始吗?"
+  },
+
+  "challenges": {
+    "title": "每日挑战",
+    "subtitle": "完成今日挑战",
+    "streak": "连续",
+    "completed": "已完成",
+    "timeRemaining": "剩余时间",
+    "expired": "已过期",
+    "claimReward": "领取{{xp}} XP + {{coins}} 🪙",
+    "rewarded": "已领取奖励",
+    "inProgress": "进行中",
+    "locked": "已锁定",
+    "unlockAt": "{{time}}后解锁",
+    "easy": "简单",
+    "medium": "中等",
+    "hard": "困难",
+    "daily": "每日",
+    "weekly": "每周",
+    "description": {
+      "reachLevel": "达到第{{level}}关",
+      "score": "获得{{score}}分",
+      "noMistakes": "无失误到达第{{level}}关",
+      "timeAttack": "限时模式中获得{{score}}分",
+      "survival": "生存{{time}}秒",
+      "combo": "达成{{combo}}连击",
+      "perfectRound": "连续{{count}}回合完美"
+    }
+  },
+
+  "friends": {
+    "title": "好友",
+    "addFriend": "添加好友",
+    "friendCode": "好友代码",
+    "yourCode": "你的代码",
+    "enterCode": "输入代码",
+    "add": "添加",
+    "remove": "移除",
+    "online": "在线",
+    "offline": "离线",
+    "lastSeen": "{{time}}前在线",
+    "noFriends": "还没有好友",
+    "noFriendsDesc": "分享你的代码或添加好友的代码",
+    "copyCode": "复制代码",
+    "codeCopied": "代码已复制!",
+    "friendAdded": "好友已添加!",
+    "friendRemoved": "好友已移除",
+    "invalidCode": "无效代码",
+    "alreadyFriends": "你们已经是好友了",
+    "cannotAddSelf": "不能添加自己",
+    "level": "等级{{level}}",
+    "highScore": "最高: {{score}}"
+  },
+
+  "friendChallenges": {
+    "title": "好友对战",
+    "subtitle": "与好友竞争",
+    "newChallenge": "新挑战",
+    "active": "进行中",
+    "pending": "等待中",
+    "completed": "已完成",
+    "createChallenge": "创建挑战",
+    "selectFriend": "选择好友",
+    "selectMode": "选择模式",
+    "sendChallenge": "发送挑战",
+    "accept": "接受",
+    "decline": "拒绝",
+    "youWin": "你赢了!",
+    "youLose": "你输了",
+    "waiting": "等待{{name}}",
+    "yourScore": "你的得分",
+    "theirScore": "对方得分",
+    "playNow": "立即游玩",
+    "viewResult": "查看结果",
+    "challengeExpired": "挑战已过期",
+    "expiresIn": "{{time}}后过期",
+    "noChallenges": "没有进行中的挑战",
+    "noChallengesDesc": "创建挑战与好友竞争",
+    "challengeSent": "挑战已发送!",
+    "challengeAccepted": "挑战已接受!",
+    "challengeDeclined": "挑战已拒绝",
+    "winStreak": "连胜: {{count}}场"
+  },
+
+  "leaderboard": {
+    "title": "排行榜",
+    "global": "全球",
+    "friends": "好友",
+    "daily": "每日",
+    "weekly": "每周",
+    "allTime": "历史",
+    "rank": "#{{rank}}",
+    "you": "你",
+    "level": "等级{{level}}",
+    "score": "{{score}}分",
+    "noData": "暂无数据",
+    "topPlayers": "顶尖玩家",
+    "loading": "加载排行榜..."
+  },
+
+  "profile": {
+    "title": "个人资料",
+    "stats": "统计",
+    "achievements": "成就",
+    "themes": "主题",
+    "visualEffects": "视觉效果",
+    "particles": "粒子",
+    "confetti": "彩纸",
+    "glowEffects": "发光效果",
+    "shakeEffects": "震动效果",
+    "earnRewards": "赚取经验值和金币以解锁主题",
+    "edit": "编辑资料",
+    "signOut": "登出",
+    "signingOut": "正在登出...",
+    "signOutConfirm": "确定要登出吗？",
+    "level": "等级{{level}}",
+    "xp": "{{current}} / {{next}} XP",
+    "nextLevel": "距离下一级还需{{xp}} XP",
+    "gamesPlayed": "游玩次数",
+    "totalScore": "总得分",
+    "highScore": "最高得分",
+    "maxLevel": "最高等级",
+    "avgScore": "平均",
+    "winRate": "胜率",
+    "playTime": "游戏时长",
+    "perfectGames": "完美游戏",
+    "currentStreak": "当前连续",
+    "bestStreak": "最佳连续",
+    "friendsCount": "好友",
+    "challengesWon": "挑战胜利",
+    "unlockedAchievements": "已解锁成就",
+    "noAchievements": "还没有解锁任何成就。继续游戏！",
+    "anonymousInfo": "您的进度已本地保存在此设备上。",
+    "anonymousTip": "如果您想保留进度，请不要登出。",
+    "editProfile": "编辑资料",
+    "displayName": "显示名称",
+    "avatar": "头像",
+    "save": "保存",
+    "cancel": "取消",
+    "nameTooShort": "名称太短",
+    "nameTooLong": "名称太长",
+    "profileUpdated": "资料已更新!"
+  },
+
+  "settings": {
+    "title": "设置",
+    "general": "常规",
+    "gameplay": "游戏玩法",
+    "audio": "音频",
+    "notifications": "通知",
+    "about": "关于",
+    "language": "语言",
+    "selectLanguage": "选择你的语言",
+    "sound": "音效",
+    "soundDescription": "游戏音效",
+    "music": "音乐",
+    "vibration": "震动",
+    "hapticFeedback": "触觉反馈",
+    "hapticsDescription": "触觉反馈",
+    "animations": "动画",
+    "difficulty": "难度",
+    "theme": "主题",
+    "darkMode": "暗色模式",
+    "dailyReminder": "每日提醒",
+    "friendRequests": "好友请求",
+    "challengeInvites": "挑战邀请",
+    "version": "版本{{version}}",
+    "credits": "制作人员",
+    "privacy": "隐私",
+    "terms": "条款",
+    "support": "支持",
+    "rateApp": "评价应用",
+    "shareApp": "分享应用"
+  },
+
+  "onboarding": {
+    "skip": "跳过",
+    "next": "下一步",
+    "start": "开始",
+    "slide1": {
+      "title": "欢迎来到Memory Matrix",
+      "description": "用这个上瘾的游戏训练你的记忆力。记住序列,提升等级,挑战好友。"
+    },
+    "slide2": {
+      "title": "专注挑战",
+      "description": "有干扰和多种颜色的特殊模式。赢得2场好友对战即可解锁。"
+    },
+    "slide3": {
+      "title": "多种游戏模式",
+      "description": "经典、生存、限时或禅。每个模式都提供独特体验。"
+    },
+    "slide4": {
+      "title": "生命系统",
+      "description": "你有5条生命。每次失误消耗1条生命。没有生命=游戏结束!"
+    },
+    "slide5": {
+      "title": "进度和等级",
+      "description": "获得XP,升级并解锁新功能。每个等级都增加难度。"
+    },
+    "slide6": {
+      "title": "成就",
+      "description": "完成特殊挑战以获得独特成就和专属奖励。"
+    },
+    "slide7": {
+      "title": "好友对战",
+      "description": "用代码添加好友并创建自定义挑战。竞争并比较分数。"
+    },
+    "slide8": {
+      "title": "每日挑战",
+      "description": "每天都有新挑战。完成连续挑战以最大化奖励。"
+    },
+    "slide9": {
+      "title": "音效",
+      "description": "享受沉浸式音效。在设置中根据你的喜好配置。"
+    }
+  },
+
+  "achievements": {
+    "title": "成就",
+    "unlocked": "已解锁",
+    "locked": "已锁定",
+    "progress": "进度",
+    "reward": "奖励: {{xp}} XP",
+    "firstWin": {
+      "name": "首胜",
+      "description": "完成你的第一场游戏"
+    },
+    "speedRunner": {
+      "name": "速度奔跑者",
+      "description": "限时模式获得500分"
+    },
+    "survivor": {
+      "name": "幸存者",
+      "description": "生存模式生存5分钟"
+    },
+    "perfectionist": {
+      "name": "完美主义者",
+      "description": "一场游戏10回合完美"
+    },
+    "friendlyCompetitor": {
+      "name": "友好竞争者",
+      "description": "赢得5场好友对战"
+    },
+    "dailyDedication": {
+      "name": "每日奉献",
+      "description": "挑战连续7天"
+    },
+    "levelMaster": {
+      "name": "等级大师",
+      "description": "达到20级"
+    },
+    "scoreHunter": {
+      "name": "分数猎人",
+      "description": "一场游戏获得1000分"
+    },
+    "memoryMaster": {
+      "name": "记忆大师",
+      "description": "完成所有模式"
+    },
+    "socialButterfly": {
+      "name": "社交蝴蝶",
+      "description": "添加10个好友"
+    },
+    "challenger": {
+      "name": "挑战者",
+      "description": "创建20个挑战"
+    },
+    "unstoppable": {
+      "name": "势不可挡",
+      "description": "挑战10连胜"
+    },
+    "zenMaster": {
+      "name": "禅师",
+      "description": "禅模式游玩50次"
+    },
+    "achievementHunter": {
+      "name": "成就猎人",
+      "description": "解锁10个成就"
+    },
+    "legend": {
+      "name": "传奇",
+      "description": "达到50级"
+    },
+    "noMistakes": {
+      "name": "零失误",
+      "description": "无失误完成第10关"
+    }
+  },
+
+  "errors": {
+    "networkError": "网络错误",
+    "serverError": "服务器错误",
+    "authError": "认证错误",
+    "notFound": "未找到",
+    "permissionDenied": "权限被拒绝",
+    "unknown": "未知错误",
+    "signOutFailed": "登出失败。请重试。",
+    "tryAgainLater": "请稍后重试",
+    "checkConnection": "请检查你的连接"
+  },
+
+  "notifications": {
+    "friendRequest": "{{name}}想成为你的好友",
+    "challengeReceived": "{{name}}向你发起了挑战",
+    "challengeWon": "你赢得了与{{name}}的挑战!",
+    "challengeLost": "{{name}}赢得了挑战",
+    "dailyChallengeReady": "新的每日挑战已开放!",
+    "achievementUnlocked": "成就已解锁: {{achievement}}!",
+    "levelUp": "已达到{{level}}级!",
+    "streakReminder": "别失去你的{{days}}天连续!"
+  },
+
+  "tips": {
+    "title": "每日提示",
+    "tip1": "集中注意力在网格中心以捕获整个序列",
+    "tip2": "在禅模式中练习以无压力提高",
+    "tip3": "音效帮助记忆序列",
+    "tip4": "定期休息以保持专注",
+    "tip5": "挑战好友以获得更多XP",
+    "tip6": "完成每日挑战获得额外奖励",
+    "tip7": "限时模式最适合连续得分",
+    "tip8": "寻找序列中的模式",
+    "tip9": "定期练习改善记忆力",
+    "tip10": "解锁专注挑战以获得终极挑战"
+  }
+}

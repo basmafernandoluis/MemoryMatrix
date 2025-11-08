@@ -28,6 +28,7 @@ import { firestoreService } from '../services/firestore';
 import { FriendChallenge, Friend, GameMode, UserProgress } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { BackButton } from '../components/BackButton';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface FriendChallengesScreenProps {
   userId: string;
@@ -41,7 +42,7 @@ interface FriendChallengesScreenProps {
 
 type TabType = 'pending' | 'active' | 'history';
 
-const GAME_MODES: { mode: GameMode; name: string; icon: string }[] = [
+const GAME_MODES_CONFIG: { mode: GameMode; name: string; icon: string }[] = [
   { mode: 'classic', name: 'Classique', icon: '🎯' },
   { mode: 'survival', name: 'Survie', icon: '💪' },
   { mode: 'timeAttack', name: 'Temps', icon: '⚡' },
@@ -58,6 +59,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   highlightChallengeId,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [pendingChallenges, setPendingChallenges] = useState<FriendChallenge[]>([]);
   const [activeChallenges, setActiveChallenges] = useState<FriendChallenge[]>([]);
@@ -139,7 +141,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
       setStats(challengeStats);
     } catch (error) {
       console.error('Error loading challenges:', error);
-      Alert.alert('Erreur', 'Impossible de charger les défis');
+      Alert.alert(t('common.error'), t('friendChallenges.errors.loadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -148,28 +150,28 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   const handleAcceptChallenge = async (challengeId: string) => {
     try {
       await friendChallengesService.acceptChallenge(userId, challengeId);
-      Alert.alert('Succès', 'Défi accepté ! Lancez une partie pour soumettre votre score.');
+      Alert.alert(t('common.success'), t('friendChallenges.alerts.challengeAccepted'));
       loadData();
     } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Impossible d\'accepter le défi');
+      Alert.alert(t('common.error'), error.message || t('friendChallenges.errors.acceptFailed'));
     }
   };
 
   const handleRejectChallenge = async (challengeId: string) => {
     Alert.alert(
-      'Refuser le défi',
-      'Voulez-vous vraiment refuser ce défi ?',
+      t('friendChallenges.alerts.rejectTitle'),
+      t('friendChallenges.alerts.rejectMessage'),
       [
-        { text: 'Annuler', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Refuser',
+          text: t('friendChallenges.alerts.rejectButton'),
           style: 'destructive',
           onPress: async () => {
             try {
               await friendChallengesService.rejectChallenge(userId, challengeId);
               loadData();
             } catch (error: any) {
-              Alert.alert('Erreur', error.message || 'Impossible de refuser le défi');
+              Alert.alert(t('common.error'), error.message || t('friendChallenges.errors.rejectFailed'));
             }
           },
         },
@@ -200,10 +202,10 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
       // Recharger les données pour afficher le badge "réclamé"
       await loadData();
       
-      Alert.alert('🎉 Récompense réclamée !', 'Vous avez reçu 50 XP et 25 coins !');
+      Alert.alert(t('friendChallenges.alerts.rewardClaimedTitle'), t('friendChallenges.alerts.rewardClaimedMessage'));
     } catch (error: any) {
       console.error('❌ Error claiming reward:', error);
-      Alert.alert('Erreur', error.message || 'Impossible de réclamer la récompense');
+      Alert.alert(t('common.error'), error.message || t('friendChallenges.errors.claimFailed'));
     }
   };
 
@@ -221,28 +223,28 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
         mode
       );
 
-      Alert.alert('Succès', `Défi envoyé à ${friend.displayName} !`);
+      Alert.alert(t('common.success'), t('friendChallenges.alerts.challengeSent', { name: friend.displayName }));
       setShowCreateModal(false);
       setSelectedFriend(null);
       loadData();
     } catch (error: any) {
-      const errorMessage = error.message || 'Impossible de créer le défi';
+      const errorMessage = error.message || t('friendChallenges.errors.createFailed');
       
       // Message plus clair pour le cas du défi déjà en cours
       if (errorMessage.includes('déjà en cours')) {
         Alert.alert(
-          'Défi en cours',
-          `Vous avez déjà un défi actif avec ${friend.displayName}. Terminez-le avant d\'en créer un nouveau.`,
+          t('friendChallenges.alerts.alreadyActiveTitle'),
+          t('friendChallenges.alerts.alreadyActiveMessage', { name: friend.displayName }),
           [{ text: 'OK', style: 'default' }]
         );
       } else {
-        Alert.alert('Erreur', errorMessage);
+        Alert.alert(t('common.error'), errorMessage);
       }
     }
   };
 
   const renderPendingChallenge = ({ item }: { item: FriendChallenge }) => {
-    const modeData = GAME_MODES.find(m => m.mode === item.mode);
+    const modeData = GAME_MODES_CONFIG.find(m => m.mode === item.mode);
     const timeLeft = Math.max(0, item.expiresAt.getTime() - Date.now());
     const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
     const isHighlighted = highlightChallengeId === item.id;
@@ -262,16 +264,20 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             <Text style={[styles.challengeMode, { color: colors.textSecondary }]}>
               {modeData?.icon} {modeData?.name}
             </Text>
-            <Text style={[styles.expiresText, { color: colors.warning }]}>Expire dans {hoursLeft}h</Text>
+            <Text style={[styles.expiresText, { color: colors.warning }]}>
+              {t('friendChallenges.expiresIn', { hours: hoursLeft })}
+            </Text>
           </View>
-          {isHighlighted && <Text style={[styles.newBadge, { backgroundColor: colors.accent }]}>🔔 Nouveau</Text>}
+          {isHighlighted && <Text style={[styles.newBadge, { backgroundColor: colors.accent }]}>
+            {t('friendChallenges.new')}
+          </Text>}
         </View>
         <View style={styles.challengeActions}>
           <TouchableOpacity
             style={[styles.acceptChallengeButton, { backgroundColor: colors.success }]}
             onPress={() => handleAcceptChallenge(item.id)}
           >
-            <Text style={styles.acceptChallengeText}>✓ Accepter</Text>
+            <Text style={styles.acceptChallengeText}>{t('friendChallenges.accept')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.rejectChallengeButton, { backgroundColor: colors.error }]}
@@ -285,7 +291,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   };
 
   const renderActiveChallenge = ({ item }: { item: FriendChallenge }) => {
-    const modeData = GAME_MODES.find(m => m.mode === item.mode);
+    const modeData = GAME_MODES_CONFIG.find(m => m.mode === item.mode);
     const isChallenger = item.challengerId === userId;
     const myScore = isChallenger ? item.challengerScore : item.opponentScore;
     const opponentScore = isChallenger ? item.opponentScore : item.challengerScore;
@@ -323,7 +329,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
         </View>
         <View style={[styles.scoresContainer, { backgroundColor: colors.surfaceLight }]}>
           <View style={styles.scoreBox}>
-            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>Toi</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>{t('friendChallenges.you')}</Text>
             <Text style={[styles.scoreValue, { color: colors.primary }]}>
               {myScore !== undefined && myScore !== null ? myScore : '---'}
             </Text>
@@ -346,13 +352,13 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             style={[styles.playButton, { backgroundColor: colors.primary }]}
             onPress={() => onStartChallenge(item)}
           >
-            <Text style={styles.playButtonText}>🎮 Jouer maintenant</Text>
+            <Text style={styles.playButtonText}>{t('friendChallenges.playNow')}</Text>
           </TouchableOpacity>
         )}
         {/* Si le défi n'est pas encore accepté */}
         {myScore === undefined && !item.acceptedAt && (
           <View style={[styles.waitingContainer, { backgroundColor: colors.warning + '20' }]}>
-            <Text style={[styles.waitingText, { color: colors.warning }]}>⏳ En attente d'acceptation</Text>
+            <Text style={[styles.waitingText, { color: colors.warning }]}>{t('friendChallenges.waitingAcceptance')}</Text>
           </View>
         )}
       </View>
@@ -360,7 +366,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
   };
 
   const renderCompletedChallenge = ({ item }: { item: FriendChallenge }) => {
-    const modeData = GAME_MODES.find(m => m.mode === item.mode);
+    const modeData = GAME_MODES_CONFIG.find(m => m.mode === item.mode);
     const isWinner = item.winnerId === userId;
     const isChallenger = item.challengerId === userId;
     const myScore = isChallenger ? item.challengerScore : item.opponentScore;
@@ -384,12 +390,16 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               {modeData?.icon} {modeData?.name}
             </Text>
           </View>
-          {isWinner && <Text style={[styles.winnerBadge, { backgroundColor: colors.success }]}>🏆 Victoire</Text>}
-          {!isWinner && <Text style={[styles.loserBadge, { backgroundColor: colors.error }]}>❌ Défaite</Text>}
+          {isWinner && <Text style={[styles.winnerBadge, { backgroundColor: colors.success }]}>
+            {t('friendChallenges.victory')}
+          </Text>}
+          {!isWinner && <Text style={[styles.loserBadge, { backgroundColor: colors.error }]}>
+            {t('friendChallenges.defeat')}
+          </Text>}
         </View>
         <View style={[styles.scoresContainer, { backgroundColor: colors.surfaceLight }]}>
           <View style={styles.scoreBox}>
-            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>Toi</Text>
+            <Text style={[styles.scoreLabel, { color: colors.textSecondary }]}>{t('friendChallenges.you')}</Text>
             <Text style={[styles.scoreValue, { color: isWinner ? colors.success : colors.error }]}>{myScore || 0}</Text>
           </View>
           <Text style={[styles.vsText, { color: colors.text }]}>VS</Text>
@@ -404,12 +414,12 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             style={[styles.claimRewardButton, { backgroundColor: colors.accent }]}
             onPress={() => handleClaimReward(item.id)}
           >
-            <Text style={styles.claimRewardText}>🎁 Réclamer 50 XP + 25 🪙</Text>
+            <Text style={styles.claimRewardText}>{t('friendChallenges.claimReward')}</Text>
           </TouchableOpacity>
         )}
         {isWinner && (isChallenger ? item.challengerRewardClaimed : item.opponentRewardClaimed) && (
           <View style={[styles.rewardClaimedBadge, { backgroundColor: colors.success + '30' }]}>
-            <Text style={[styles.rewardClaimedText, { color: colors.success }]}>✓ Récompense réclamée</Text>
+            <Text style={[styles.rewardClaimedText, { color: colors.success }]}>{t('friendChallenges.rewardClaimed')}</Text>
           </View>
         )}
       </View>
@@ -428,11 +438,11 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Créer un défi</Text>
+          <Text style={styles.modalTitle}>{t('friendChallenges.modal.title')}</Text>
 
           {!selectedFriend ? (
             <>
-              <Text style={styles.modalSubtitle}>Choisir un ami :</Text>
+              <Text style={styles.modalSubtitle}>{t('friendChallenges.modal.chooseFriend')}</Text>
               <FlatList
                 data={friends}
                 keyExtractor={item => item.userId}
@@ -447,7 +457,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
                 )}
                 ListEmptyComponent={
                   <Text style={styles.emptyText}>
-                    Aucun ami disponible. Ajoutez des amis d'abord !
+                    {t('friendChallenges.modal.noFriends')}
                   </Text>
                 }
               />
@@ -455,9 +465,9 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
           ) : (
             <>
               <Text style={styles.modalSubtitle}>
-                Défier {selectedFriend.displayName} en :
+                {t('friendChallenges.modal.challengeFriend', { name: selectedFriend.displayName })}
               </Text>
-              {GAME_MODES.map(mode => (
+              {GAME_MODES_CONFIG.map(mode => (
                 <TouchableOpacity
                   key={mode.mode}
                   style={styles.modeOption}
@@ -471,7 +481,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
                 style={styles.backModeButton}
                 onPress={() => setSelectedFriend(null)}
               >
-                <Text style={styles.backModeButtonText}>← Retour</Text>
+                <Text style={styles.backModeButtonText}>{t('friendChallenges.modal.back')}</Text>
               </TouchableOpacity>
             </>
           )}
@@ -483,7 +493,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               setSelectedFriend(null);
             }}
           >
-            <Text style={styles.closeModalButtonText}>Annuler</Text>
+            <Text style={styles.closeModalButtonText}>{t('common.cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -496,8 +506,8 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
       <View style={[styles.header, { backgroundColor: colors.surface }]}>
         <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surfaceLight} />
         <View style={styles.headerCenter}>
-          <Text style={[styles.title, { color: colors.text }]}>Défis entre amis</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Créez, acceptez et remportez des duels ⚔️</Text>
+          <Text style={[styles.title, { color: colors.text }]}>{t('friendChallenges.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t('friendChallenges.subtitle')}</Text>
         </View>
         <Animated.View style={[styles.createCtaWrapper, { transform: [{ scale: pulseAnim }] }]}>
           <TouchableOpacity
@@ -509,7 +519,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             activeOpacity={0.85}
           >
             <Text style={styles.createCtaIcon}>⚔️</Text>
-            <Text style={styles.createCtaText}>Nouveau défi</Text>
+            <Text style={styles.createCtaText}>{t('friendChallenges.newChallenge')}</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -519,22 +529,22 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
         <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={styles.statIcon}>📊</Text>
           <Text style={[styles.statValue, { color: colors.primary }]}>{stats.totalChallenges}</Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Défis</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('friendChallenges.stats.challenges')}</Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={styles.statIcon}>🏆</Text>
           <Text style={[styles.statValue, styles.winValue, { color: colors.success }]}>{stats.wins}</Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Victoires</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('friendChallenges.stats.wins')}</Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={styles.statIcon}>💥</Text>
           <Text style={[styles.statValue, styles.loseValue, { color: colors.error }]}>{stats.losses}</Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Défaites</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('friendChallenges.stats.losses')}</Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={styles.statIcon}>⚖️</Text>
           <Text style={[styles.statValue, { color: colors.primary }]}>{stats.winRate.toFixed(0)}%</Text>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Win Rate</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{t('friendChallenges.stats.winRate')}</Text>
         </View>
       </View>
 
@@ -552,7 +562,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'pending' ? '#FFFFFF' : colors.text }
           ]}>
-            Reçus ({pendingChallenges.length})
+            {t('friendChallenges.tabs.received', { count: pendingChallenges.length })}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -567,7 +577,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'active' ? '#FFFFFF' : colors.text }
           ]}>
-            Actifs ({activeChallenges.length})
+            {t('friendChallenges.tabs.active', { count: activeChallenges.length })}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -582,7 +592,7 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
             styles.tabText,
             { color: activeTab === 'history' ? '#FFFFFF' : colors.text }
           ]}>
-            Historique
+            {t('friendChallenges.tabs.history')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -601,7 +611,9 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>📭</Text>
-                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi en attente</Text>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>
+                    {t('friendChallenges.emptyPending')}
+                  </Text>
                 </View>
               }
             />
@@ -616,9 +628,11 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>🎮</Text>
-                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi actif</Text>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>
+                    {t('friendChallenges.emptyActive')}
+                  </Text>
                   <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                    Créez un défi ou acceptez-en un !
+                    {t('friendChallenges.emptyActiveDesc')}
                   </Text>
                 </View>
               }
@@ -634,7 +648,9 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
               ListEmptyComponent={
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyEmoji}>📊</Text>
-                  <Text style={[styles.emptyText, { color: colors.text }]}>Aucun défi terminé</Text>
+                  <Text style={[styles.emptyText, { color: colors.text }]}>
+                    {t('friendChallenges.emptyHistory')}
+                  </Text>
                 </View>
               }
             />
@@ -656,15 +672,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     backgroundColor: '#16213e',
+    minHeight: 70,
   },
   headerCenter: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
+    marginHorizontal: 8,
   },
   backButton: {
     padding: 8,
@@ -674,24 +692,27 @@ const styles = StyleSheet.create({
     color: '#E0E0E0',
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#E0E0E0',
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#A0A0A0',
+    textAlign: 'center',
   },
   // New CTA styles (pill with icon + label)
   createCtaWrapper: {
     borderRadius: 999,
     overflow: 'visible',
+    flexShrink: 0,
   },
   createCtaButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    height: 40,
+    paddingHorizontal: 12,
+    height: 38,
     borderRadius: 999,
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -700,12 +721,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   createCtaIcon: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFF',
-    marginRight: 8,
+    marginRight: 6,
   },
   createCtaText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: '#FFF',
   },

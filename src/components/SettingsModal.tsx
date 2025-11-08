@@ -19,13 +19,20 @@ import {
   setAudioEnabled, 
   setHapticsEnabled 
 } from '../utils/soundManager';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface SettingsModalProps {
   visible: boolean;
   onClose: () => void;
+  onOpenLanguageSelection?: () => void;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onClose }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ 
+  visible, 
+  onClose,
+  onOpenLanguageSelection 
+}) => {
+  const { t, currentLanguage } = useTranslation();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hapticsEnabled, setHapticsEnabledState] = useState(true);
 
@@ -56,14 +63,33 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onClose }
     >
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>Paramètres</Text>
+          <Text style={styles.title}>{t('settings.title')}</Text>
+
+          {/* Language Selection */}
+          {onOpenLanguageSelection && (
+            <TouchableOpacity 
+              style={styles.languageRow}
+              onPress={() => {
+                onClose();
+                onOpenLanguageSelection();
+              }}
+            >
+              <View style={styles.settingInfo}>
+                <Text style={styles.settingLabel}>{t('settings.language')}</Text>
+                <Text style={styles.settingDescription}>
+                  {currentLanguage?.nativeName || 'Français'}
+                </Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Sound Setting */}
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Sons</Text>
+              <Text style={styles.settingLabel}>{t('settings.sound')}</Text>
               <Text style={styles.settingDescription}>
-                Effets sonores du jeu
+                {t('settings.soundDescription')}
               </Text>
             </View>
             <Switch
@@ -81,9 +107,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onClose }
           {/* Haptics Setting */}
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Vibrations</Text>
+              <Text style={styles.settingLabel}>{t('settings.haptics')}</Text>
               <Text style={styles.settingDescription}>
-                Retour haptique
+                {t('settings.hapticsDescription')}
               </Text>
             </View>
             <Switch
@@ -100,7 +126,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ visible, onClose }
 
           {/* Close Button */}
           <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Fermer</Text>
+            <Text style={styles.closeButtonText}>{t('common.close')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -129,6 +155,23 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginBottom: SPACING.xxl,
     textAlign: 'center',
+  },
+  languageRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SPACING.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    paddingHorizontal: SPACING.md,
+    marginHorizontal: -SPACING.md,
+    marginBottom: SPACING.sm,
+  },
+  chevron: {
+    fontSize: 28,
+    color: '#4CAF50',
+    fontWeight: 'bold',
   },
   settingRow: {
     flexDirection: 'row',

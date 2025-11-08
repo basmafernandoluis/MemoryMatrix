@@ -10,6 +10,7 @@ import { BackButton } from '../components/BackButton';
 import { friendsService } from '../services/friendsService';
 import { firestoreService } from '../services/firestore';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface LeaderboardScreenProps {
   onBack: () => void;
@@ -76,6 +77,7 @@ const ModeTabButton: React.FC<ModeTabButtonProps> = ({ label, active, onPress, c
 
 export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, currentUserId }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [selectedPeriod, setSelectedPeriod] = useState<LeaderboardPeriod>('alltime');
   const [selectedMode, setSelectedMode] = useState<LeaderboardMode>('global');
   const [topScores, setTopScores] = useState<LeaderboardEntry[]>([]);
@@ -203,26 +205,26 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           label=""
           style={{ width:40, justifyContent:'center' }}
         />
-        <Text style={[styles.title, { color: colors.text }]}>Classement</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('leaderboard.title')}</Text>
         <View style={styles.placeholder} />
       </View>
 
       {/* Period Tabs */}
       <View style={styles.tabsContainer}>
         <TabButton
-          label="📅 Jour"
+          label={`📅 ${t('leaderboard.periods.daily')}`}
           active={selectedPeriod === 'daily'}
           onPress={() => handlePeriodChange('daily')}
           colors={colors}
         />
         <TabButton
-          label="📆 Semaine"
+          label={`📆 ${t('leaderboard.periods.weekly')}`}
           active={selectedPeriod === 'weekly'}
           onPress={() => handlePeriodChange('weekly')}
           colors={colors}
         />
         <TabButton
-          label="🏆 Total"
+          label={`🏆 ${t('leaderboard.periods.allTime')}`}
           active={selectedPeriod === 'alltime'}
           onPress={() => handlePeriodChange('alltime')}
           colors={colors}
@@ -238,31 +240,31 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           contentContainerStyle={styles.modeTabsContent}
         >
           <ModeTabButton
-            label="🌟 Global"
+            label={`🌟 ${t('leaderboard.modes.all')}`}
             active={selectedMode === 'global'}
             onPress={() => handleModeChange('global')}
             colors={colors}
           />
           <ModeTabButton
-            label="🎮 Classique"
+            label={`🎮 ${t('leaderboard.modes.classic')}`}
             active={selectedMode === 'classic'}
             onPress={() => handleModeChange('classic')}
             colors={colors}
           />
           <ModeTabButton
-            label="🔥 Survie"
+            label={`🔥 ${t('leaderboard.modes.survival')}`}
             active={selectedMode === 'survival'}
             onPress={() => handleModeChange('survival')}
             colors={colors}
           />
           <ModeTabButton
-            label="⏱️ Chrono"
+            label={`⏱️ ${t('leaderboard.modes.timeAttack')}`}
             active={selectedMode === 'timeAttack'}
             onPress={() => handleModeChange('timeAttack')}
             colors={colors}
           />
           <ModeTabButton
-            label="🧘 Zen"
+            label={`🧘 ${t('leaderboard.modes.zen')}`}
             active={selectedMode === 'zen'}
             onPress={() => handleModeChange('zen')}
             colors={colors}
@@ -273,12 +275,12 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
       {/* User Position Card */}
       {userScore && userRank && (
         <View style={[styles.userPositionCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
-          <Text style={[styles.userPositionTitle, { color: colors.text }]}>Votre Position</Text>
+          <Text style={[styles.userPositionTitle, { color: colors.text }]}>{t('leaderboard.yourPosition')}</Text>
           <View style={styles.userPositionContent}>
             <Text style={[styles.userRank, { color: colors.primary }]}>#{userRank}</Text>
             <View style={styles.userStats}>
               <Text style={[styles.userScore, { color: colors.text }]}>{getScoreForMode(userScore, selectedMode)} pts</Text>
-              <Text style={[styles.userLevel, { color: colors.textSecondary }]}>Niveau {userScore.level}</Text>
+              <Text style={[styles.userLevel, { color: colors.textSecondary }]}>{t('leaderboard.level', { level: userScore.level })}</Text>
             </View>
           </View>
         </View>
@@ -288,7 +290,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.loadingText, { color: colors.text }]}>Chargement...</Text>
+          <Text style={[styles.loadingText, { color: colors.text }]}>{t('leaderboard.loading')}</Text>
         </View>
       ) : (
         <ScrollView
@@ -308,10 +310,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           {topScores.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, { color: colors.text }]}>
-                Aucun score pour {getPeriodLabel(selectedPeriod).toLowerCase()}
+                {t('leaderboard.emptyForPeriod', { period: getPeriodLabel(selectedPeriod).toLowerCase() })}
               </Text>
               <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
-                Soyez le premier à jouer !
+                {t('leaderboard.beFirst')}
               </Text>
             </View>
           ) : (
@@ -331,9 +333,9 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
                   <View style={styles.playerInfo}>
                     <Text style={[styles.playerName, { color: colors.text }]} numberOfLines={1}>
                       {entry.displayName}
-                      {isSelf && ' (Vous)'}
+                      {isSelf && ` (${t('leaderboard.you')})`}
                     </Text>
-                    <Text style={[styles.playerLevel, { color: colors.textSecondary }]}>Niveau {entry.level}</Text>
+                    <Text style={[styles.playerLevel, { color: colors.textSecondary }]}>{t('leaderboard.level', { level: entry.level })}</Text>
                   </View>
                   <Text style={[styles.scoreText, { color: colors.primary }]}>{getScoreForMode(entry, selectedMode)}</Text>
                   {!isSelf && <FriendStatusBadge
@@ -393,6 +395,7 @@ interface FriendStatusBadgeProps {
 }
 
 const FriendStatusBadge: React.FC<FriendStatusBadgeProps> = ({ status, colors, onAdd, onAccept }) => {
+  const { t } = useTranslation();
   const scale = React.useRef(new Animated.Value(0.9)).current;
   const opacity = React.useRef(new Animated.Value(0)).current;
 
@@ -411,14 +414,14 @@ const FriendStatusBadge: React.FC<FriendStatusBadgeProps> = ({ status, colors, o
   if (status === 'friend') {
     return (
       <Animated.View style={[styles.friendBadge, { backgroundColor: colors.success + '20', borderColor: colors.success, transform: [{ scale }], opacity }]}> 
-        <Text style={[styles.friendBadgeText, { color: colors.success }]}>✓ Ami</Text>
+        <Text style={[styles.friendBadgeText, { color: colors.success }]}>{t('leaderboard.friendStatus.friend')}</Text>
       </Animated.View>
     );
   }
   if (status === 'pending-sent') {
     return (
       <Animated.View style={[styles.pendingBadge, { backgroundColor: colors.warning + '20', borderColor: colors.warning, transform: [{ scale }], opacity }]}> 
-        <Text style={[styles.pendingBadgeText, { color: colors.warning }]}>⏳ Envoyée</Text>
+        <Text style={[styles.pendingBadgeText, { color: colors.warning }]}>{t('leaderboard.friendStatus.pendingSent')}</Text>
       </Animated.View>
     );
   }
@@ -432,7 +435,7 @@ const FriendStatusBadge: React.FC<FriendStatusBadgeProps> = ({ status, colors, o
         ]}
         onPress={onAccept}
       >
-        <Text style={styles.acceptFriendText}>✓ Accepter</Text>
+        <Text style={styles.acceptFriendText}>{t('leaderboard.acceptRequest')}</Text>
       </Pressable>
     );
   }
@@ -446,7 +449,7 @@ const FriendStatusBadge: React.FC<FriendStatusBadgeProps> = ({ status, colors, o
       ]}
       onPress={onAdd}
     >
-      <Text style={[styles.addFriendText, { color: colors.primary }]}>+ Ami</Text>
+      <Text style={[styles.addFriendText, { color: colors.primary }]}>{t('leaderboard.friendStatus.addFriend')}</Text>
     </Pressable>
   );
 };

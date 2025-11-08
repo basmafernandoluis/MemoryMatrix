@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ViewStyle } from 'react-native';
 import { feedback } from '../utils/soundManager';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface BackButtonProps {
   onPress: () => void;
@@ -15,8 +16,11 @@ export const BackButton: React.FC<BackButtonProps> = ({
   color = '#4A90E2',
   backgroundColor = 'rgba(255,255,255,0.08)',
   style,
-  label = 'Retour',
+  label,
 }) => {
+  const { t } = useTranslation();
+  const displayLabel = label || t('common.back');
+  
   const handlePress = async () => {
     await feedback.buttonPress();
     onPress();
@@ -35,7 +39,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
       onPress={handlePress}
     >
       <Text style={[styles.icon, { color }]}>←</Text>
-      <Text style={[styles.label, { color }]}>{label}</Text>
+      <Text style={[styles.label, { color }]}>{displayLabel}</Text>
     </Pressable>
   );
 };

@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Challenge } from '../types';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS, FONT_SIZE } from '../constants/designTokens';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -20,6 +21,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
   rewardClaimed,
   onClaim,
 }) => {
+  const { t } = useTranslation();
   const progressPercent = Math.min((progress / challenge.target) * 100, 100);
 
   const getDifficultyColor = (): [string, string] => {
@@ -38,11 +40,11 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
   const getDifficultyLabel = () => {
     switch (challenge.difficulty) {
       case 'easy':
-        return 'Facile';
+        return t('common.easy');
       case 'medium':
-        return 'Moyen';
+        return t('common.medium');
       case 'hard':
-        return 'Difficile';
+        return t('common.hard');
       default:
         return '';
     }
@@ -127,14 +129,14 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                 colors={['#4ade80', '#22c55e']}
                 style={styles.claimGradient}
               >
-                <Text style={styles.claimText}>Réclamer 🎁</Text>
+                <Text style={styles.claimText}>{t('challenges.claimReward', { xp: challenge.reward.xp, coins: challenge.reward.coins })}</Text>
               </LinearGradient>
             </Pressable>
           )}
 
           {rewardClaimed && (
             <View style={styles.claimedBadge}>
-              <Text style={styles.claimedText}>✓ Réclamé</Text>
+              <Text style={styles.claimedText}>✓ {t('challenges.rewarded')}</Text>
             </View>
           )}
         </View>

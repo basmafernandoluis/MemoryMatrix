@@ -5,6 +5,7 @@ import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '../constants/des
 import { UserProgress, GameMode } from '../types';
 import { useWorldRecords } from '../hooks/useWorldRecords';
 import { formatRecord, getRecordLabel } from '../services/worldRecords';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface GameHeaderProps {
   level: number;
@@ -37,6 +38,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   currentModeValue = 0,
   userId,
 }) => {
+  const { t } = useTranslation();
   const levelScale = useRef(new Animated.Value(1)).current;
   const scoreScale = useRef(new Animated.Value(1)).current;
 
@@ -83,14 +85,14 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
     <View style={styles.container}>
       <View style={styles.leftSection}>
         <View style={styles.stat}>
-          <Text style={styles.label}>Niveau</Text>
+          <Text style={styles.label}>{t('game.levelLabel')}</Text>
           <Animated.Text style={[styles.value, { transform: [{ scale: levelScale }] }]}>
             {level}
           </Animated.Text>
         </View>
         
         <View style={styles.stat}>
-          <Text style={styles.label}>Score</Text>
+          <Text style={styles.label}>{t('game.score')}</Text>
           <Animated.Text style={[styles.value, { transform: [{ scale: scoreScale }] }]}>
             {score}
           </Animated.Text>
@@ -100,7 +102,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
             {/* Record Personnel */}
             {personalBest > 0 && (
               <Text style={styles.personalRecord}>
-                 🏅 Toi: {formatRecord(mode, personalBest)}
+                 🏅 {t('game.you')}: {formatRecord(mode, personalBest)}
               </Text>
             )}
             
@@ -112,13 +114,13 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
                   isWorldRecordHolder && styles.worldRecordHolder,
                   isNearWorldRecord && styles.nearWorldRecord,
                 ]}>
-                  {isWorldRecordHolder ? '👑' : '🌍'} Monde: {formatRecord(mode, worldRecord.value)}
+                  {isWorldRecordHolder ? '👑' : '🌍'} {t('game.world')}: {formatRecord(mode, worldRecord.value)}
                 </Text>
                 {isNearWorldRecord && !isWorldRecordHolder && (
-                  <Text style={styles.nearRecordBadge}>🔥 Proche!</Text>
+                  <Text style={styles.nearRecordBadge}>{t('game.nearRecord')}</Text>
                 )}
                 {isWorldRecordHolder && (
-                  <Text style={styles.recordHolderBadge}>👑 Champion!</Text>
+                  <Text style={styles.recordHolderBadge}>{t('game.champion')}</Text>
                 )}
               </View>
             )}
@@ -129,7 +131,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
       <View style={styles.centerSection}>
         {!hideHearts && (
           <View style={styles.stat}>
-            <Text style={styles.label}>Vies</Text>
+            <Text style={styles.label}>{t('game.lives')}</Text>
             <View style={styles.livesContainer}>
               {Array.from({ length: 5 }).map((_, index) => (
                 <View

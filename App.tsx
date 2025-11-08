@@ -22,8 +22,10 @@ import { leaderboardService } from './src/services/leaderboard';
 import { notificationService } from './src/services/notificationService';
 import { adManager } from './src/services/adManager';
 import { ThemeProvider } from './src/context/ThemeContext';
+import { i18nService } from './src/services/i18nService';
+import { LanguageSelectionScreen } from './src/screens/LanguageSelectionScreen';
 
-type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges';
+type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges' | 'language';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('onboarding');
@@ -41,9 +43,10 @@ export default function App() {
   const [notificationTab, setNotificationTab] = useState<'pending' | 'active' | 'history' | undefined>(undefined);
   const [notificationChallengeId, setNotificationChallengeId] = useState<string | undefined>(undefined);
 
-  // Initialize audio, AdMob and check onboarding status
+  // Initialize audio, AdMob, i18n and check onboarding status
   useEffect(() => {
     const initialize = async () => {
+      await i18nService.init(); // Initialiser i18n en premier
       await initializeAudio();
       await adManager.initialize(); // Initialiser AdMob
       const onboardingCompleted = await hasCompletedOnboarding();
@@ -283,6 +286,14 @@ export default function App() {
     transitionToScreen('home');
   };
 
+  const handleOpenLanguageSelection = () => {
+    transitionToScreen('language');
+  };
+
+  const handleCloseLanguageSelection = () => {
+    transitionToScreen('home');
+  };
+
   const handleChallengeFriend = (friendId: string) => {
     // Navigate to create challenge for this friend
     handleOpenFriendChallenges();
@@ -377,6 +388,7 @@ export default function App() {
             onOpenProfile={handleOpenProfile}
             onOpenChallenges={handleOpenChallenges}
             onOpenFriends={handleOpenFriends}
+            onOpenLanguageSelection={handleOpenLanguageSelection}
             userProgress={userProgress}
             currentUserId={currentUser?.uid}
           />
@@ -423,6 +435,11 @@ export default function App() {
             onProfileUpdated={handleProfileUpdated}
             initialTab={notificationTab}
             highlightChallengeId={notificationChallengeId}
+          />
+        )}
+        {currentScreen === 'language' && (
+          <LanguageSelectionScreen
+            onBack={handleCloseLanguageSelection}
           />
         )}
                 {currentScreen === 'game' && (

@@ -97,7 +97,7 @@ Memory Matrix est un jeu de mémorisation de grilles pensé pour progresser jour
 • Nouveaux **Défis entre amis** : Lancez des duels avec vos amis et comparez vos scores.
 
 👤 PROFIL & ONBOARDING
-• Onboarding enrichi (8 écrans) pour bien démarrer
+• Onboarding enrichi (9 écrans) pour bien démarrer
 • Après l'onboarding, créez votre pseudo et avatar (modale profil) pour sauvegarder vos stats
 
 ⚙️ RÉGLAGES & ACCESSIBILITÉ
