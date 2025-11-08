@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GameHeader } from '../components/GameHeader';
@@ -64,6 +64,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [previousLevel, setPreviousLevel] = useState(1);
   const [previousScore, setPreviousScore] = useState(0);
+  const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const sequenceRef = useRef<number[]>([]);
+  const currentIndexRef = useRef(0);
 
   // Start game on mount
   useEffect(() => {
@@ -170,45 +173,66 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
   // Show sequence animation
   useEffect(() => {
-    if (gameState.isShowingSequence && gameStatus === 'showing') {
-      let currentIndex = 0;
-      const sequence = gameState.currentSequence;
-      
-      // Slower timing for hint replays
-      const highlightDuration = gameState.isHintReplay 
-        ? GAME_CONFIG.CELL_HIGHLIGHT_DURATION * 1.5 
-        : GAME_CONFIG.CELL_HIGHLIGHT_DURATION;
-      const delayBetweenCells = gameState.isHintReplay 
-        ? GAME_CONFIG.DELAY_BETWEEN_CELLS * 1.5 
-        : GAME_CONFIG.DELAY_BETWEEN_CELLS;
-
-      const showNextCell = () => {
-        if (currentIndex >= sequence.length) {
-          setHighlightedCell(null);
-          finishShowingSequence();
-          
-          // En mode TimeAttack, si c'était un hint replay, on relance le timer
-          if (gameState.isHintReplay && mode === 'timeAttack') {
-            togglePause(); // Unpause pour relancer le timer
-          }
-          
-          return;
-        }
-
-        setHighlightedCell(sequence[currentIndex]);
-        
-        setTimeout(() => {
-          setHighlightedCell(null);
-          currentIndex++;
-          setTimeout(showNextCell, delayBetweenCells);
-        }, highlightDuration);
-      };
-
-      // Start showing sequence after a brief delay
-      const timer = setTimeout(showNextCell, 500);
-      return () => clearTimeout(timer);
+    if (!gameState.isShowingSequence || gameStatus !== 'showing') {
+      return;
     }
-  }, [gameState.isShowingSequence, gameState.currentSequence, gameStatus, finishShowingSequence]);
+
+    console.log('🎮 Starting sequence animation - Level:', gameState.level, 'Sequence length:', gameState.currentSequence.length);
+    
+    // Store sequence in ref to avoid closure issues
+    sequenceRef.current = [...gameState.currentSequence];
+    currentIndexRef.current = 0;
+    
+    // Slower timing for hint replays
+    const highlightDuration = gameState.isHintReplay 
+      ? GAME_CONFIG.CELL_HIGHLIGHT_DURATION * 1.5 
+      : GAME_CONFIG.CELL_HIGHLIGHT_DURATION;
+    const delayBetweenCells = gameState.isHintReplay 
+      ? GAME_CONFIG.DELAY_BETWEEN_CELLS * 1.5 
+      : GAME_CONFIG.DELAY_BETWEEN_CELLS;
+
+    console.log('⏱️ Timings - Highlight:', highlightDuration, 'Delay:', delayBetweenCells);
+
+    const showNextCell = () => {
+      const sequence = sequenceRef.current;
+      const currentIndex = currentIndexRef.current;
+
+      if (currentIndex >= sequence.length) {
+        console.log('✅ Sequence animation complete');
+        setHighlightedCell(null);
+        finishShowingSequence();
+        
+        // En mode TimeAttack, si c'était un hint replay, on relance le timer
+        if (gameState.isHintReplay && mode === 'timeAttack') {
+          togglePause(); // Unpause pour relancer le timer
+        }
+        
+        return;
+      }
+
+      console.log('💡 Highlighting cell:', sequence[currentIndex], 'Index:', currentIndex);
+      setHighlightedCell(sequence[currentIndex]);
+      
+      // Schedule un-highlighting and next cell
+      animationTimerRef.current = setTimeout(() => {
+        setHighlightedCell(null);
+        currentIndexRef.current++;
+        animationTimerRef.current = setTimeout(showNextCell, delayBetweenCells);
+      }, highlightDuration);
+    };
+
+    // Start showing sequence after a brief delay
+    animationTimerRef.current = setTimeout(showNextCell, 500);
+
+    // Cleanup function
+    return () => {
+      console.log('🧹 Cleaning up sequence animation');
+      if (animationTimerRef.current) {
+        clearTimeout(animationTimerRef.current);
+        animationTimerRef.current = null;
+      }
+    };
+  }, [gameState.isShowingSequence, gameStatus, gameState.level]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>

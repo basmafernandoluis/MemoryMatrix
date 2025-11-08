@@ -6,148 +6,149 @@ import { Challenge, ChallengeType, DailyChallengeExtended, ChallengeProgress } f
  */
 
 class ChallengeService {
-  private challengeTemplates: Omit<Challenge, 'id'>[] = [
+  // Templates with translation keys instead of hardcoded text
+  private challengeTemplateKeys = [
     // Speed Challenges
     {
-      type: 'speed',
-      title: 'Vitesse éclair',
-      description: 'Atteindre le niveau 5 en moins de 2 minutes',
+      type: 'speed' as ChallengeType,
+      titleKey: 'challenges.speed.lightningSpeed.title',
+      descriptionKey: 'challenges.speed.lightningSpeed.description',
       target: 5,
       reward: { xp: 100, coins: 50 },
       icon: '⚡',
-      difficulty: 'easy',
+      difficulty: 'easy' as const,
     },
     {
-      type: 'speed',
-      title: 'Sprinter mental',
-      description: 'Atteindre le niveau 8 en moins de 3 minutes',
+      type: 'speed' as ChallengeType,
+      titleKey: 'challenges.speed.mentalSprinter.title',
+      descriptionKey: 'challenges.speed.mentalSprinter.description',
       target: 8,
       reward: { xp: 200, coins: 100 },
       icon: '🏃',
-      difficulty: 'medium',
+      difficulty: 'medium' as const,
     },
     {
-      type: 'speed',
-      title: 'Flash de mémoire',
-      description: 'Atteindre le niveau 10 en moins de 4 minutes',
+      type: 'speed' as ChallengeType,
+      titleKey: 'challenges.speed.memoryFlash.title',
+      descriptionKey: 'challenges.speed.memoryFlash.description',
       target: 10,
       reward: { xp: 300, coins: 150 },
       icon: '💨',
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
     },
 
     // Accuracy Challenges
     {
-      type: 'accuracy',
-      title: 'Perfectionniste',
-      description: 'Compléter 5 séquences sans erreur',
+      type: 'accuracy' as ChallengeType,
+      titleKey: 'challenges.accuracy.perfectionist.title',
+      descriptionKey: 'challenges.accuracy.perfectionist.description',
       target: 5,
       reward: { xp: 150, coins: 75 },
       icon: '🎯',
-      difficulty: 'easy',
+      difficulty: 'easy' as const,
     },
     {
-      type: 'accuracy',
-      title: 'Précision absolue',
-      description: 'Compléter 10 séquences parfaites',
+      type: 'accuracy' as ChallengeType,
+      titleKey: 'challenges.accuracy.absolutePrecision.title',
+      descriptionKey: 'challenges.accuracy.absolutePrecision.description',
       target: 10,
       reward: { xp: 250, coins: 125 },
       icon: '✨',
-      difficulty: 'medium',
+      difficulty: 'medium' as const,
     },
     {
-      type: 'accuracy',
-      title: 'Maître de la précision',
-      description: 'Compléter 15 séquences sans aucune erreur',
+      type: 'accuracy' as ChallengeType,
+      titleKey: 'challenges.accuracy.precisionMaster.title',
+      descriptionKey: 'challenges.accuracy.precisionMaster.description',
       target: 15,
       reward: { xp: 400, coins: 200 },
       icon: '👑',
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
     },
 
     // Endurance Challenges
     {
-      type: 'endurance',
-      title: 'Marathon mental',
-      description: 'Jouer 5 parties complètes',
+      type: 'endurance' as ChallengeType,
+      titleKey: 'challenges.endurance.mentalMarathon.title',
+      descriptionKey: 'challenges.endurance.mentalMarathon.description',
       target: 5,
       reward: { xp: 120, coins: 60 },
       icon: '🏋️',
-      difficulty: 'easy',
+      difficulty: 'easy' as const,
     },
     {
-      type: 'endurance',
-      title: 'Endurant',
-      description: 'Jouer 10 parties sans abandonner',
+      type: 'endurance' as ChallengeType,
+      titleKey: 'challenges.endurance.enduring.title',
+      descriptionKey: 'challenges.endurance.enduring.description',
       target: 10,
       reward: { xp: 250, coins: 125 },
       icon: '💪',
-      difficulty: 'medium',
+      difficulty: 'medium' as const,
     },
     {
-      type: 'endurance',
-      title: 'Indestructible',
-      description: 'Compléter 15 parties aujourd\'hui',
+      type: 'endurance' as ChallengeType,
+      titleKey: 'challenges.endurance.indestructible.title',
+      descriptionKey: 'challenges.endurance.indestructible.description',
       target: 15,
       reward: { xp: 500, coins: 250 },
       icon: '🔥',
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
     },
 
     // Score Challenges
     {
-      type: 'score',
-      title: 'Chasseur de points',
-      description: 'Atteindre 3000 points en une partie',
+      type: 'score' as ChallengeType,
+      titleKey: 'challenges.score.pointHunter.title',
+      descriptionKey: 'challenges.score.pointHunter.description',
       target: 3000,
       reward: { xp: 150, coins: 75 },
       icon: '🌟',
-      difficulty: 'easy',
+      difficulty: 'easy' as const,
     },
     {
-      type: 'score',
-      title: 'Collectionneur',
-      description: 'Totaliser 5000 points en une partie',
+      type: 'score' as ChallengeType,
+      titleKey: 'challenges.score.collector.title',
+      descriptionKey: 'challenges.score.collector.description',
       target: 5000,
       reward: { xp: 300, coins: 150 },
       icon: '💎',
-      difficulty: 'medium',
+      difficulty: 'medium' as const,
     },
     {
-      type: 'score',
-      title: 'Légende du score',
-      description: 'Atteindre 10000 points en une seule partie',
+      type: 'score' as ChallengeType,
+      titleKey: 'challenges.score.scoreLegend.title',
+      descriptionKey: 'challenges.score.scoreLegend.description',
       target: 10000,
       reward: { xp: 500, coins: 250 },
       icon: '🏆',
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
     },
 
     // Perfect Challenges
     {
-      type: 'perfect',
-      title: 'Sans faute',
-      description: 'Terminer une partie sans perdre de vie',
+      type: 'perfect' as ChallengeType,
+      titleKey: 'challenges.perfect.flawless.title',
+      descriptionKey: 'challenges.perfect.flawless.description',
       target: 1,
       reward: { xp: 200, coins: 100, badge: 'perfect_game' },
       icon: '💯',
-      difficulty: 'medium',
+      difficulty: 'medium' as const,
     },
     {
-      type: 'perfect',
-      title: 'Perfection absolue',
-      description: 'Atteindre le niveau 8 sans perdre de vie',
+      type: 'perfect' as ChallengeType,
+      titleKey: 'challenges.perfect.absolutePerfection.title',
+      descriptionKey: 'challenges.perfect.absolutePerfection.description',
       target: 8,
       reward: { xp: 400, coins: 200, badge: 'flawless_master' },
       icon: '🌠',
-      difficulty: 'hard',
+      difficulty: 'hard' as const,
     },
   ];
 
   /**
    * Génère les défis quotidiens pour une date donnée
    */
-  generateDailyChallenges(date: string): DailyChallengeExtended {
+  generateDailyChallenges(date: string, t: (key: string, params?: any) => string): DailyChallengeExtended {
     // Utiliser la date comme seed pour générer toujours les mêmes défis pour un jour donné
     const seed = this.dateSeed(date);
     
@@ -155,16 +156,19 @@ class ChallengeService {
     const challenges: Challenge[] = [];
     
     // 1 défi facile
-    const easyTemplates = this.challengeTemplates.filter(c => c.difficulty === 'easy');
-    challenges.push(this.createChallenge(easyTemplates[seed % easyTemplates.length], `${date}-easy`));
+    const easyTemplates = this.challengeTemplateKeys.filter(c => c.difficulty === 'easy');
+    const easyTemplate = easyTemplates[seed % easyTemplates.length];
+    challenges.push(this.createChallenge(easyTemplate, `${date}-easy`, t));
     
     // 1 défi moyen
-    const mediumTemplates = this.challengeTemplates.filter(c => c.difficulty === 'medium');
-    challenges.push(this.createChallenge(mediumTemplates[(seed + 1) % mediumTemplates.length], `${date}-medium`));
+    const mediumTemplates = this.challengeTemplateKeys.filter(c => c.difficulty === 'medium');
+    const mediumTemplate = mediumTemplates[(seed + 1) % mediumTemplates.length];
+    challenges.push(this.createChallenge(mediumTemplate, `${date}-medium`, t));
     
     // 1 défi difficile
-    const hardTemplates = this.challengeTemplates.filter(c => c.difficulty === 'hard');
-    challenges.push(this.createChallenge(hardTemplates[(seed + 2) % hardTemplates.length], `${date}-hard`));
+    const hardTemplates = this.challengeTemplateKeys.filter(c => c.difficulty === 'hard');
+    const hardTemplate = hardTemplates[(seed + 2) % hardTemplates.length];
+    challenges.push(this.createChallenge(hardTemplate, `${date}-hard`, t));
 
     // Expiration : fin de la journée (23:59:59)
     const expiresAt = new Date(date + 'T23:59:59').getTime();
@@ -181,10 +185,17 @@ class ChallengeService {
   /**
    * Crée un défi avec un ID unique
    */
-  private createChallenge(template: Omit<Challenge, 'id'>, id: string): Challenge {
+  private createChallenge(
+    template: typeof this.challengeTemplateKeys[0], 
+    id: string, 
+    t: (key: string, params?: any) => string
+  ): Challenge {
+    const { titleKey, descriptionKey, ...rest } = template;
     return {
-      ...template,
+      ...rest,
       id,
+      title: t(titleKey),
+      description: t(descriptionKey),
     };
   }
 

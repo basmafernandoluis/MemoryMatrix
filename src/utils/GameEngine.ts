@@ -6,6 +6,7 @@ export class GameEngine {
   /**
    * Generate a random sequence based on current level
    * Uses the new getSequenceLength function for gentle progression
+   * Ensures no consecutive duplicates for better visual feedback
    */
   static generateSequence(level: number, gridSize: number = GAME_CONFIG.GRID_SIZE): number[] {
     const sequenceLength = getSequenceLength(level);
@@ -13,7 +14,14 @@ export class GameEngine {
     const sequence: number[] = [];
     
     for (let i = 0; i < sequenceLength; i++) {
-      sequence.push(Math.floor(Math.random() * maxCellIndex));
+      let newCell: number;
+      
+      // Prevent consecutive duplicates (same cell twice in a row)
+      do {
+        newCell = Math.floor(Math.random() * maxCellIndex);
+      } while (sequence.length > 0 && newCell === sequence[sequence.length - 1]);
+      
+      sequence.push(newCell);
     }
     
     return sequence;

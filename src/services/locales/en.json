@@ -69,6 +69,41 @@
     "instruction2": "Memorize the positions",
     "instruction3": "Reproduce the sequence",
     "instruction4": "Progress and improve your score!",
+    "instructionsModal": {
+      "gameModes": {
+        "title": "5 Game Modes",
+        "description": "Classic, Survival, Time Attack, Zen and Custom. Each mode is unique!"
+      },
+      "memorize": {
+        "title": "Memorize",
+        "description": "Watch the sequence of cells that light up"
+      },
+      "reproduce": {
+        "title": "Reproduce",
+        "description": "Click on the cells in the correct order"
+      },
+      "lives": {
+        "title": "Lives",
+        "description": "Classic/Timer: 3 lives • Survival/Zen: unlimited"
+      },
+      "timeAttack": {
+        "title": "Time Attack",
+        "description": "120 seconds to score maximum points!"
+      },
+      "dailyChallenges": {
+        "title": "Daily Challenges",
+        "description": "A new challenge every day with rewards"
+      },
+      "leaderboards": {
+        "title": "Leaderboards",
+        "description": "Daily, weekly and all-time by game mode"
+      },
+      "settings": {
+        "title": "Sounds & Settings",
+        "description": "Customize your experience in settings ⚙️"
+      },
+      "understood": "Got it!"
+    },
     "dailyChallengeTitle": "Daily Challenges",
     "dailyChallengeSubtitle": "New challenges every day"
   },
@@ -188,6 +223,72 @@
       "speedGoal": "Complete {{goal}} levels in under {{time}}s",
       "precisionGoal": "{{goal}} correct answers in a row",
       "enduranceGoal": "Survive {{goal}} levels without errors"
+    },
+    "speed": {
+      "lightningSpeed": {
+        "title": "Lightning Speed",
+        "description": "Reach level 5 in under 2 minutes"
+      },
+      "mentalSprinter": {
+        "title": "Mental Sprinter",
+        "description": "Reach level 8 in under 3 minutes"
+      },
+      "memoryFlash": {
+        "title": "Memory Flash",
+        "description": "Reach level 10 in under 4 minutes"
+      }
+    },
+    "accuracy": {
+      "perfectionist": {
+        "title": "Perfectionist",
+        "description": "Complete 5 sequences without errors"
+      },
+      "absolutePrecision": {
+        "title": "Absolute Precision",
+        "description": "Complete 10 perfect sequences in a row"
+      },
+      "precisionMaster": {
+        "title": "Precision Master",
+        "description": "Complete 15 sequences without any mistakes"
+      }
+    },
+    "endurance": {
+      "mentalMarathon": {
+        "title": "Mental Marathon",
+        "description": "Play 5 games in the same session"
+      },
+      "enduring": {
+        "title": "Enduring",
+        "description": "Play 10 games in the same day"
+      },
+      "indestructible": {
+        "title": "Indestructible",
+        "description": "Play 15 games without quitting"
+      }
+    },
+    "score": {
+      "pointHunter": {
+        "title": "Point Hunter",
+        "description": "Reach a score of 3000 points"
+      },
+      "collector": {
+        "title": "Collector",
+        "description": "Reach a score of 5000 points"
+      },
+      "scoreLegend": {
+        "title": "Score Legend",
+        "description": "Reach a score of 10000 points"
+      }
+    },
+    "perfect": {
+      "flawless": {
+        "title": "Flawless",
+        "description": "Complete a game with no errors until level 8"
+      },
+      "absolutePerfection": {
+        "title": "Absolute Perfection",
+        "description": "Finish a perfect game until level 8"
+      }
     }
   },
 
@@ -365,13 +466,21 @@
     "progress": "Progress: {{current}}/{{target}}",
     "earnCoinsInfo": "💡 Earn XP and Coins by completing daily challenges!",
     "editModal": {
-      "title": "Edit profile",
+      "title": "Edit my profile",
       "displayName": "Username",
       "avatar": "Avatar",
       "chooseAvatar": "Choose your avatar",
       "save": "Save",
+      "saving": "Saving...",
       "cancel": "Cancel",
-      "placeholder": "Enter your username"
+      "placeholder": "Enter your username",
+      "characterCount": "{{count}}/20 characters",
+      "errors": {
+        "emptyName": "Username cannot be empty",
+        "tooShort": "Username must be at least 3 characters",
+        "tooLong": "Username cannot exceed 20 characters",
+        "saveFailed": "Unable to save profile"
+      }
     }
   },
 

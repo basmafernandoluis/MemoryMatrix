@@ -295,14 +295,17 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     const newLevel = gameState.level + 1;
     const config = getModeConfig(gameModeState.mode);
     
-    // En mode survie, la taille de grille augmente plus vite
-    let gridSize = newLevel + 1;
+    // Déterminer la taille de grille selon le mode
+    let gridSize = GAME_CONFIG.GRID_SIZE; // Par défaut : grille fixe 4x4
+    
     if (gameModeState.mode === 'survival') {
+      // En mode survie, la taille de grille augmente
       gridSize = getSurvivalDifficultyIncrease(newLevel);
+    } else if (gameModeState.mode === 'focusChallenge') {
+      // En Focus Challenge, grille augmente avec le niveau (cap à 5x5)
+      gridSize = Math.min(newLevel + 1, 5);
     }
-    if (gameModeState.mode === 'focusChallenge') {
-      gridSize = Math.min(gridSize, 5); // Cap à 5x5
-    }
+    // Autres modes (classic, zen, timeAttack) : garder gridSize = 4
     
   // Générer la séquence avec le bon niveau ET la bonne taille de grille
   const sequence = GameEngine.generateSequence(newLevel, gridSize);
@@ -478,13 +481,15 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
           }));
           // Le game over sera déclenché si le joueur refuse la pub
         } else {
-          setGameState(prev => ({
-            ...prev,
-            lives: newLives,
-            userSequence: [],
-            isShowingSequence: true,
-          }));
-          setTimeout(() => setGameStatus('showing'), 1000);
+          setTimeout(() => {
+            setGameState(prev => ({
+              ...prev,
+              lives: newLives,
+              userSequence: [],
+              isShowingSequence: true,
+            }));
+            setGameStatus('showing');
+          }, 1000);
         }
       }
     }

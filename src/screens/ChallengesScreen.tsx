@@ -46,7 +46,7 @@ export const ChallengesScreen: React.FC<ChallengesScreenProps> = ({
       
       // Générer les défis du jour
       const todayDate = challengeService.getTodayDate();
-      const challenges = challengeService.generateDailyChallenges(todayDate);
+      const challenges = challengeService.generateDailyChallenges(todayDate, t);
       
       // Charger le progrès de l'utilisateur
       let progress = await firestoreService.getChallengeProgress(userId);

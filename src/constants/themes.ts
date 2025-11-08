@@ -43,7 +43,7 @@ const classicTheme: Theme = {
     textDisabled: '#606060',
     
     // Couleurs de jeu
-    cellActive: '#4A90E2',
+    cellActive: '#FFD700', // Or brillant - très visible
     cellInactive: '#2a2a3e',
     cellCorrect: '#50C878',
     cellIncorrect: '#FF6B6B',

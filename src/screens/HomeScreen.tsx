@@ -343,19 +343,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             style={styles.modalContent}
             onPress={(e) => e.stopPropagation()}
           >
-            <Text style={styles.modalTitle}>📚 {t('home.instructionsTitle')}</Text>
-            
-            <ScrollView 
-              style={styles.instructionsScrollView}
-              contentContainerStyle={styles.instructionsScrollContent}
-              showsVerticalScrollIndicator={true}
-            >
+            <View style={styles.modalInnerContainer}>
+              <Text style={styles.modalTitle}>📚 {t('home.instructionsTitle')}</Text>
+              
+              <ScrollView 
+                style={styles.instructionsScrollView}
+                contentContainerStyle={styles.instructionsScrollContent}
+                showsVerticalScrollIndicator={true}
+              >
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>🎮</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>5 Modes de Jeu</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.gameModes.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Classique, Survie, Contre-la-Montre, Zen et Personnalisé. Chaque mode est unique !
+                    {t('home.instructionsModal.gameModes.description')}
                   </Text>
                 </View>
               </View>
@@ -363,9 +364,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>1️⃣</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Mémorise</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.memorize.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Observe la séquence de cases qui s'illuminent
+                    {t('home.instructionsModal.memorize.description')}
                   </Text>
                 </View>
               </View>
@@ -373,9 +374,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>2️⃣</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Reproduis</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.reproduce.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Clique sur les cases dans le bon ordre
+                    {t('home.instructionsModal.reproduce.description')}
                   </Text>
                 </View>
               </View>
@@ -383,9 +384,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>❤️</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Vies</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.lives.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Classique/Chrono: 3 vies • Survie/Zen: illimité
+                    {t('home.instructionsModal.lives.description')}
                   </Text>
                 </View>
               </View>
@@ -393,9 +394,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>⏱️</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Contre-la-Montre</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.timeAttack.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    120 secondes pour marquer un maximum de points !
+                    {t('home.instructionsModal.timeAttack.description')}
                   </Text>
                 </View>
               </View>
@@ -403,9 +404,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>🎯</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Défis Quotidiens</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.dailyChallenges.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Un nouveau défi chaque jour avec des récompenses
+                    {t('home.instructionsModal.dailyChallenges.description')}
                   </Text>
                 </View>
               </View>
@@ -413,9 +414,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>🏆</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Classements</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.leaderboards.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Quotidien, hebdomadaire et all-time par mode de jeu
+                    {t('home.instructionsModal.leaderboards.description')}
                   </Text>
                 </View>
               </View>
@@ -423,9 +424,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.instructionItem}>
                 <Text style={styles.instructionNumber}>🔊</Text>
                 <View style={styles.instructionTextContainer}>
-                  <Text style={styles.instructionTitle}>Sons & Paramètres</Text>
+                  <Text style={styles.instructionTitle}>{t('home.instructionsModal.settings.title')}</Text>
                   <Text style={styles.instructionItemText}>
-                    Personnalise ton expérience dans les paramètres ⚙️
+                    {t('home.instructionsModal.settings.description')}
                   </Text>
                 </View>
               </View>
@@ -438,8 +439,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 setShowInstructions(false);
               }}
             >
-              <Text style={styles.closeButtonText}>C'est compris !</Text>
+              <Text style={styles.closeButtonText}>{t('home.instructionsModal.understood')}</Text>
             </Pressable>
+            </View>
           </Pressable>
         </Pressable>
       </Modal>
@@ -751,8 +753,12 @@ const styles = StyleSheet.create({
     padding: SPACING.xxl,
     width: '100%',
     maxWidth: 400,
-    height: SCREEN_HEIGHT * 0.75,
+    height: SCREEN_HEIGHT * 0.8,
+    maxHeight: SCREEN_HEIGHT * 0.85,
     ...SHADOW.large,
+  },
+  modalInnerContainer: {
+    flex: 1,
   },
   modalTitle: {
     fontSize: FONT_SIZE.xxxl,

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from './useTranslation';
 import { challengeService } from '../services/challengeService';
 import { firestoreService } from '../services/firestore';
 import { ChallengeProgress, DailyChallengeExtended, Challenge } from '../types';
@@ -18,6 +19,7 @@ interface GameStats {
 }
 
 export const useChallengeTracking = (userId: string | null) => {
+  const { t } = useTranslation();
   const gameStatsRef = useRef<GameStats>({
     level: 1,
     score: 0,
@@ -37,7 +39,7 @@ export const useChallengeTracking = (userId: string | null) => {
     const loadChallenges = async () => {
       try {
         const todayDate = challengeService.getTodayDate();
-        const challenges = challengeService.generateDailyChallenges(todayDate);
+        const challenges = challengeService.generateDailyChallenges(todayDate, t);
         challengesRef.current = challenges;
 
         let progress = await firestoreService.getChallengeProgress(userId);
@@ -52,7 +54,7 @@ export const useChallengeTracking = (userId: string | null) => {
     };
 
     loadChallenges();
-  }, [userId]);
+  }, [userId, t]);
 
   // Réinitialiser les stats de jeu
   const resetGameStats = () => {

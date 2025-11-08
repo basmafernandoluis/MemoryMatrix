@@ -56,7 +56,16 @@ const GridCell: React.FC<GridCellProps> = ({
 
   const getCellStyle = () => {
     if (isHighlighted) {
-      return { backgroundColor: colors.cellActive };
+      return { 
+        backgroundColor: colors.cellActive,
+        shadowColor: colors.cellActive,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 20,
+        elevation: 10,
+        borderWidth: 3,
+        borderColor: '#ffffff',
+      };
     }
     if (gameStatus === 'correct' && isInUserSequence) {
       return { backgroundColor: colors.cellCorrect };

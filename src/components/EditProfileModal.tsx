@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface EditProfileModalProps {
   visible: boolean;
@@ -33,6 +34,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   onSave,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const [displayName, setDisplayName] = useState(currentDisplayName);
   const [selectedEmoji, setSelectedEmoji] = useState(currentAvatarEmoji);
   const [isSaving, setIsSaving] = useState(false);
@@ -40,17 +42,17 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const handleSave = async () => {
     // Validation
     if (!displayName.trim()) {
-      Alert.alert('Erreur', 'Le pseudo ne peut pas être vide');
+      Alert.alert(t('common.error'), t('profile.editModal.errors.emptyName'));
       return;
     }
 
     if (displayName.trim().length < 3) {
-      Alert.alert('Erreur', 'Le pseudo doit contenir au moins 3 caractères');
+      Alert.alert(t('common.error'), t('profile.editModal.errors.tooShort'));
       return;
     }
 
     if (displayName.trim().length > 20) {
-      Alert.alert('Erreur', 'Le pseudo ne peut pas dépasser 20 caractères');
+      Alert.alert(t('common.error'), t('profile.editModal.errors.tooLong'));
       return;
     }
 
@@ -58,8 +60,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     try {
       await onSave(displayName.trim(), selectedEmoji);
     } catch (error: any) {
-      const errorMessage = error?.message || 'Impossible de sauvegarder le profil';
-      Alert.alert('Erreur', errorMessage);
+      const errorMessage = error?.message || t('profile.editModal.errors.saveFailed');
+      Alert.alert(t('common.error'), errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -74,29 +76,29 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Modifier mon profil</Text>
+          <Text style={styles.title}>{t('profile.editModal.title')}</Text>
 
           {/* Display Name Input */}
           <View style={styles.section}>
-            <Text style={styles.label}>Pseudo</Text>
+            <Text style={styles.label}>{t('profile.editModal.displayName')}</Text>
             <TextInput
               style={styles.input}
               value={displayName}
               onChangeText={setDisplayName}
-              placeholder="Entrez votre pseudo"
+              placeholder={t('profile.editModal.placeholder')}
               placeholderTextColor="rgba(255, 255, 255, 0.4)"
               maxLength={20}
               autoCapitalize="none"
               autoCorrect={false}
             />
             <Text style={styles.hint}>
-              {displayName.trim().length}/20 caractères
+              {t('profile.editModal.characterCount', { count: displayName.trim().length })}
             </Text>
           </View>
 
           {/* Avatar Emoji Picker */}
           <View style={styles.section}>
-            <Text style={styles.label}>Avatar</Text>
+            <Text style={styles.label}>{t('profile.editModal.avatar')}</Text>
             <ScrollView
               style={styles.emojiScrollView}
               contentContainerStyle={styles.emojiGrid}
@@ -124,7 +126,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               onPress={onCancel}
               disabled={isSaving}
             >
-              <Text style={styles.cancelButtonText}>Annuler</Text>
+              <Text style={styles.cancelButtonText}>{t('profile.editModal.cancel')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -137,7 +139,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               disabled={isSaving}
             >
               <Text style={styles.saveButtonText}>
-                {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                {isSaving ? t('profile.editModal.saving') : t('profile.editModal.save')}
               </Text>
             </TouchableOpacity>
           </View>

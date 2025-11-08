@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, ActivityIndicator } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Animated, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/gameConfig';
 import { feedback } from '../utils/soundManager';
 import { useTranslation } from '../hooks/useTranslation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LoginScreenProps {
   onGuestLogin: () => void;
@@ -15,6 +16,31 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoadin
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [debugPressCount, setDebugPressCount] = useState(0);
+
+  const handleDebugPress = () => {
+    const newCount = debugPressCount + 1;
+    setDebugPressCount(newCount);
+    
+    if (newCount >= 5) {
+      Alert.alert(
+        '🔧 Debug Mode',
+        'Clear onboarding flag and restart?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Clear',
+            style: 'destructive',
+            onPress: async () => {
+              await AsyncStorage.removeItem('@MemoryMatrix:onboardingCompleted');
+              Alert.alert('✅ Done', 'Please restart the app');
+            },
+          },
+        ]
+      );
+      setDebugPressCount(0);
+    }
+  };
 
   useEffect(() => {
     // Entrance animation
@@ -80,7 +106,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onGuestLogin, isLoadin
         ]}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>{t('login.title')}</Text>
+          <Pressable onPress={handleDebugPress}>
+            <Text style={styles.title}>{t('login.title')}</Text>
+          </Pressable>
           <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
           <Text style={styles.tagline}>
             {t('login.tagline')}

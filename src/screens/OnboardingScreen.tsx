@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GAME_CONFIG } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
+import { useTranslation } from '../hooks/useTranslation';
 
 const { width } = Dimensions.get('window');
 
@@ -19,87 +20,93 @@ interface OnboardingSlide {
   tip?: string;
 }
 
-const slides: OnboardingSlide[] = [
-  {
-    id: 1,
-    emoji: '🧠',
-    title: 'Bienvenue dans Memory Matrix !',
-    description: 'Entraînez votre mémoire avec un jeu addictif et progressif. 5 modes de jeu différents vous attendent !',
-    tip: 'Parfait pour tous les âges : de 6 à 100 ans !',
-  },
-  {
-    id: 2,
-    emoji: '🎮',
-    title: '5 Modes de Jeu Uniques',
-    description: 'Classique, Survie, Contre-la-Montre, Zen et Focus Challenge. Chaque mode offre une expérience différente !',
-    tip: 'Débloquez le mode Focus après 2 victoires entre amis',
-  },
-  {
-    id: 3,
-    emoji: '�',
-    title: 'Comment jouer ?',
-    description: 'Mémorisez la séquence de cases qui s\'illuminent, puis reproduisez-la exactement dans le bon ordre.',
-    tip: 'La séquence s\'allonge à chaque niveau réussi',
-  },
-  {
-    id: 4,
-    emoji: '❤️',
-    title: 'Vies et Difficulté',
-    description: 'Mode Classique et Contre-la-Montre : 5 vies. Modes Survie et Zen : vie infinie pour une expérience relaxante.',
-    tip: 'Choisissez le mode adapté à votre style de jeu',
-  },
-  {
-    id: 5,
-    emoji: '⏱️',
-    title: 'Mode Contre-la-Montre',
-    description: 'Battez le chrono ! 120 secondes pour marquer un maximum de points. Le temps ne s\'arrête pas !',
-    tip: 'Le son du chrono vous accompagne pendant la partie',
-  },
-  {
-    id: 6,
-    emoji: '🏅',
-    title: 'Défis Quotidiens',
-    description: 'Relevez un nouveau défi chaque jour et gagnez des récompenses. Maintenez votre streak pour plus de points !',
-    tip: 'Revenez chaque jour pour de nouveaux défis',
-  },
-  {
-    id: 7,
-    emoji: '⚔️',
-    title: 'Défis Entre Amis',
-    description: 'Ajoutez des amis et lancez des duels ! Comparez vos scores en mode Classique, Survie, Temps ou Zen.',
-    tip: 'Gagnez 2 défis pour débloquer le mode Focus Challenge',
-  },
-  {
-    id: 8,
-    emoji: '🏆',
-    title: 'Succès et Classements',
-    description: 'Débloquez 16 succès, comparez vos scores dans les classements quotidiens, hebdomadaires et all-time !',
-    tip: 'Classements par mode de jeu pour plus de compétition',
-  },
-  {
-    id: 9,
-    emoji: '🔊',
-    title: 'Sons et Personnalisation',
-    description: 'Effets sonores immersifs et retour haptique. Personnalisez votre expérience dans les paramètres !',
-    tip: 'Activez/désactivez les sons et vibrations à tout moment',
-  },
-];
-
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
+  const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  console.log('OnboardingScreen - Rendering with currentSlide:', currentSlide);
+
+  const slides: OnboardingSlide[] = [
+    {
+      id: 1,
+      emoji: '🧠',
+      title: t('onboarding.slides.welcome.title'),
+      description: t('onboarding.slides.welcome.description'),
+      tip: t('onboarding.slides.welcome.tip'),
+    },
+    {
+      id: 2,
+      emoji: '🎮',
+      title: t('onboarding.slides.modes.title'),
+      description: t('onboarding.slides.modes.description'),
+      tip: t('onboarding.slides.modes.tip'),
+    },
+    {
+      id: 3,
+      emoji: '🎯',
+      title: t('onboarding.slides.howToPlay.title'),
+      description: t('onboarding.slides.howToPlay.description'),
+      tip: t('onboarding.slides.howToPlay.tip'),
+    },
+    {
+      id: 4,
+      emoji: '❤️',
+      title: t('onboarding.slides.lives.title'),
+      description: t('onboarding.slides.lives.description'),
+      tip: t('onboarding.slides.lives.tip'),
+    },
+    {
+      id: 5,
+      emoji: '⏱️',
+      title: t('onboarding.slides.timeAttack.title'),
+      description: t('onboarding.slides.timeAttack.description'),
+      tip: t('onboarding.slides.timeAttack.tip'),
+    },
+    {
+      id: 6,
+      emoji: '🏅',
+      title: t('onboarding.slides.challenges.title'),
+      description: t('onboarding.slides.challenges.description'),
+      tip: t('onboarding.slides.challenges.tip'),
+    },
+    {
+      id: 7,
+      emoji: '⚔️',
+      title: t('onboarding.slides.friendChallenges.title'),
+      description: t('onboarding.slides.friendChallenges.description'),
+      tip: t('onboarding.slides.friendChallenges.tip'),
+    },
+    {
+      id: 8,
+      emoji: '🏆',
+      title: t('onboarding.slides.achievements.title'),
+      description: t('onboarding.slides.achievements.description'),
+      tip: t('onboarding.slides.achievements.tip'),
+    },
+    {
+      id: 9,
+      emoji: '🔊',
+      title: t('onboarding.slides.customization.title'),
+      description: t('onboarding.slides.customization.description'),
+      tip: t('onboarding.slides.customization.tip'),
+    },
+  ];
+
   const handleNext = () => {
+    console.log('OnboardingScreen - handleNext called, currentSlide:', currentSlide, 'total:', slides.length);
     if (currentSlide < slides.length - 1) {
       const nextSlide = currentSlide + 1;
       setCurrentSlide(nextSlide);
       scrollViewRef.current?.scrollTo({ x: nextSlide * width, animated: true });
     } else {
+      console.log('OnboardingScreen - Last slide reached, calling onComplete');
       onComplete();
     }
   };
 
   const handleSkip = () => {
+    console.log('OnboardingScreen - handleSkip called');
     onComplete();
   };
 
@@ -111,7 +118,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const isLastSlide = currentSlide === slides.length - 1;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <LinearGradient
         colors={[COLORS.background, COLORS.surface]}
         style={styles.gradient}
@@ -124,8 +131,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               pressed && styles.skipButtonPressed,
             ]}
             onPress={handleSkip}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={styles.skipButtonText}>Passer →</Text>
+            <Text style={styles.skipButtonText}>{t('onboarding.skip')}</Text>
           </Pressable>
         )}
 
@@ -136,21 +144,33 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           scrollEnabled={false}
+          scrollEventThrottle={16}
+          onMomentumScrollEnd={(event) => {
+            const slideIndex = Math.round(event.nativeEvent.contentOffset.x / width);
+            setCurrentSlide(slideIndex);
+          }}
           style={styles.scrollView}
         >
           {slides.map((slide) => (
             <View key={slide.id} style={styles.slide}>
-              <View style={styles.content}>
-                <Text style={styles.emoji}>{slide.emoji}</Text>
-                <Text style={styles.title}>{slide.title}</Text>
-                <Text style={styles.description}>{slide.description}</Text>
-                {slide.tip && (
-                  <View style={styles.tipContainer}>
-                    <Text style={styles.tipIcon}>💡</Text>
-                    <Text style={styles.tip}>{slide.tip}</Text>
-                  </View>
-                )}
-              </View>
+              <ScrollView
+                style={styles.contentScrollView}
+                contentContainerStyle={styles.contentScrollContainer}
+                showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true}
+              >
+                <View style={styles.content}>
+                  <Text style={styles.emoji}>{slide.emoji}</Text>
+                  <Text style={styles.title}>{slide.title}</Text>
+                  <Text style={styles.description}>{slide.description}</Text>
+                  {slide.tip && (
+                    <View style={styles.tipContainer}>
+                      <Text style={styles.tipIcon}>💡</Text>
+                      <Text style={styles.tip}>{slide.tip}</Text>
+                    </View>
+                  )}
+                </View>
+              </ScrollView>
             </View>
           ))}
         </ScrollView>
@@ -176,6 +196,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             pressed && styles.nextButtonPressed,
           ]}
           onPress={handleNext}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <LinearGradient
             colors={[COLORS.primary, COLORS.secondary]}
@@ -184,7 +205,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             style={styles.nextButtonGradient}
           >
             <Text style={styles.nextButtonText}>
-              {isLastSlide ? 'Commencer ! 🚀' : 'Suivant'}
+              {isLastSlide ? t('onboarding.start') : t('onboarding.next')}
             </Text>
           </LinearGradient>
         </Pressable>
@@ -228,6 +249,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: SPACING.xxl,
+  },
+  contentScrollView: {
+    flex: 1,
+    width: '100%',
+  },
+  contentScrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.xl,
   },
   content: {
     alignItems: 'center',

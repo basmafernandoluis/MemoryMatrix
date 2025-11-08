@@ -69,6 +69,41 @@
     "instruction2": "Mémorisez les positions",
     "instruction3": "Reproduisez la séquence",
     "instruction4": "Progressez et améliorez votre score !",
+    "instructionsModal": {
+      "gameModes": {
+        "title": "5 Modes de Jeu",
+        "description": "Classique, Survie, Contre-la-Montre, Zen et Personnalisé. Chaque mode est unique !"
+      },
+      "memorize": {
+        "title": "Mémorise",
+        "description": "Observe la séquence de cases qui s'illuminent"
+      },
+      "reproduce": {
+        "title": "Reproduis",
+        "description": "Clique sur les cases dans le bon ordre"
+      },
+      "lives": {
+        "title": "Vies",
+        "description": "Classique/Chrono: 3 vies • Survie/Zen: illimité"
+      },
+      "timeAttack": {
+        "title": "Contre-la-Montre",
+        "description": "120 secondes pour marquer un maximum de points !"
+      },
+      "dailyChallenges": {
+        "title": "Défis Quotidiens",
+        "description": "Un nouveau défi chaque jour avec des récompenses"
+      },
+      "leaderboards": {
+        "title": "Classements",
+        "description": "Quotidien, hebdomadaire et all-time par mode de jeu"
+      },
+      "settings": {
+        "title": "Sons & Paramètres",
+        "description": "Personnalise ton expérience dans les paramètres ⚙️"
+      },
+      "understood": "C'est compris !"
+    },
     "dailyChallengeTitle": "Défis Quotidiens",
     "dailyChallengeSubtitle": "Nouveaux défis chaque jour"
   },
@@ -188,6 +223,72 @@
       "speedGoal": "Complétez {{goal}} niveaux en moins de {{time}}s",
       "precisionGoal": "{{goal}} réponses correctes d'affilée",
       "enduranceGoal": "Survivez {{goal}} niveaux sans erreur"
+    },
+    "speed": {
+      "lightningSpeed": {
+        "title": "Vitesse éclair",
+        "description": "Atteindre le niveau 5 en moins de 2 minutes"
+      },
+      "mentalSprinter": {
+        "title": "Sprinteur mental",
+        "description": "Atteindre le niveau 8 en moins de 3 minutes"
+      },
+      "memoryFlash": {
+        "title": "Éclair de mémoire",
+        "description": "Atteindre le niveau 10 en moins de 4 minutes"
+      }
+    },
+    "accuracy": {
+      "perfectionist": {
+        "title": "Perfectionniste",
+        "description": "Compléter 5 séquences sans erreur"
+      },
+      "absolutePrecision": {
+        "title": "Précision absolue",
+        "description": "Compléter 10 séquences parfaites d'affilée"
+      },
+      "precisionMaster": {
+        "title": "Maître de la précision",
+        "description": "Compléter 15 séquences sans aucune erreur"
+      }
+    },
+    "endurance": {
+      "mentalMarathon": {
+        "title": "Marathon mental",
+        "description": "Jouer 5 parties dans la même session"
+      },
+      "enduring": {
+        "title": "Endurant",
+        "description": "Jouer 10 parties dans la même journée"
+      },
+      "indestructible": {
+        "title": "Indestructible",
+        "description": "Jouer 15 parties sans abandonner"
+      }
+    },
+    "score": {
+      "pointHunter": {
+        "title": "Chasseur de points",
+        "description": "Atteindre un score de 3000 points"
+      },
+      "collector": {
+        "title": "Collectionneur",
+        "description": "Atteindre un score de 5000 points"
+      },
+      "scoreLegend": {
+        "title": "Légende du score",
+        "description": "Atteindre un score de 10000 points"
+      }
+    },
+    "perfect": {
+      "flawless": {
+        "title": "Sans faute",
+        "description": "Compléter une partie sans aucune erreur jusqu'au niveau 8"
+      },
+      "absolutePerfection": {
+        "title": "Perfection absolue",
+        "description": "Terminer une partie parfaite jusqu'au niveau 8"
+      }
     }
   },
 
@@ -367,13 +468,21 @@
     "progress": "Progression : {{current}}/{{target}}",
     "earnCoinsInfo": "💡 Gagnez XP et Coins en complétant les défis quotidiens !",
     "editModal": {
-      "title": "Modifier le profil",
+      "title": "Modifier mon profil",
       "displayName": "Pseudo",
       "avatar": "Avatar",
       "chooseAvatar": "Choisissez votre avatar",
       "save": "Sauvegarder",
+      "saving": "Sauvegarde...",
       "cancel": "Annuler",
-      "placeholder": "Entrez votre pseudo"
+      "placeholder": "Entrez votre pseudo",
+      "characterCount": "{{count}}/20 caractères",
+      "errors": {
+        "emptyName": "Le pseudo ne peut pas être vide",
+        "tooShort": "Le pseudo doit contenir au moins 3 caractères",
+        "tooLong": "Le pseudo ne peut pas dépasser 20 caractères",
+        "saveFailed": "Impossible de sauvegarder le profil"
+      }
     }
   },
 
