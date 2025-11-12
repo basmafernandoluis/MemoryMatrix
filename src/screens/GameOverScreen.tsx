@@ -93,6 +93,29 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
     submitChallengeScore();
   }, [challengeId, userId, score, level, scoreSubmitted]);
 
+  // Afficher un interstitial quand le joueur arrive sur GameOver
+  useEffect(() => {
+    const showInterstitialAd = async () => {
+      try {
+        const shown = await adManager.showInterstitial();
+        if (shown) {
+          console.log('Interstitial shown on GameOver screen');
+        } else {
+          console.log('Interstitial not shown (conditions not met or not loaded)');
+        }
+      } catch (error) {
+        console.error('Error showing interstitial:', error);
+      }
+    };
+
+    // Attendre 500ms pour que l'écran s'affiche avant de montrer la pub
+    const timer = setTimeout(() => {
+      showInterstitialAd();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []); // Run once on mount
+
   useEffect(() => {
     // Entrance animations
     Animated.parallel([

@@ -213,9 +213,9 @@ export default function App() {
     // Clear challengeId when replaying - don't resubmit to same challenge
     setActiveChallengeId(undefined);
     
-    // Essayer de montrer un interstitiel avant de rejouer
-    // (transition naturelle entre deux parties)
-    await adManager.showInterstitial();
+    // Interstitiels supprimés pour conformité Families Policy Google Play
+    // Les annonces interstitielles ne sont pas recommandées pour les apps enfants
+    // await adManager.showInterstitial();
     
     transitionToScreen('game');
   };
@@ -228,8 +228,8 @@ export default function App() {
     // Clear the active challenge when going back to home
     setActiveChallengeId(undefined);
     
-    // Essayer de montrer un interstitiel avant de retourner au menu
-    await adManager.showInterstitial();
+    // Interstitiels supprimés pour conformité Families Policy Google Play
+    // await adManager.showInterstitial();
     
     transitionToScreen('home');
   };

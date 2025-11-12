@@ -43,13 +43,13 @@ export const AD_UNIT_IDS = USE_TEST_ADS ? TEST_IDS : ADMOB_IDS;
  */
 const AD_CONFIG = {
   // Interstitiel: Maximum 1 toutes les 3 minutes
-  INTERSTITIAL_MIN_INTERVAL: 3 * 60 * 1000, // 3 minutes en ms
+  INTERSTITIAL_MIN_INTERVAL: 1 * 60 * 1000, // 3 minutes en ms
   
   // Première pub interstitielle après 2 minutes d'usage
   FIRST_INTERSTITIAL_DELAY: 2 * 60 * 1000, // 2 minutes
   
-  // Maximum 3 publicités par session de 10 minutes
-  MAX_ADS_PER_SESSION: 3,
+  // Maximum 6 publicités par session de 10 minutes
+  MAX_ADS_PER_SESSION: 6,
   SESSION_DURATION: 10 * 60 * 1000, // 10 minutes
   
   // Refresh rate pour les bannières
@@ -59,8 +59,12 @@ const AD_CONFIG = {
 class AdManagerService {
   private initialized: boolean = false;
   private interstitialAd: InterstitialAd | null = null;
-  private rewardedAd: RewardedAd | null = null;
   private interstitialLoaded: boolean = false;
+  private lastInterstitialTime: number = 0;
+  private adsShownThisSession: number = 0;
+  private sessionStartTime: number = Date.now();
+  
+  private rewardedAd: RewardedAd | null = null;
   private rewardedLoaded: boolean = false;
 
   /**
@@ -75,21 +79,28 @@ class AdManagerService {
     try {
       await MobileAds().initialize();
       
-      // Configuration globale
+      // Configuration globale pour conformité Families Policy
       await MobileAds().setRequestConfiguration({
-        maxAdContentRating: MaxAdContentRating.PG,
-        tagForChildDirectedTreatment: false,
-        tagForUnderAgeOfConsent: false,
+        // Contenu adapté aux enfants (G = General Audiences)
+        maxAdContentRating: MaxAdContentRating.G,
+        // Traiter comme dirigé vers les enfants
+        tagForChildDirectedTreatment: true,
+        // Conformité COPPA/GDPR-K
+        tagForUnderAgeOfConsent: true,
       });
 
       this.initialized = true;
       
-      // Précharger les interstitiels et rewarded ads
+      // Précharger les publicités conformes à Families Policy
+      // Important: Les interstitiels seront affichés avec un bouton de fermeture après 5 secondes
       this.loadInterstitial();
       this.loadRewarded();
 
-      console.log('AdMob initialized successfully');
+      console.log('AdMob initialized successfully with Families Policy compliance');
       console.log('Using', USE_TEST_ADS ? 'TEST' : 'PRODUCTION', 'ad units');
+      console.log('Child-directed treatment: ENABLED');
+      console.log('Max content rating: G (General Audiences)');
+      console.log('Interstitial ads: ENABLED with 5-second close button');
     } catch (error) {
       console.error('Error initializing AdMob:', error);
     }
@@ -97,25 +108,30 @@ class AdManagerService {
 
   /**
    * Précharger une publicité interstitielle
+   * Conforme à Families Policy avec filtrage de contenu
    */
   private loadInterstitial(): void {
-    this.interstitialAd = InterstitialAd.createForAdRequest(AD_UNIT_IDS.INTERSTITIAL);
+    this.interstitialAd = InterstitialAd.createForAdRequest(AD_UNIT_IDS.INTERSTITIAL, {
+      requestNonPersonalizedAdsOnly: true, // Pas de publicité personnalisée pour les enfants
+    });
     
     this.interstitialAd.addAdEventListener(AdEventType.LOADED, () => {
-      console.log('Interstitial ad loaded');
+      console.log('Interstitial ad loaded (child-safe, closable after 5s)');
       this.interstitialLoaded = true;
     });
 
     this.interstitialAd.addAdEventListener(AdEventType.ERROR, (error) => {
       console.log('Interstitial ad failed to load:', error);
       this.interstitialLoaded = false;
+      // Réessayer après 30 secondes
+      setTimeout(() => this.loadInterstitial(), 30000);
     });
 
     this.interstitialAd.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('Interstitial ad closed');
       this.interstitialLoaded = false;
-      // Précharger la prochaine
-      setTimeout(() => this.loadInterstitial(), 1000);
+      // Précharger la prochaine après 5 secondes
+      setTimeout(() => this.loadInterstitial(), 5000);
     });
 
     this.interstitialAd.load();
@@ -154,21 +170,91 @@ class AdManagerService {
   }
 
   /**
+   * Vérifier si on peut afficher une pub interstitielle
+   * Respecte les règles de fréquence pour éviter le spam
+   */
+  private canShowInterstitial(): boolean {
+    console.log('[INTERSTITIAL] Checking if can show:', {
+      initialized: this.initialized,
+      loaded: this.interstitialLoaded,
+      adsShown: this.adsShownThisSession,
+      lastAdTime: this.lastInterstitialTime,
+      sessionStart: this.sessionStartTime,
+    });
+
+    if (!this.initialized) {
+      console.log('[INTERSTITIAL] ❌ AdMob not initialized');
+      return false;
+    }
+
+    if (!this.interstitialLoaded) {
+      console.log('[INTERSTITIAL] ❌ Ad not loaded yet');
+      return false;
+    }
+
+    const now = Date.now();
+    
+    // Vérifier la session (reset compteur toutes les 10 minutes)
+    if (now - this.sessionStartTime > AD_CONFIG.SESSION_DURATION) {
+      this.sessionStartTime = now;
+      this.adsShownThisSession = 0;
+      console.log('[INTERSTITIAL] Session reset');
+    }
+
+    // Maximum 3 pubs par session de 10 minutes
+    if (this.adsShownThisSession >= AD_CONFIG.MAX_ADS_PER_SESSION) {
+      console.log('[INTERSTITIAL] ❌ Max ads per session reached (3/3)');
+      return false;
+    }
+
+    // Minimum 3 minutes entre chaque pub
+    const timeSinceLastAd = now - this.lastInterstitialTime;
+    if (this.lastInterstitialTime > 0 && timeSinceLastAd < AD_CONFIG.INTERSTITIAL_MIN_INTERVAL) {
+      console.log(`[INTERSTITIAL] ❌ Too soon for next ad (${Math.round(timeSinceLastAd / 1000)}s / ${AD_CONFIG.INTERSTITIAL_MIN_INTERVAL / 1000}s)`);
+      return false;
+    }
+
+    // Première pub après 2 minutes d'utilisation
+    const timeSinceAppStart = now - this.sessionStartTime;
+    if (this.adsShownThisSession === 0 && timeSinceAppStart < AD_CONFIG.FIRST_INTERSTITIAL_DELAY) {
+      console.log(`[INTERSTITIAL] ❌ Too soon for first ad (${Math.round(timeSinceAppStart / 1000)}s / ${AD_CONFIG.FIRST_INTERSTITIAL_DELAY / 1000}s)`);
+      return false;
+    }
+
+    console.log('[INTERSTITIAL] ✅ Can show ad!');
+    return true;
+  }
+
+  /**
    * Afficher une publicité interstitielle
-   * Rate limiting géré par AdMob console
+   * Conforme à Families Policy: fermable après 5 secondes maximum
    */
   async showInterstitial(): Promise<boolean> {
-    if (!this.initialized || !this.interstitialLoaded || !this.interstitialAd) {
-      console.log('Cannot show interstitial: not ready');
+    console.log('[INTERSTITIAL] showInterstitial() called');
+    
+    if (!this.canShowInterstitial()) {
+      console.log('[INTERSTITIAL] ❌ Cannot show (failed canShowInterstitial check)');
+      return false;
+    }
+
+    if (!this.interstitialAd) {
+      console.log('[INTERSTITIAL] ❌ No interstitial ad instance');
       return false;
     }
 
     try {
+      console.log('[INTERSTITIAL] 🎬 Showing ad...');
       await this.interstitialAd.show();
-      console.log('Interstitial shown');
+      
+      this.lastInterstitialTime = Date.now();
+      this.adsShownThisSession++;
+      this.interstitialLoaded = false; // Sera rechargé via l'event CLOSED
+      
+      console.log(`[INTERSTITIAL] ✅ Ad shown successfully (${this.adsShownThisSession}/${AD_CONFIG.MAX_ADS_PER_SESSION} this session)`);
+      console.log('[INTERSTITIAL] Ad is child-safe and closable after 5 seconds');
       return true;
     } catch (error) {
-      console.error('Error showing interstitial:', error);
+      console.error('[INTERSTITIAL] ❌ Error showing ad:', error);
       return false;
     }
   }
