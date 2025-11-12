@@ -5,7 +5,7 @@
     "continue": "Continuar",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
-    "ok": "Aceptar",
+    "ok": "OK",
     "yes": "Sí",
     "no": "No",
     "close": "Cerrar",
@@ -18,7 +18,28 @@
     "warning": "Advertencia",
     "tryAgain": "Intentar de nuevo",
     "share": "Compartir",
-    "settings": "Ajustes"
+    "settings": "Configuración",
+    "easy": "Fácil",
+    "medium": "Medio",
+    "hard": "Difícil",
+    "appTitle": "Memory Matrix",
+    "byAppWizards": "Por AppWizards"
+  },
+
+  "login": {
+    "title": "Memory Matrix",
+    "subtitle": "Desafío",
+    "tagline": "¡Pon a prueba tu memoria, mejora tu puntuación! 🧠",
+    "features": {
+      "gameplay": "Jugabilidad Adictiva",
+      "dailyChallenges": "Desafíos Diarios",
+      "achievements": "Desbloquea Logros",
+      "savedProgress": "Progreso Guardado"
+    },
+    "guestButton": "👤 COMENZAR",
+    "guestSubtext": "Jugar como invitado",
+    "disclaimer": "Tu progreso se guardará automáticamente",
+    "connecting": "Conectando..."
   },
   
   "home": {
@@ -27,412 +48,609 @@
     "welcome": "Bienvenido",
     "play": "JUGAR",
     "playButton": "Jugar",
-    "modesButton": "Modos de juego",
+    "modesButton": "Modos de Juego",
     "leaderboard": "Clasificación",
     "leaderboardButton": "Clasificación",
     "challenges": "Desafíos",
-    "challengesButton": "Desafíos diarios",
+    "challengesButton": "Desafíos Diarios",
     "profile": "Perfil",
     "profileButton": "Perfil",
     "friends": "Amigos",
     "friendsButton": "Amigos",
-    "friendChallengesButton": "Desafíos entre amigos",
+    "friendChallengesButton": "Desafíos con Amigos",
     "settings": "Configuración",
-    "settingsButton": "Ajustes",
+    "settingsButton": "Configuración",
     "dailyChallenge": "Desafío Diario",
     "challengeTarget": "Objetivo: {{target}} puntos",
     "completed": "¡Completado!",
     "highScore": "Mejor Puntuación",
     "maxLevel": "Nivel Máximo",
-    "gamesPlayed": "Partidas Jugadas",
-    "instructionsTitle": "Cómo jugar",
+    "gamesPlayed": "Juegos Jugados",
+    "instructionsTitle": "Cómo Jugar",
     "instruction1": "Observa la secuencia que se ilumina",
     "instruction2": "Memoriza las posiciones",
     "instruction3": "Reproduce la secuencia",
     "instruction4": "¡Progresa y mejora tu puntuación!",
+    "instructionsModal": {
+      "gameModes": {
+        "title": "5 Modos de Juego",
+        "description": "Clásico, Supervivencia, Ataque en el Tiempo, Zen y Personalizado. ¡Cada modo es único!"
+      },
+      "memorize": {
+        "title": "Memorizar",
+        "description": "Observa la secuencia de celdas que se encienden"
+      },
+      "reproduce": {
+        "title": "Reproducir",
+        "description": "Haz clic en las celdas en el orden correcto"
+      },
+      "lives": {
+        "title": "Vidas",
+        "description": "Clásico/Tiempo: 3 vidas • Supervivencia/Zen: ilimitadas"
+      },
+      "timeAttack": {
+        "title": "Ataque en el Tiempo",
+        "description": "¡120 segundos para conseguir la máxima puntuación!"
+      },
+      "dailyChallenges": {
+        "title": "Desafíos Diarios",
+        "description": "Un nuevo desafío cada día con recompensas"
+      },
+      "leaderboards": {
+        "title": "Clasificaciones",
+        "description": "Diarias, semanales y de todos los tiempos por modo de juego"
+      },
+      "settings": {
+        "title": "Sonidos y Configuración",
+        "description": "Personaliza tu experiencia en configuración ⚙️"
+      },
+      "understood": "¡Entendido!"
+    },
     "dailyChallengeTitle": "Desafíos Diarios",
     "dailyChallengeSubtitle": "Nuevos desafíos cada día"
   },
 
   "modes": {
-    "title": "Elegir un modo",
+    "title": "Elige un modo",
     "subtitle": "Selecciona tu estilo de juego",
     "classic": "Clásico",
-    "classicDesc": "Modo estándar con vidas limitadas",
+    "classicDesc": "10 niveles, 5 vidas. ¡El modo original!",
     "survival": "Supervivencia",
-    "survivalDesc": "¿Cuánto tiempo resistirás?",
-    "timeAttack": "Contrarreloj",
-    "timeAttackDesc": "120 segundos para marcar el máximo",
+    "survivalDesc": "Vidas infinitas, dificultad creciente. ¿Hasta dónde llegarás?",
+    "timeAttack": "Ataque en el Tiempo",
+    "timeAttackDesc": "¡120 segundos para conseguir la máxima puntuación!",
     "zen": "Zen",
-    "zenDesc": "Relájate sin presión",
+    "zenDesc": "Sin presión. Tómate tu tiempo, relájate.",
     "focus": "Desafío de Concentración",
     "focusDesc": "Memoriza con distracciones y colores",
+    "custom": "Personalizado",
+    "customDesc": "¡Crea tu propio desafío!",
     "recommended": "Recomendado",
     "locked": "Bloqueado",
-    "unlockHint": "Gana 2 desafíos entre amigos para desbloquear",
+    "unlockHint": "Gana 2 desafíos con amigos para desbloquear",
+    "unlockInfo": "¡Completa niveles para desbloquear modos!",
+    "unlockLevel": "Nivel {{level}}",
+    "unlockFriendWins": "{{count}} victorias con amigos ({{current}}/{{count}})",
     "lives": "{{count}} vidas",
     "infiniteLives": "Vidas infinitas",
-    "timedMode": "Cronometrado"
+    "timedMode": "Con Tiempo"
   },
 
   "game": {
     "level": "Nivel {{level}}",
+    "levelLabel": "Nivel",
     "score": "Puntuación",
     "lives": "Vidas",
+    "you": "Tú",
+    "world": "Mundo",
+    "nearRecord": "¡Cerca!",
+    "champion": "¡Campeón!",
     "time": "Tiempo",
-    "paused": "Pausa",
-    "resume": "Reanudar",
+    "paused": "Pausado",
+    "resume": "Continuar",
     "restart": "Reiniciar",
     "quit": "Salir",
     "memorize": "¡Memoriza!",
-    "memorizeSequence": "¡Memoriza la secuencia!",
-    "memorizeFocusShapes": "¡Enfócate en las formas que se iluminan!",
-    "yourTurn": "¡Tu turno!",
-    "clickShapesInOrder": "Toca las formas en orden",
-    "ready": "¡Prepárate!",
+    "memorizeSequence": "Memoriza la secuencia ({{count}} celdas)",
+    "memorizeFocusShapes": "¡Memoriza las {{count}} formas!",
+    "yourTurn": "¡Tu turno! Reproduce la secuencia",
+    "clickShapesInOrder": "¡Haz clic en las formas en orden!",
+    "ready": "¿Listo para jugar?",
     "correct": "¡Correcto!",
-    "wrong": "¡Error!",
-    "excellent": "¡Excelente!",
-    "tryAgain": "¡Inténtalo de nuevo!",
+    "wrong": "¡Incorrecto!",
+    "excellent": "¡Excelente! ¡Sigue así!",
+    "tryAgain": "¡No te preocupes! Inténtalo de nuevo, ¡tú puedes!",
+    "level5": "¡Nivel 5! ¡Vas por buen camino!",
+    "level10": "¡Nivel 10! ¡Eres un Maestro!",
+    "level15": "¡Nivel 15! ¡Campeón!",
+    "level20": "¡Nivel 20! ¡Experto confirmado!",
+    "level25": "¡Nivel 25! ¡Eres una Leyenda!",
+    "level30": "¡NIVEL 30! ¡GENIO ABSOLUTO!",
     "perfect": "¡Perfecto!",
     "goodJob": "¡Buen trabajo!",
-    "level5": "¡Nivel 5! ¡Buen comienzo!",
-    "level10": "¡Nivel 10! ¡Sigue así!",
-    "level15": "¡Nivel 15! ¡Increíble!",
-    "level20": "¡Nivel 20! ¡Eres un maestro!",
-    "level25": "¡Nivel 25! ¡Imparable!",
-    "level30": "¡Nivel 30! ¡LEYENDA!",
-    "gameOver": "Fin del Juego",
+    "gameOver": "Juego Terminado",
     "newHighScore": "¡Nuevo récord!",
     "finalScore": "Puntuación final",
     "playAgain": "Jugar de nuevo",
-    "backToMenu": "Menú principal",
+    "backToMenu": "Menú Principal",
     "pauseTitle": "Pausa",
     "quitConfirm": "¿Realmente quieres salir?",
-    "restartConfirm": "¿Quieres reiniciar?"
+    "restartConfirm": "¿Quieres reiniciar?",
+    "challengeCompleted": "¡Desafío Completado!",
+    "scoreSubmitted": "¡Puntuación enviada!",
+    "challengeReward": "El ganador obtiene 50 XP + 25 🪙",
+    "challengeCheckHistory": "Revisa la pestaña HISTORIAL para el resultado",
+    "challengeOneTry": "Modo Desafío: Un intento por desafío",
+    "shareScore": "COMPARTIR",
+    "homeButton": "INICIO",
+    "replayButton": "JUGAR DE NUEVO",
+    "successShared": "¡Puntuación compartida!",
+    "bestScore": "Mejor Puntuación",
+    "levelReached": "Nivel alcanzado: {{level}}",
+    "newRecord": "¡NUEVO RÉCORD!",
+    "pause": "PAUSA",
+    "resumeButton": "CONTINUAR",
+    "quitButton": "SALIR",
+    "bonusTitle": "BONUS",
+    "bonusSubtitle": "Mira un anuncio para obtener bonificaciones",
+    "boost": {
+      "life": "+1 Vida",
+      "hint": "+1 Pista",
+      "watchAd": "Ver anuncio"
+    }
   },
 
   "challenges": {
     "title": "Desafíos Diarios",
-    "subtitle": "Completa los desafíos del día",
+    "subtitle": "Completa los desafíos de hoy",
     "streak": "Racha",
-    "completed": "Completados",
+    "completed": "Completado",
     "timeRemaining": "Tiempo restante",
     "expired": "Expirado",
-    "claimReward": "Reclamar {{xp}} XP + {{coins}} 🪙",
+    "loading": "Cargando desafíos...",
+    "timeFormat": "{{hours}}h {{minutes}}m restantes",
+    "claimReward": "Reclama {{xp}} XP + {{coins}} 🪙",
     "rewarded": "Recompensa reclamada",
     "inProgress": "En progreso",
     "locked": "Bloqueado",
-    "unlockAt": "Desbloquear en {{time}}",
-    "easy": "Fácil",
-    "medium": "Medio",
-    "hard": "Difícil",
-    "daily": "Diario",
-    "weekly": "Semanal",
-    "description": {
-      "reachLevel": "Alcanza el nivel {{level}}",
-      "score": "Consigue {{score}} puntos",
-      "noMistakes": "Sin errores hasta el nivel {{level}}",
-      "timeAttack": "Consigue {{score}} en Contrarreloj",
-      "survival": "Sobrevive {{time}} segundos",
-      "combo": "Consigue un combo de {{combo}}",
-      "perfectRound": "{{count}} rondas perfectas seguidas"
+    "infoBanner": "💡 Completa desafíos jugando partidas normales. ¡Los desafíos se reinician cada día!",
+    "types": {
+      "score": "Puntuación total",
+      "speed": "Velocidad",
+      "precision": "Precisión",
+      "endurance": "Resistencia"
+    },
+    "descriptions": {
+      "scoreGoal": "Alcanza {{goal}} puntos",
+      "speedGoal": "Completa {{goal}} niveles en menos de {{time}}s",
+      "precisionGoal": "{{goal}} respuestas correctas seguidas",
+      "enduranceGoal": "Sobrevive {{goal}} niveles sin errores"
+    },
+    "speed": {
+      "lightningSpeed": {
+        "title": "Velocidad del Rayo",
+        "description": "Alcanza el nivel 5 en menos de 2 minutos"
+      },
+      "mentalSprinter": {
+        "title": "Velocista Mental",
+        "description": "Alcanza el nivel 8 en menos de 3 minutos"
+      },
+      "memoryFlash": {
+        "title": "Flash de Memoria",
+        "description": "Alcanza el nivel 10 en menos de 4 minutos"
+      }
+    },
+    "accuracy": {
+      "perfectionist": {
+        "title": "Perfeccionista",
+        "description": "Completa 5 secuencias sin errores"
+      },
+      "absolutePrecision": {
+        "title": "Precisión Absoluta",
+        "description": "Completa 10 secuencias perfectas seguidas"
+      },
+      "precisionMaster": {
+        "title": "Maestro de la Precisión",
+        "description": "Completa 15 secuencias sin errores"
+      }
+    },
+    "endurance": {
+      "mentalMarathon": {
+        "title": "Maratón Mental",
+        "description": "Juega 5 partidas en la misma sesión"
+      },
+      "enduring": {
+        "title": "Resistente",
+        "description": "Juega 10 partidas en el mismo día"
+      },
+      "indestructible": {
+        "title": "Indestructible",
+        "description": "Juega 15 partidas sin salir"
+      }
+    },
+    "score": {
+      "pointHunter": {
+        "title": "Cazador de Puntos",
+        "description": "Alcanza una puntuación de 3000 puntos"
+      },
+      "collector": {
+        "title": "Coleccionista",
+        "description": "Alcanza una puntuación de 5000 puntos"
+      },
+      "scoreLegend": {
+        "title": "Leyenda de Puntuación",
+        "description": "Alcanza una puntuación de 10000 puntos"
+      }
+    },
+    "perfect": {
+      "flawless": {
+        "title": "Impecable",
+        "description": "Completa un juego sin errores hasta el nivel 8"
+      },
+      "absolutePerfection": {
+        "title": "Perfección Absoluta",
+        "description": "Termina un juego perfecto hasta el nivel 8"
+      }
     }
   },
 
   "friends": {
     "title": "Amigos",
+    "subtitle": "Gestiona tus amigos y solicitudes",
     "addFriend": "Añadir Amigo",
-    "friendCode": "Código de Amigo",
-    "yourCode": "Tu Código",
-    "enterCode": "Introduce el código",
-    "add": "Añadir",
+    "searchPlaceholder": "Usuario o email",
+    "search": "Buscar",
+    "noResults": "Sin resultados",
+    "sendRequest": "Enviar solicitud",
+    "requestSent": "Solicitud enviada",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
     "remove": "Eliminar",
-    "online": "En línea",
-    "offline": "Desconectado",
-    "lastSeen": "Visto {{time}}",
-    "noFriends": "Aún no tienes amigos",
-    "noFriendsDesc": "Comparte tu código o añade el de un amigo",
-    "copyCode": "Copiar Código",
-    "codeCopied": "¡Código copiado!",
+    "tabs": {
+      "friends": "Amigos ({{count}})",
+      "requests": "Solicitudes ({{count}})",
+      "search": "Buscar"
+    },
+    "emptyFriends": "Aún no tienes amigos",
+    "emptyFriendsDesc": "¡Añade amigos para iniciar desafíos!",
+    "emptyRequests": "No hay solicitudes",
     "friendAdded": "¡Amigo añadido!",
+    "requestAccepted": "Solicitud aceptada",
+    "requestRejected": "Solicitud rechazada",
     "friendRemoved": "Amigo eliminado",
-    "invalidCode": "Código inválido",
-    "alreadyFriends": "Ya sois amigos",
-    "cannotAddSelf": "No puedes añadirte a ti mismo",
-    "level": "Niv. {{level}}",
-    "highScore": "Récord: {{score}}"
+    "errors": {
+      "loadFriends": "No se pudo cargar la lista de amigos",
+      "searchError": "Error durante la búsqueda",
+      "sendRequestError": "No se pudo enviar la solicitud",
+      "acceptError": "No se pudo aceptar la solicitud",
+      "rejectError": "No se pudo rechazar la solicitud",
+      "removeError": "No se pudo eliminar al amigo"
+    },
+    "success": {
+      "requestSent": "¡Solicitud de amistad enviada!",
+      "requestAccepted": "¡Solicitud aceptada!",
+      "requestRejected": "¡Solicitud rechazada!",
+      "friendRemoved": "¡Amigo eliminado!"
+    }
   },
 
   "friendChallenges": {
-    "title": "Desafíos Entre Amigos",
-    "subtitle": "Compite con tus amigos",
-    "newChallenge": "Nuevo Desafío",
-    "active": "Activos",
-    "pending": "Pendientes",
-    "completed": "Completados",
-    "createChallenge": "Crear Desafío",
-    "selectFriend": "Seleccionar Amigo",
-    "selectMode": "Seleccionar Modo",
-    "sendChallenge": "Enviar Desafío",
-    "accept": "Aceptar",
-    "decline": "Rechazar",
-    "youWin": "¡Ganaste!",
-    "youLose": "Perdiste",
-    "waiting": "Esperando a {{name}}",
-    "yourScore": "Tu Puntuación",
-    "theirScore": "Su Puntuación",
-    "playNow": "Jugar Ahora",
-    "viewResult": "Ver Resultado",
-    "challengeExpired": "Desafío expirado",
-    "expiresIn": "Expira en {{time}}",
-    "noChallenges": "Sin desafíos activos",
-    "noChallengesDesc": "Crea un desafío para competir con amigos",
-    "challengeSent": "¡Desafío enviado!",
-    "challengeAccepted": "¡Desafío aceptado!",
-    "challengeDeclined": "Desafío rechazado",
-    "winStreak": "Racha: {{count}} victorias"
+    "title": "Desafíos con Amigos",
+    "subtitle": "Crea, acepta y gana duelos ⚔️",
+    "newChallenge": "Nuevo desafío",
+    "new": "🔔 Nuevo",
+    "stats": {
+      "challenges": "Desafíos",
+      "wins": "Victorias",
+      "losses": "Derrotas",
+      "winRate": "Tasa de Victoria"
+    },
+    "tabs": {
+      "received": "Recibidos ({{count}})",
+      "active": "Activos ({{count}})",
+      "history": "Historial"
+    },
+    "accept": "✓ Aceptar",
+    "reject": "✗",
+    "you": "Tú",
+    "playNow": "🎮 Jugar ahora",
+    "waitingAcceptance": "⏳ Esperando aceptación",
+    "victory": "🏆 Victoria",
+    "defeat": "❌ Derrota",
+    "expiresIn": "Caduca en {{hours}}h",
+    "claimReward": "🎁 Reclama 50 XP + 25 🪙",
+    "rewardClaimed": "✓ Recompensa reclamada",
+    "emptyPending": "No hay desafíos pendientes",
+    "emptyActive": "No hay desafíos activos",
+    "emptyActiveDesc": "¡Crea un desafío o acepta uno!",
+    "emptyHistory": "No hay desafíos completados",
+    "modal": {
+      "title": "Crear un desafío",
+      "chooseFriend": "Elige un amigo:",
+      "challengeFriend": "Desafía a {{name}} en:",
+      "noFriends": "No hay amigos disponibles. ¡Añade amigos primero!",
+      "back": "← Atrás"
+    },
+    "alerts": {
+      "challengeAccepted": "¡Desafío aceptado! Inicia un juego para enviar tu puntuación.",
+      "rejectTitle": "Rechazar desafío",
+      "rejectMessage": "¿Realmente quieres rechazar este desafío?",
+      "rejectButton": "Rechazar",
+      "rewardClaimedTitle": "¡Recompensa reclamada!",
+      "rewardClaimedMessage": "¡Recibiste 50 XP y 25 monedas!",
+      "challengeSent": "¡Desafío enviado a {{name}}!",
+      "alreadyActiveTitle": "Desafío en progreso",
+      "alreadyActiveMessage": "Ya tienes un desafío activo con {{name}}. Termínalo antes de crear uno nuevo."
+    },
+    "errors": {
+      "loadFailed": "Error al cargar los desafíos",
+      "acceptFailed": "Error al aceptar el desafío",
+      "rejectFailed": "Error al rechazar el desafío",
+      "claimFailed": "Error al reclamar la recompensa",
+      "createFailed": "Error al crear el desafío"
+    }
   },
 
   "leaderboard": {
     "title": "Clasificación",
-    "global": "Global",
-    "friends": "Amigos",
-    "daily": "Diario",
-    "weekly": "Semanal",
-    "allTime": "Histórico",
-    "rank": "#{{rank}}",
+    "subtitle": "Compara tus puntuaciones",
+    "periods": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "allTime": "Todos los Tiempos"
+    },
+    "modes": {
+      "all": "Todos",
+      "classic": "Clásico",
+      "survival": "Supervivencia",
+      "timeAttack": "Tiempo",
+      "zen": "Zen"
+    },
+    "rank": "Posición",
+    "player": "Jugador",
+    "score": "Puntuación",
     "you": "Tú",
-    "level": "Niv. {{level}}",
-    "score": "{{score}} pts",
-    "noData": "Sin datos disponibles",
-    "topPlayers": "Mejores Jugadores",
-    "loading": "Cargando clasificación..."
+    "yourPosition": "Tu Posición",
+    "level": "Nivel {{level}}",
+    "empty": "Aún no hay puntuaciones",
+    "emptyForPeriod": "No hay puntuaciones para {{period}}",
+    "beFirst": "¡Sé el primero en jugar!",
+    "loading": "Cargando...",
+    "friendStatus": {
+      "friend": "✓ Amigo",
+      "pendingSent": "⏳ Enviada",
+      "pendingReceived": "Pendiente",
+      "addFriend": "+ Amigo"
+    },
+    "acceptRequest": "✓ Aceptar"
   },
 
   "profile": {
-    "title": "Perfil",
-    "stats": "Estadísticas",
-    "achievements": "Logros",
+    "title": "Mi Perfil",
+    "subtitle": "Tus estadísticas y logros",
+    "editProfile": "Editar mi perfil",
     "themes": "Temas",
     "visualEffects": "Efectos Visuales",
     "particles": "Partículas",
     "confetti": "Confeti",
-    "glowEffects": "Efectos Brillo",
-    "shakeEffects": "Efectos Vibración",
-    "earnRewards": "Gana XP y Coins para desbloquear temas",
-    "edit": "Editar Perfil",
+    "glowEffects": "Efectos de Resplandor",
+    "shakeEffects": "Efectos de Sacudida",
+    "earnRewards": "¡Gana XP y Monedas completando desafíos diarios!",
+    "highScore": "Mejor Puntuación",
+    "maxLevel": "Nivel Máximo",
+    "gamesPlayed": "Juegos Jugados",
+    "achievements": "Logros",
+    "unlockedAchievements": "Logros Desbloqueados",
+    "noAchievements": "No hay logros desbloqueados. ¡Juega para ganar algunos!",
     "signOut": "Cerrar Sesión",
     "signingOut": "Cerrando sesión...",
     "signOutConfirm": "¿Estás seguro de que quieres cerrar sesión?",
+    "profileUpdated": "¡Perfil actualizado!",
+    "anonymousInfo": "Tu perfil se guarda en este dispositivo",
+    "anonymousTip": "Consejo: ¡No cierres sesión para mantener tus datos!",
+    "stats": "Estadísticas",
+    "settings": "Configuración",
     "level": "Nivel {{level}}",
     "xp": "{{current}} / {{next}} XP",
-    "nextLevel": "Siguiente nivel en {{xp}} XP",
-    "gamesPlayed": "Partidas Jugadas",
-    "totalScore": "Puntuación Total",
-    "highScore": "Mejor Puntuación",
-    "maxLevel": "Nivel Máximo",
-    "avgScore": "Promedio",
-    "winRate": "Tasa de Victoria",
-    "playTime": "Tiempo de Juego",
-    "perfectGames": "Partidas Perfectas",
-    "currentStreak": "Racha Actual",
-    "bestStreak": "Mejor Racha",
-    "friendsCount": "Amigos",
-    "challengesWon": "Desafíos Ganados",
-    "unlockedAchievements": "Logros Desbloqueados",
-    "noAchievements": "No hay logros desbloqueados todavía. ¡Sigue jugando!",
-    "anonymousInfo": "Tu progreso se guarda localmente en este dispositivo.",
-    "anonymousTip": "No cierres sesión si quieres conservar tu progreso.",
-    "editProfile": "Editar Perfil",
-    "displayName": "Nombre para mostrar",
-    "avatar": "Avatar",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "nameTooShort": "El nombre es demasiado corto",
-    "nameTooLong": "El nombre es demasiado largo",
-    "profileUpdated": "¡Perfil actualizado!"
+    "coins": "🪙 {{count}} Monedas",
+    "totalGames": "Juegos jugados",
+    "bestScore": "Mejor puntuación",
+    "totalScore": "Puntuación total",
+    "winRate": "Tasa de victoria",
+    "avgScore": "Puntuación media",
+    "perfectGames": "Juegos perfectos",
+    "currentStreak": "Racha actual",
+    "bestStreak": "Mejor racha",
+    "timePlayed": "Tiempo jugado",
+    "achievementsCount": "{{unlocked}}/{{total}} logros",
+    "unlocked": "Desbloqueado",
+    "locked": "Bloqueado",
+    "progress": "Progreso: {{current}}/{{target}}",
+    "earnCoinsInfo": "¡Gana XP y Monedas completando desafíos diarios!",
+    "editModal": {
+      "title": "Editar mi perfil",
+      "displayName": "Usuario",
+      "avatar": "Avatar",
+      "chooseAvatar": "Elige tu avatar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "cancel": "Cancelar",
+      "placeholder": "Ingresa tu usuario",
+      "characterCount": "{{count}}/20 caracteres",
+      "errors": {
+        "emptyName": "El usuario no puede estar vacío",
+        "tooShort": "El usuario debe tener al menos 3 caracteres",
+        "tooLong": "El usuario no puede exceder 20 caracteres",
+        "saveFailed": "No se pudo guardar el perfil"
+      }
+    }
   },
 
   "settings": {
-    "title": "Ajustes",
-    "general": "General",
-    "gameplay": "Jugabilidad",
-    "audio": "Audio",
-    "notifications": "Notificaciones",
-    "about": "Acerca de",
+    "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia",
     "language": "Idioma",
-    "selectLanguage": "Selecciona tu idioma",
+    "selectLanguage": "Seleccionar idioma",
     "sound": "Sonido",
     "soundDescription": "Efectos de sonido del juego",
-    "music": "Música",
-    "vibration": "Vibración",
-    "hapticFeedback": "Respuesta Háptica",
-    "hapticsDescription": "Retroalimentación táctil",
-    "animations": "Animaciones",
-    "difficulty": "Dificultad",
+    "soundOn": "Activado",
+    "soundOff": "Desactivado",
+    "haptics": "Háptica",
+    "hapticsDescription": "Retroalimentación háptica",
+    "hapticsOn": "Activado",
+    "hapticsOff": "Desactivado",
+    "notifications": "Notificaciones",
+    "notificationsOn": "Activado",
+    "notificationsOff": "Desactivado",
     "theme": "Tema",
-    "darkMode": "Modo Oscuro",
-    "dailyReminder": "Recordatorio Diario",
-    "friendRequests": "Solicitudes de Amistad",
-    "challengeInvites": "Invitaciones a Desafíos",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeAuto": "Automático",
+    "about": "Acerca de",
     "version": "Versión {{version}}",
-    "credits": "Créditos",
-    "privacy": "Privacidad",
-    "terms": "Términos",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
     "support": "Soporte",
-    "rateApp": "Calificar App",
-    "shareApp": "Compartir App"
+    "rateApp": "Valorar la App",
+    "shareApp": "Compartir",
+    "logout": "Cerrar Sesión",
+    "logoutConfirm": "¿Realmente quieres cerrar sesión?",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteConfirm": "Esta acción es irreversible. ¿Continuar?"
   },
 
   "onboarding": {
-    "skip": "Omitir",
+    "skip": "Saltar →",
     "next": "Siguiente",
-    "start": "Comenzar",
-    "slide1": {
-      "title": "Bienvenido a Memory Matrix",
-      "description": "Entrena tu memoria con este juego adictivo. Memoriza secuencias, progresa en niveles y desafía a tus amigos."
-    },
-    "slide2": {
-      "title": "Desafío de Concentración",
-      "description": "Un modo especial con distracciones y múltiples colores. Desbloqueado ganando 2 desafíos entre amigos."
-    },
-    "slide3": {
-      "title": "Múltiples Modos de Juego",
-      "description": "Clásico, Supervivencia, Contrarreloj o Zen. Cada modo ofrece una experiencia única."
-    },
-    "slide4": {
-      "title": "Sistema de Vidas",
-      "description": "Tienes 5 vidas. Cada error te cuesta una vida. ¡Sin vidas = Game Over!"
-    },
-    "slide5": {
-      "title": "Progresión y Niveles",
-      "description": "Gana XP, sube de nivel y desbloquea nuevas funciones. Cada nivel aumenta la dificultad."
-    },
-    "slide6": {
-      "title": "Logros",
-      "description": "Completa desafíos especiales para ganar logros únicos y recompensas exclusivas."
-    },
-    "slide7": {
-      "title": "Desafíos Entre Amigos",
-      "description": "Añade amigos con su código y crea desafíos personalizados. Compite y compara puntuaciones."
-    },
-    "slide8": {
-      "title": "Desafíos Diarios",
-      "description": "Nuevos desafíos cada día. Completa rachas para maximizar tus recompensas."
-    },
-    "slide9": {
-      "title": "Efectos de Sonido",
-      "description": "Disfruta de sonidos inmersivos. Configúralos en ajustes según tu preferencia."
+    "start": "¡Comenzar! 🚀",
+    "slides": {
+      "welcome": {
+        "title": "¡Bienvenido a Memory Matrix!",
+        "description": "Entrena tu memoria con un juego adictivo y progresivo. ¡5 modos de juego diferentes te esperan!",
+        "tip": "¡Perfecto para todas las edades: de 6 a 100 años!"
+      },
+      "modes": {
+        "title": "5 Modos de Juego Únicos",
+        "description": "Clásico, Supervivencia, Ataque en el Tiempo, Zen y Desafío de Concentración. ¡Cada modo ofrece una experiencia diferente!",
+        "tip": "Desbloquea el modo Concentración tras 2 victorias con amigos"
+      },
+      "howToPlay": {
+        "title": "¿Cómo se juega?",
+        "description": "Memoriza la secuencia de celdas que se encienden, luego reprodúcela exactamente en el orden correcto.",
+        "tip": "La secuencia se alarga con cada nivel exitoso"
+      },
+      "lives": {
+        "title": "Vidas y Dificultad",
+        "description": "Modos Clásico y Ataque en el Tiempo: 5 vidas. Modos Supervivencia y Zen: vidas infinitas para una experiencia relajante.",
+        "tip": "Elige el modo que se adapte a tu estilo de juego"
+      },
+      "timeAttack": {
+        "title": "Modo Ataque en el Tiempo",
+        "description": "¡Vence al reloj! 120 segundos para conseguir la máxima puntuación. ¡El tiempo no se detiene!",
+        "tip": "El sonido del temporizador te acompaña durante el juego"
+      },
+      "challenges": {
+        "title": "Desafíos Diarios",
+        "description": "Enfréntate a un nuevo desafío cada día y gana recompensas. ¡Mantén tu racha para más puntos!",
+        "tip": "Vuelve cada día para nuevos desafíos"
+      },
+      "friendChallenges": {
+        "title": "Desafíos con Amigos",
+        "description": "¡Añade amigos e inicia duelos! Compara tus puntuaciones en modos Clásico, Supervivencia, Tiempo o Zen.",
+        "tip": "Gana 2 desafíos para desbloquear el modo Desafío de Concentración"
+      },
+      "achievements": {
+        "title": "Logros y Clasificaciones",
+        "description": "¡Desbloquea 16 logros, compara tus puntuaciones en clasificaciones diarias, semanales y de todos los tiempos!",
+        "tip": "Clasificaciones por modo de juego para más competencia"
+      },
+      "customization": {
+        "title": "Sonidos y Personalización",
+        "description": "Efectos de sonido inmersivos y retroalimentación háptica. ¡Personaliza tu experiencia en la configuración!",
+        "tip": "Activa/desactiva sonidos y vibraciones en cualquier momento"
+      }
     }
   },
 
   "achievements": {
-    "title": "Logros",
-    "unlocked": "Desbloqueados",
-    "locked": "Bloqueados",
-    "progress": "Progreso",
-    "reward": "Recompensa: {{xp}} XP",
-    "firstWin": {
-      "name": "Primera Victoria",
-      "description": "Completa tu primera partida"
-    },
-    "speedRunner": {
-      "name": "Corredor Veloz",
-      "description": "Consigue 500 pts en Contrarreloj"
-    },
-    "survivor": {
-      "name": "Superviviente",
-      "description": "Sobrevive 5 minutos en Supervivencia"
-    },
-    "perfectionist": {
-      "name": "Perfeccionista",
-      "description": "10 rondas perfectas en una partida"
-    },
-    "friendlyCompetitor": {
-      "name": "Competidor Amistoso",
-      "description": "Gana 5 desafíos entre amigos"
-    },
-    "dailyDedication": {
-      "name": "Dedicación Diaria",
-      "description": "Racha de 7 días en desafíos"
-    },
-    "levelMaster": {
-      "name": "Maestro de Niveles",
-      "description": "Alcanza el nivel 20"
-    },
-    "scoreHunter": {
-      "name": "Cazador de Puntos",
-      "description": "Consigue 1000 puntos en una partida"
-    },
-    "memoryMaster": {
-      "name": "Maestro de la Memoria",
-      "description": "Completa todos los modos"
-    },
-    "socialButterfly": {
-      "name": "Mariposa Social",
-      "description": "Añade 10 amigos"
-    },
-    "challenger": {
-      "name": "Retador",
-      "description": "Crea 20 desafíos"
-    },
-    "unstoppable": {
-      "name": "Imparable",
-      "description": "Racha de 10 victorias en desafíos"
-    },
-    "zenMaster": {
-      "name": "Maestro Zen",
-      "description": "Juega 50 partidas en modo Zen"
-    },
-    "achievementHunter": {
-      "name": "Cazador de Logros",
-      "description": "Desbloquea 10 logros"
-    },
-    "legend": {
-      "name": "Leyenda",
-      "description": "Alcanza el nivel 50"
-    },
-    "noMistakes": {
-      "name": "Sin Errores",
-      "description": "Completa el nivel 10 sin fallos"
-    }
+    "firstSteps": "Primeros Pasos",
+    "firstStepsDesc": "Completa tu primer juego",
+    "tenGames": "Principiante",
+    "tenGamesDesc": "Juega 10 partidas",
+    "hundredGames": "Veterano",
+    "hundredGamesDesc": "Juega 100 partidas",
+    "score1000": "Novato",
+    "score1000Desc": "Alcanza 1000 puntos",
+    "score5000": "Experto",
+    "score5000Desc": "Alcanza 5000 puntos",
+    "score10000": "Maestro",
+    "score10000Desc": "Alcanza 10000 puntos",
+    "perfectGame": "Impecable",
+    "perfectGameDesc": "Completa un juego sin errores",
+    "speedRunner": "Relámpago",
+    "speedRunnerDesc": "Completa 5 niveles en menos de 30s",
+    "survivor": "Superviviente",
+    "survivorDesc": "Alcanza el nivel 20 en modo Supervivencia",
+    "zenMaster": "Maestro Zen",
+    "zenMasterDesc": "Alcanza el nivel 30 en modo Zen",
+    "timeKeeper": "Guardián del Tiempo",
+    "timeKeeperDesc": "Consigue 3000 puntos en modo Tiempo",
+    "socialButterfly": "Social",
+    "socialButterflyDesc": "Añade 5 amigos",
+    "challenger": "Desafiante",
+    "challengerDesc": "Gana 10 desafíos con amigos",
+    "dailyWarrior": "Guerrero Diario",
+    "dailyWarriorDesc": "Completa 7 días consecutivos de desafíos",
+    "collector": "Coleccionista",
+    "collectorDesc": "Gana 1000 monedas",
+    "legendary": "Legendario",
+    "legendaryDesc": "Desbloquea todos los demás logros"
   },
 
   "errors": {
-    "networkError": "Error de conexión",
+    "network": "Error de red. Comprueba tu conexión.",
+    "auth": "Error de autenticación.",
+    "generic": "Ocurrió un error.",
+    "tryAgain": "Por favor, inténtalo de nuevo.",
+    "noInternet": "Sin conexión a internet",
     "serverError": "Error del servidor",
-    "authError": "Error de autenticación",
     "notFound": "No encontrado",
     "permissionDenied": "Permiso denegado",
-    "unknown": "Error desconocido",
-    "signOutFailed": "No se pudo cerrar sesión. Por favor, intenta de nuevo.",
-    "tryAgainLater": "Inténtalo más tarde",
-    "checkConnection": "Verifica tu conexión"
+    "invalidData": "Datos inválidos",
+    "signOutFailed": "No se pudo cerrar sesión"
   },
 
   "notifications": {
-    "friendRequest": "{{name}} quiere ser tu amigo",
-    "challengeReceived": "{{name}} te ha retado",
-    "challengeWon": "¡Ganaste el desafío contra {{name}}!",
-    "challengeLost": "{{name}} ganó el desafío",
+    "title": "Notificación",
+    "dismiss": "Descartar",
+    "view": "Ver",
+    "newNotification": "Has recibido una notificación",
     "dailyChallengeReady": "¡Nuevos desafíos diarios disponibles!",
-    "achievementUnlocked": "¡Logro desbloqueado: {{achievement}}!",
-    "levelUp": "¡Nivel {{level}} alcanzado!",
-    "streakReminder": "¡No pierdas tu racha de {{days}} días!"
+    "friendRequest": "Nueva solicitud de amistad 👥",
+    "friendRequestBody": "{{name}} quiere ser tu amigo",
+    "friendAccepted": "¡Solicitud aceptada! ✅",
+    "friendAcceptedBody": "{{name}} aceptó tu solicitud de amistad",
+    "challengeReceived": "¡Nuevo desafío! 🎮",
+    "challengeReceivedBody": "{{name}} te desafía en modo {{mode}}",
+    "challengeAccepted": "¡Desafío aceptado! ✅",
+    "challengeAcceptedBody": "{{name}} aceptó tu desafío",
+    "opponentPlayed": "¡El oponente jugó! ⚡",
+    "opponentPlayedBody": "{{name}} terminó con {{score}} puntos",
+    "victory": "¡Victoria! 🏆",
+    "victoryBody": "¡Has vencido a {{name}}!",
+    "defeat": "Derrota 😔",
+    "defeatBody": "{{name}} te venció por {{points}} puntos",
+    "newAchievement": "¡Logro desbloqueado: {{achievement}}"
   },
 
   "tips": {
-    "title": "Consejo del día",
-    "tip1": "Concéntrate en el centro de la cuadrícula para captar toda la secuencia",
-    "tip2": "Practica en modo Zen para mejorar sin presión",
-    "tip3": "Los sonidos ayudan a memorizar secuencias",
-    "tip4": "Toma descansos regulares para mantener tu concentración",
-    "tip5": "Desafía a amigos para ganar más XP",
-    "tip6": "Completa desafíos diarios para recompensas extras",
-    "tip7": "El modo Contrarreloj es perfecto para rachas de puntos",
-    "tip8": "Busca patrones en las secuencias",
-    "tip9": "La práctica regular mejora tu memoria",
-    "tip10": "Desbloquea el Desafío de Concentración para el desafío final"
+    "memorization": "💡 Visualiza posiciones mentalmente",
+    "patterns": "💡 Busca patrones recurrentes",
+    "focus": "💡 Elimina distracciones a tu alrededor",
+    "practice": "💡 La práctica regular mejora la memoria",
+    "breaks": "💡 Toma descansos para mantener la concentración",
+    "sleep": "💡 El buen sueño mejora la memorización",
+    "chunking": "💡 Agrupa elementos en bloques de 3-4",
+    "rhythm": "💡 Crea un ritmo para memorizar"
   }
 }

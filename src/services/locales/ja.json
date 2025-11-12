@@ -18,38 +18,94 @@
     "warning": "警告",
     "tryAgain": "再試行",
     "share": "共有",
-    "settings": "設定"
+    "settings": "設定",
+    "easy": "簡単",
+    "medium": "普通",
+    "hard": "難しい",
+    "appTitle": "Memory Matrix",
+    "byAppWizards": "AppWizards製"
+  },
+
+  "login": {
+    "title": "メモリーマトリックス",
+    "subtitle": "チャレンジ",
+    "tagline": "記憶力をテストし、スコアを向上させよう！ 🧠",
+    "features": {
+      "gameplay": "中毒性のあるゲームプレイ",
+      "dailyChallenges": "デイリーチャレンジ",
+      "achievements": "実績解除",
+      "savedProgress": "進捗保存"
+    },
+    "guestButton": "👤 スタート",
+    "guestSubtext": "ゲストとしてプレイ",
+    "disclaimer": "進捗は自動的に保存されます",
+    "connecting": "接続中..."
   },
   
   "home": {
-    "title": "Memory Matrix",
+    "title": "メモリーマトリックス",
     "subtitle": "チャレンジ",
     "welcome": "ようこそ",
     "play": "プレイ",
     "playButton": "プレイ",
     "modesButton": "ゲームモード",
-    "leaderboard": "リーダーボード",
-    "leaderboardButton": "リーダーボード",
+    "leaderboard": "ランキング",
+    "leaderboardButton": "ランキング",
     "challenges": "チャレンジ",
     "challengesButton": "デイリーチャレンジ",
     "profile": "プロフィール",
     "profileButton": "プロフィール",
     "friends": "フレンド",
     "friendsButton": "フレンド",
-    "friendChallengesButton": "フレンド対戦",
+    "friendChallengesButton": "フレンドチャレンジ",
     "settings": "設定",
     "settingsButton": "設定",
     "dailyChallenge": "デイリーチャレンジ",
-    "challengeTarget": "目標：{{target}} ポイント",
-    "completed": "クリア！",
+    "challengeTarget": "目標: {{target}}ポイント",
+    "completed": "完了！",
     "highScore": "ハイスコア",
-    "maxLevel": "最高レベル",
+    "maxLevel": "最大レベル",
     "gamesPlayed": "プレイ回数",
     "instructionsTitle": "遊び方",
     "instruction1": "光るシーケンスを観察",
     "instruction2": "位置を記憶",
     "instruction3": "シーケンスを再現",
-    "instruction4": "レベルアップしてスコアを伸ばそう!",
+    "instruction4": "進捗してスコアを向上させよう！",
+    "instructionsModal": {
+      "gameModes": {
+        "title": "5つのゲームモード",
+        "description": "クラシック、サバイバル、タイムアタック、禅、カスタム。各モードがユニーク！"
+      },
+      "memorize": {
+        "title": "記憶",
+        "description": "光るセルのシーケンスを観察"
+      },
+      "reproduce": {
+        "title": "再現",
+        "description": "正しい順序でセルをクリック"
+      },
+      "lives": {
+        "title": "ライフ",
+        "description": "クラシック/タイム: 3ライフ • サバイバル/禅: 無制限"
+      },
+      "timeAttack": {
+        "title": "タイムアタック",
+        "description": "120秒で最大ポイントを獲得！"
+      },
+      "dailyChallenges": {
+        "title": "デイリーチャレンジ",
+        "description": "毎日新しいチャレンジと報酬"
+      },
+      "leaderboards": {
+        "title": "ランキング",
+        "description": "デイリー、ウィークリー、オールタイム（モード別）"
+      },
+      "settings": {
+        "title": "サウンドと設定",
+        "description": "設定で体験をカスタマイズ ⚙️"
+      },
+      "understood": "了解！"
+    },
     "dailyChallengeTitle": "デイリーチャレンジ",
     "dailyChallengeSubtitle": "毎日新しいチャレンジ"
   },
@@ -58,58 +114,90 @@
     "title": "モードを選択",
     "subtitle": "プレイスタイルを選択",
     "classic": "クラシック",
-    "classicDesc": "ライフ制限ありの標準モード",
+    "classicDesc": "10レベル、5ライフ。オリジナルモード！",
     "survival": "サバイバル",
-    "survivalDesc": "どれだけ耐えられる?",
+    "survivalDesc": "無限ライフ、難易度上昇。どこまで進める？",
     "timeAttack": "タイムアタック",
-    "timeAttackDesc": "120秒で最高得点を",
+    "timeAttackDesc": "120秒で最高得点を目指せ！",
     "zen": "禅",
-    "zenDesc": "プレッシャーなくリラックス",
-    "focus": "フォーカスチャレンジ",
-    "focusDesc": "妨害と色で記憶",
+    "zenDesc": "プレッシャーなし。自分のペースでリラックス。",
+    "focus": "集中チャレンジ",
+    "focusDesc": "妨害と色で記憶力を試す",
+    "custom": "カスタム",
+    "customDesc": "自分だけのチャレンジを作成！",
     "recommended": "おすすめ",
     "locked": "ロック中",
-    "unlockHint": "フレンド対戦で2勝してアンロック",
+    "unlockHint": "フレンドチャレンジ2回勝利で解除",
+    "unlockInfo": "レベルをクリアしてモードを解除！",
+    "unlockLevel": "レベル {{level}}",
+    "unlockFriendWins": "フレンド勝利{{count}}回 ({{current}}/{{count}})",
     "lives": "{{count}}ライフ",
     "infiniteLives": "無限ライフ",
-    "timedMode": "タイム制"
+    "timedMode": "時間制限"
   },
 
   "game": {
     "level": "レベル {{level}}",
+    "levelLabel": "レベル",
     "score": "スコア",
     "lives": "ライフ",
-    "time": "タイム",
-    "paused": "一時停止",
+    "you": "あなた",
+    "world": "世界",
+    "nearRecord": "🔥 惜しい！",
+    "champion": "👑 チャンピオン！",
+    "time": "時間",
+    "paused": "一時停止中",
     "resume": "再開",
     "restart": "リスタート",
     "quit": "終了",
-    "memorize": "記憶しよう!",
-    "memorizeSequence": "シーケンスを記憶！",
-    "memorizeFocusShapes": "光る形に集中！",
-    "yourTurn": "あなたの番!",
-    "clickShapesInOrder": "順番通りに形をタップ",
-    "ready": "準備完了！",
-    "correct": "正解!",
-    "wrong": "間違い!",
-    "excellent": "素晴らしい!",
-    "tryAgain": "もう一度！",
-    "perfect": "完璧!",
-    "goodJob": "よくできました!",
-    "level5": "レベル5！良いスタート！",
-    "level10": "レベル10！その調子！",
-    "level15": "レベル15！すごい！",
-    "level20": "レベル20！マスター！",
-    "level25": "レベル25！止められない！",
-    "level30": "レベル30！伝説だ！",
+    "memorize": "記憶！",
+    "memorizeSequence": "シーケンスを記憶 ({{count}}セル)",
+    "memorizeFocusShapes": "🎯 {{count}}つの形を記憶！",
+    "yourTurn": "あなたの番！シーケンスを再現",
+    "clickShapesInOrder": "🎯 形を順番にクリック！",
+    "ready": "プレイ準備はできた？",
+    "correct": "正解！",
+    "wrong": "不正解！",
+    "excellent": "✓ 優秀！その調子！",
+    "tryAgain": "✗ 心配無用！再挑戦、君ならできる！",
+    "level5": "🎯 レベル5！順調です！",
+    "level10": "🏆 レベル10！マスター！",
+    "level15": "🏅 レベル15！チャンピオン！",
+    "level20": "🏆 レベル20！エキスパート認定！",
+    "level25": "👑 レベル25！伝説！",
+    "level30": "💎 レベル30！絶対的天才！",
+    "perfect": "完璧！",
+    "goodJob": "よくできました！",
     "gameOver": "ゲームオーバー",
-    "newHighScore": "新記録!",
+    "newHighScore": "ニューハイスコア！",
     "finalScore": "最終スコア",
-    "playAgain": "もう一度",
+    "playAgain": "再プレイ",
     "backToMenu": "メインメニュー",
     "pauseTitle": "一時停止",
-    "quitConfirm": "本当に終了しますか?",
-    "restartConfirm": "リスタートしますか?"
+    "quitConfirm": "本当に終了しますか？",
+    "restartConfirm": "リスタートしますか？",
+    "challengeCompleted": "チャレンジ完了！",
+    "scoreSubmitted": "スコア提出済み！",
+    "challengeReward": "勝者は50XP + 25🪙獲得",
+    "challengeCheckHistory": "結果は履歴タブで確認",
+    "challengeOneTry": "チャレンジモード：1回のみ挑戦可能",
+    "shareScore": "共有",
+    "homeButton": "ホーム",
+    "replayButton": "再プレイ",
+    "successShared": "スコア共有済み！",
+    "bestScore": "ベストスコア",
+    "levelReached": "到達レベル: {{level}}",
+    "newRecord": "新記録！",
+    "pause": "一時停止",
+    "resumeButton": "再開",
+    "quitButton": "終了",
+    "bonusTitle": "ボーナス",
+    "bonusSubtitle": "広告視聴でボーナス獲得",
+    "boost": {
+      "life": "+1ライフ",
+      "hint": "+1ヒント",
+      "watchAd": "広告を見る"
+    }
   },
 
   "challenges": {
@@ -119,320 +207,450 @@
     "completed": "完了",
     "timeRemaining": "残り時間",
     "expired": "期限切れ",
-    "claimReward": "{{xp}} XP + {{coins}} 🪙を獲得",
+    "loading": "チャレンジ読み込み中...",
+    "timeFormat": "残り{{hours}}時間{{minutes}}分",
+    "claimReward": "{{xp}}XP + {{coins}}🪙 獲得",
     "rewarded": "報酬獲得済み",
     "inProgress": "進行中",
     "locked": "ロック中",
-    "unlockAt": "{{time}}でアンロック",
-    "easy": "簡単",
-    "medium": "普通",
-    "hard": "難しい",
-    "daily": "デイリー",
-    "weekly": "ウィークリー",
-    "description": {
-      "reachLevel": "レベル{{level}}に到達",
-      "score": "{{score}}点を獲得",
-      "noMistakes": "レベル{{level}}までノーミス",
-      "timeAttack": "タイムアタックで{{score}}点",
-      "survival": "{{time}}秒生き残る",
-      "combo": "{{combo}}コンボを達成",
-      "perfectRound": "{{count}}回連続パーフェクト"
+    "infoBanner": "💡 通常プレイでチャレンジ完了。チャレンジは毎日リセット！",
+    "types": {
+      "score": "合計スコア",
+      "speed": "速度",
+      "precision": "精度",
+      "endurance": "耐久"
+    },
+    "descriptions": {
+      "scoreGoal": "{{goal}}ポイント達成",
+      "speedGoal": "{{goal}}レベルを{{time}}秒以内に完了",
+      "precisionGoal": "{{goal}}連続正解",
+      "enduranceGoal": "{{goal}}レベル連続成功"
+    },
+    "speed": {
+      "lightningSpeed": {
+        "title": "電光石火",
+        "description": "2分以内にレベル5達成"
+      },
+      "mentalSprinter": {
+        "title": "精神疾走",
+        "description": "3分以内にレベル8達成"
+      },
+      "memoryFlash": {
+        "title": "記憶閃光",
+        "description": "4分以内にレベル10達成"
+      }
+    },
+    "accuracy": {
+      "perfectionist": {
+        "title": "完璧主義",
+        "description": "5連続成功"
+      },
+      "absolutePrecision": {
+        "title": "絶対精度",
+        "description": "10連続完璧成功"
+      },
+      "precisionMaster": {
+        "title": "精度マスター",
+        "description": "15連続成功"
+      }
+    },
+    "endurance": {
+      "mentalMarathon": {
+        "title": "精神マラソン",
+        "description": "同一セッションで5回プレイ"
+      },
+      "enduring": {
+        "title": "不屈",
+        "description": "同一日に10回プレイ"
+      },
+      "indestructible": {
+        "title": "不滅",
+        "description": "15回連続プレイ"
+      }
+    },
+    "score": {
+      "pointHunter": {
+        "title": "ポイントハンター",
+        "description": "3000ポイント達成"
+      },
+      "collector": {
+        "title": "コレクター",
+        "description": "5000ポイント達成"
+      },
+      "scoreLegend": {
+        "title": "スコアレジェンド",
+        "description": "10000ポイント達成"
+      }
+    },
+    "perfect": {
+      "flawless": {
+        "title": "無欠",
+        "description": "レベル8まで完璧クリア"
+      },
+      "absolutePerfection": {
+        "title": "絶対完璧",
+        "description": "レベル8まで完全無欠"
+      }
     }
   },
 
   "friends": {
     "title": "フレンド",
+    "subtitle": "フレンドとリクエスト管理",
     "addFriend": "フレンド追加",
-    "friendCode": "フレンドコード",
-    "yourCode": "あなたのコード",
-    "enterCode": "コードを入力",
-    "add": "追加",
+    "searchPlaceholder": "ユーザー名またはメール",
+    "search": "検索",
+    "noResults": "結果なし",
+    "sendRequest": "リクエスト送信",
+    "requestSent": "リクエスト送信済み",
+    "accept": "承認",
+    "reject": "拒否",
     "remove": "削除",
-    "online": "オンライン",
-    "offline": "オフライン",
-    "lastSeen": "{{time}}に確認",
-    "noFriends": "まだフレンドがいません",
-    "noFriendsDesc": "コードを共有するかフレンドを追加",
-    "copyCode": "コードをコピー",
-    "codeCopied": "コピーしました!",
-    "friendAdded": "フレンド追加完了!",
-    "friendRemoved": "フレンド削除完了",
-    "invalidCode": "無効なコード",
-    "alreadyFriends": "既にフレンドです",
-    "cannotAddSelf": "自分を追加できません",
-    "level": "Lv. {{level}}",
-    "highScore": "最高: {{score}}"
+    "tabs": {
+      "friends": "フレンド ({{count}})",
+      "requests": "リクエスト ({{count}})",
+      "search": "検索"
+    },
+    "emptyFriends": "フレンドがいません",
+    "emptyFriendsDesc": "フレンドを追加してチャレンジ開始！",
+    "emptyRequests": "リクエストなし",
+    "friendAdded": "フレンド追加済み！",
+    "requestAccepted": "リクエスト承認済み",
+    "requestRejected": "リクエスト拒否済み",
+    "friendRemoved": "フレンド削除済み",
+    "errors": {
+      "loadFriends": "フレンドリスト読み込み失敗",
+      "searchError": "検索エラー",
+      "sendRequestError": "リクエスト送信失敗",
+      "acceptError": "リクエスト承認失敗",
+      "rejectError": "リクエスト拒否失敗",
+      "removeError": "フレンド削除失敗"
+    },
+    "success": {
+      "requestSent": "フレンドリクエスト送信済み！",
+      "requestAccepted": "リクエスト承認済み！",
+      "requestRejected": "リクエスト拒否済み！",
+      "friendRemoved": "フレンド削除済み！"
+    }
   },
 
   "friendChallenges": {
-    "title": "フレンド対戦",
-    "subtitle": "フレンドと競争",
+    "title": "フレンドチャレンジ",
+    "subtitle": "デュエル作成、承認、勝利 ⚔️",
     "newChallenge": "新規チャレンジ",
-    "active": "進行中",
-    "pending": "保留中",
-    "completed": "完了",
-    "createChallenge": "チャレンジ作成",
-    "selectFriend": "フレンド選択",
-    "selectMode": "モード選択",
-    "sendChallenge": "チャレンジ送信",
-    "accept": "受諾",
-    "decline": "辞退",
-    "youWin": "勝利!",
-    "youLose": "敗北",
-    "waiting": "{{name}}を待機中",
-    "yourScore": "あなたのスコア",
-    "theirScore": "相手のスコア",
-    "playNow": "今すぐプレイ",
-    "viewResult": "結果を見る",
-    "challengeExpired": "チャレンジ期限切れ",
-    "expiresIn": "{{time}}で期限切れ",
-    "noChallenges": "進行中のチャレンジなし",
-    "noChallengesDesc": "フレンドと競争するチャレンジを作成",
-    "challengeSent": "チャレンジ送信完了!",
-    "challengeAccepted": "チャレンジ受諾!",
-    "challengeDeclined": "チャレンジ辞退",
-    "winStreak": "連勝: {{count}}回"
+    "new": "🔔 新着",
+    "stats": {
+      "challenges": "チャレンジ",
+      "wins": "勝利",
+      "losses": "敗北",
+      "winRate": "勝率"
+    },
+    "tabs": {
+      "received": "受信 ({{count}})",
+      "active": "アクティブ ({{count}})",
+      "history": "履歴"
+    },
+    "accept": "✓ 承認",
+    "reject": "✗",
+    "you": "あなた",
+    "playNow": "🎮 今すぐプレイ",
+    "waitingAcceptance": "⏳ 承認待ち",
+    "victory": "🏆 勝利",
+    "defeat": "❌ 敗北",
+    "expiresIn": "有効期限: {{hours}}時間",
+    "claimReward": "🎁 50XP + 25🪙 獲得",
+    "rewardClaimed": "✓ 報酬獲得済み",
+    "emptyPending": "保留中のチャレンジなし",
+    "emptyActive": "アクティブなチャレンジなし",
+    "emptyActiveDesc": "チャレンジ作成または承認！",
+    "emptyHistory": "完了したチャレンジなし",
+    "modal": {
+      "title": "チャレンジ作成",
+      "chooseFriend": "フレンド選択:",
+      "challengeFriend": "{{name}}を挑戦:",
+      "noFriends": "フレンドがいません。まずフレンドを追加！",
+      "back": "← 戻る"
+    },
+    "alerts": {
+      "challengeAccepted": "チャレンジ承認済み！スコア提出のためにゲーム開始。",
+      "rejectTitle": "チャレンジ拒否",
+      "rejectMessage": "本当にこのチャレンジを拒否しますか？",
+      "rejectButton": "拒否",
+      "rewardClaimedTitle": "🎉 報酬獲得済み！",
+      "rewardClaimedMessage": "50XPと25コインを獲得！",
+      "challengeSent": "{{name}}にチャレンジ送信済み！",
+      "alreadyActiveTitle": "進行中のチャレンジ",
+      "alreadyActiveMessage": "{{name}}とのアクティブなチャレンジがあります。新しい作成前に完了してください。"
+    },
+    "errors": {
+      "loadFailed": "チャレンジ読み込み失敗",
+      "acceptFailed": "チャレンジ承認失敗",
+      "rejectFailed": "チャレンジ拒否失敗",
+      "claimFailed": "報酬獲得失敗",
+      "createFailed": "チャレンジ作成失敗"
+    }
   },
 
   "leaderboard": {
-    "title": "リーダーボード",
-    "global": "グローバル",
-    "friends": "フレンド",
-    "daily": "デイリー",
-    "weekly": "ウィークリー",
-    "allTime": "全期間",
-    "rank": "#{{rank}}",
+    "title": "ランキング",
+    "subtitle": "スコア比較",
+    "periods": {
+      "daily": "デイリー",
+      "weekly": "ウィークリー",
+      "allTime": "オールタイム"
+    },
+    "modes": {
+      "all": "全て",
+      "classic": "クラシック",
+      "survival": "サバイバル",
+      "timeAttack": "タイム",
+      "zen": "禅"
+    },
+    "rank": "順位",
+    "player": "プレイヤー",
+    "score": "スコア",
     "you": "あなた",
-    "level": "Lv. {{level}}",
-    "score": "{{score}}点",
-    "noData": "データがありません",
-    "topPlayers": "トッププレイヤー",
-    "loading": "読み込み中..."
+    "yourPosition": "あなたの順位",
+    "level": "レベル {{level}}",
+    "empty": "スコアなし",
+    "emptyForPeriod": "{{period}}のスコアなし",
+    "beFirst": "最初のプレイヤーになろう！",
+    "loading": "読み込み中...",
+    "friendStatus": {
+      "friend": "✓ フレンド",
+      "pendingSent": "⏳ 送信済み",
+      "pendingReceived": "保留中",
+      "addFriend": "+ フレンド"
+    },
+    "acceptRequest": "✓ 承認"
   },
 
   "profile": {
-    "title": "プロフィール",
-    "stats": "統計",
-    "achievements": "実績",
+    "title": "マイプロフィール",
+    "subtitle": "統計と実績",
+    "editProfile": "プロフィール編集",
     "themes": "テーマ",
-    "visualEffects": "ビジュアルエフェクト",
+    "visualEffects": "視覚効果",
     "particles": "パーティクル",
     "confetti": "紙吹雪",
-    "glowEffects": "グローエフェクト",
-    "shakeEffects": "シェイクエフェクト",
-    "earnRewards": "XPとコインを獲得してテーマをアンロック",
-    "edit": "プロフィール編集",
+    "glowEffects": "グロー効果",
+    "shakeEffects": "シェイク効果",
+    "earnRewards": "デイリーチャレンジでXPとコイン獲得！",
+    "highScore": "ハイスコア",
+    "maxLevel": "最大レベル",
+    "gamesPlayed": "プレイ回数",
+    "achievements": "実績",
+    "unlockedAchievements": "解除済み実績",
+    "noAchievements": "実績がありません。プレイして獲得！",
     "signOut": "サインアウト",
     "signingOut": "サインアウト中...",
     "signOutConfirm": "本当にサインアウトしますか？",
+    "profileUpdated": "プロフィール更新済み！",
+    "anonymousInfo": "プロフィールは端末に保存されます",
+    "anonymousTip": "ヒント: データ保持のためサインアウトしないで！",
+    "stats": "統計",
+    "settings": "設定",
     "level": "レベル {{level}}",
     "xp": "{{current}} / {{next}} XP",
-    "nextLevel": "次のレベルまで{{xp}} XP",
-    "gamesPlayed": "プレイ回数",
-    "totalScore": "累計スコア",
-    "highScore": "最高スコア",
-    "maxLevel": "最高レベル",
-    "avgScore": "平均",
+    "coins": "🪙 {{count}} コイン",
+    "totalGames": "総プレイ回数",
+    "bestScore": "ベストスコア",
+    "totalScore": "総スコア",
     "winRate": "勝率",
-    "playTime": "プレイ時間",
-    "perfectGames": "パーフェクトゲーム",
+    "avgScore": "平均スコア",
+    "perfectGames": "完璧プレイ",
     "currentStreak": "現在の連続",
     "bestStreak": "最高連続",
-    "friendsCount": "フレンド",
-    "challengesWon": "チャレンジ勝利",
-    "unlockedAchievements": "アンロックした実績",
-    "noAchievements": "まだ実績をアンロックしていません。プレイを続けましょう！",
-    "anonymousInfo": "あなたの進捗はこのデバイスにローカル保存されています。",
-    "anonymousTip": "進捗を保持したい場合はサインアウトしないでください。",
-    "editProfile": "プロフィール編集",
-    "displayName": "表示名",
-    "avatar": "アバター",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "nameTooShort": "名前が短すぎます",
-    "nameTooLong": "名前が長すぎます",
-    "profileUpdated": "プロフィール更新完了!"
+    "timePlayed": "プレイ時間",
+    "achievementsCount": "実績 {{unlocked}}/{{total}}",
+    "unlocked": "解除済み",
+    "locked": "ロック中",
+    "progress": "進捗: {{current}}/{{target}}",
+    "earnCoinsInfo": "💡 デイリーチャレンジでXPとコイン獲得！",
+    "editModal": {
+      "title": "プロフィール編集",
+      "displayName": "ユーザー名",
+      "avatar": "アバター",
+      "chooseAvatar": "アバター選択",
+      "save": "保存",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "placeholder": "ユーザー名入力",
+      "characterCount": "{{count}}/20文字",
+      "errors": {
+        "emptyName": "ユーザー名必須",
+        "tooShort": "ユーザー名は3文字以上",
+        "tooLong": "ユーザー名は20文字以内",
+        "saveFailed": "プロフィール保存失敗"
+      }
+    }
   },
 
   "settings": {
     "title": "設定",
-    "general": "一般",
-    "gameplay": "ゲームプレイ",
-    "audio": "オーディオ",
-    "notifications": "通知",
-    "about": "について",
+    "subtitle": "体験をカスタマイズ",
     "language": "言語",
-    "selectLanguage": "言語を選択",
+    "selectLanguage": "言語選択",
     "sound": "サウンド",
-    "soundDescription": "ゲームサウンドエフェクト",
-    "music": "音楽",
-    "vibration": "バイブレーション",
-    "hapticFeedback": "触覚フィードバック",
-    "hapticsDescription": "触覚によるフィードバック",
-    "animations": "アニメーション",
-    "difficulty": "難易度",
+    "soundDescription": "ゲーム効果音",
+    "soundOn": "オン",
+    "soundOff": "オフ",
+    "haptics": "触覚",
+    "hapticsDescription": "触覚フィードバック",
+    "hapticsOn": "オン",
+    "hapticsOff": "オフ",
+    "notifications": "通知",
+    "notificationsOn": "オン",
+    "notificationsOff": "オフ",
     "theme": "テーマ",
-    "darkMode": "ダークモード",
-    "dailyReminder": "デイリーリマインダー",
-    "friendRequests": "フレンド申請",
-    "challengeInvites": "チャレンジ招待",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "themeAuto": "自動",
+    "about": "について",
     "version": "バージョン {{version}}",
-    "credits": "クレジット",
-    "privacy": "プライバシー",
+    "privacy": "プライバシーポリシー",
     "terms": "利用規約",
     "support": "サポート",
     "rateApp": "アプリを評価",
-    "shareApp": "アプリを共有"
+    "shareApp": "共有",
+    "logout": "ログアウト",
+    "logoutConfirm": "本当にログアウトしますか？",
+    "deleteAccount": "アカウント削除",
+    "deleteConfirm": "この操作は取り消せません。続行しますか？"
   },
 
   "onboarding": {
-    "skip": "スキップ",
+    "skip": "スキップ →",
     "next": "次へ",
-    "start": "開始",
-    "slide1": {
-      "title": "Memory Matrixへようこそ",
-      "description": "中毒性のあるゲームで記憶力を鍛えよう。シーケンスを記憶し、レベルアップして、フレンドに挑戦しよう。"
-    },
-    "slide2": {
-      "title": "フォーカスチャレンジ",
-      "description": "妨害と複数の色がある特別なモード。フレンド対戦で2勝してアンロック。"
-    },
-    "slide3": {
-      "title": "複数のゲームモード",
-      "description": "クラシック、サバイバル、タイムアタック、禅。各モードがユニークな体験を提供。"
-    },
-    "slide4": {
-      "title": "ライフシステム",
-      "description": "5ライフあります。ミスごとに1ライフ消費。ライフ0=ゲームオーバー!"
-    },
-    "slide5": {
-      "title": "進行とレベル",
-      "description": "XPを獲得し、レベルアップして新機能をアンロック。各レベルで難易度が上昇。"
-    },
-    "slide6": {
-      "title": "実績",
-      "description": "特別なチャレンジを完了してユニークな実績と限定報酬を獲得。"
-    },
-    "slide7": {
-      "title": "フレンド対戦",
-      "description": "コードでフレンドを追加し、カスタムチャレンジを作成。競争してスコアを比較。"
-    },
-    "slide8": {
-      "title": "デイリーチャレンジ",
-      "description": "毎日新しいチャレンジ。連続完了で報酬を最大化。"
-    },
-    "slide9": {
-      "title": "サウンドエフェクト",
-      "description": "没入感のあるサウンドを楽しもう。設定で好みに合わせて調整できます。"
+    "start": "スタート！ 🚀",
+    "slides": {
+      "welcome": {
+        "title": "メモリーマトリックスへようこそ！",
+        "description": "中毒性のある進行型ゲームで記憶力を鍛えよう。5つの異なるゲームモードが待っている！",
+        "tip": "全年齢対象：6歳から100歳まで！"
+      },
+      "modes": {
+        "title": "5つのユニークなゲームモード",
+        "description": "クラシック、サバイバル、タイムアタック、禅、集中チャレンジ。各モードが異なる体験を提供！",
+        "tip": "フレンド2勝利後、集中モード解除"
+      },
+      "howToPlay": {
+        "title": "遊び方？",
+        "description": "光るセルのシーケンスを記憶し、正確に正しい順序で再現する。",
+        "tip": "シーケンスは成功レベルごとに長くなる"
+      },
+      "lives": {
+        "title": "ライフと難易度",
+        "description": "クラシック/タイムアタックモード：5ライフ。サバイバル/禅モード：リラックス体験のための無限ライフ。",
+        "tip": "プレイスタイルに合ったモードを選択"
+      },
+      "timeAttack": {
+        "title": "タイムアタックモード",
+        "description": "時計と競争！120秒で最大ポイント獲得。時間は止まらない！",
+        "tip": "タイマー音がゲーム中に伴走"
+      },
+      "challenges": {
+        "title": "デイリーチャレンジ",
+        "description": "毎日新しいチャレンジに挑戦して報酬獲得。連続記録でより多くのポイントを！",
+        "tip": "新しいチャレンジのために毎日戻ってきて"
+      },
+      "friendChallenges": {
+        "title": "フレンドチャレンジ",
+        "description": "フレンドを追加してデュエル開始！クラシック、サバイバル、タイム、禅モードでスコア比較。",
+        "tip": "2回勝利で集中チャレンジモード解除"
+      },
+      "achievements": {
+        "title": "実績とランキング",
+        "description": "16の実績解除、デイリー、ウィークリー、オールタイムのランキングでスコア比較！",
+        "tip": "より多くの競争のためのモード別ランキング"
+      },
+      "customization": {
+        "title": "サウンドとカスタマイズ",
+        "description": "没入型の効果音と触覚フィードバック。設定で体験をカスタマイズ！",
+        "tip": "いつでもサウンドと振動をオン/オフ"
+      }
     }
   },
 
   "achievements": {
-    "title": "実績",
-    "unlocked": "アンロック済み",
-    "locked": "ロック中",
-    "progress": "進捗",
-    "reward": "報酬: {{xp}} XP",
-    "firstWin": {
-      "name": "初勝利",
-      "description": "初めてゲームを完了"
-    },
-    "speedRunner": {
-      "name": "スピードランナー",
-      "description": "タイムアタックで500点"
-    },
-    "survivor": {
-      "name": "サバイバー",
-      "description": "サバイバルで5分生存"
-    },
-    "perfectionist": {
-      "name": "完璧主義者",
-      "description": "1ゲームで10回連続パーフェクト"
-    },
-    "friendlyCompetitor": {
-      "name": "友好的競争者",
-      "description": "フレンド対戦で5勝"
-    },
-    "dailyDedication": {
-      "name": "毎日の献身",
-      "description": "チャレンジ7日連続"
-    },
-    "levelMaster": {
-      "name": "レベルマスター",
-      "description": "レベル20に到達"
-    },
-    "scoreHunter": {
-      "name": "スコアハンター",
-      "description": "1ゲームで1000点"
-    },
-    "memoryMaster": {
-      "name": "記憶マスター",
-      "description": "全モードクリア"
-    },
-    "socialButterfly": {
-      "name": "社交的",
-      "description": "10人フレンド追加"
-    },
-    "challenger": {
-      "name": "挑戦者",
-      "description": "20個のチャレンジ作成"
-    },
-    "unstoppable": {
-      "name": "無敵",
-      "description": "チャレンジ10連勝"
-    },
-    "zenMaster": {
-      "name": "禅マスター",
-      "description": "禅モードで50回プレイ"
-    },
-    "achievementHunter": {
-      "name": "実績ハンター",
-      "description": "10個の実績アンロック"
-    },
-    "legend": {
-      "name": "伝説",
-      "description": "レベル50に到達"
-    },
-    "noMistakes": {
-      "name": "ノーミステイク",
-      "description": "レベル10をノーミスでクリア"
-    }
+    "firstSteps": "最初の一歩",
+    "firstStepsDesc": "初ゲーム完了",
+    "tenGames": "初心者",
+    "tenGamesDesc": "10回プレイ",
+    "hundredGames": "ベテラン",
+    "hundredGamesDesc": "100回プレイ",
+    "score1000": "新人",
+    "score1000Desc": "1000ポイント達成",
+    "score5000": "エキスパート",
+    "score5000Desc": "5000ポイント達成",
+    "score10000": "マスター",
+    "score10000Desc": "10000ポイント達成",
+    "perfectGame": "無欠",
+    "perfectGameDesc": "エラーなしでゲーム完了",
+    "speedRunner": "電光石火",
+    "speedRunnerDesc": "30秒以内に5レベル完了",
+    "survivor": "生存者",
+    "survivorDesc": "サバイバルモードでレベル20達成",
+    "zenMaster": "禅マスター",
+    "zenMasterDesc": "禅モードでレベル30達成",
+    "timeKeeper": "時間管理者",
+    "timeKeeperDesc": "タイムモードで3000ポイント獲得",
+    "socialButterfly": "社交的",
+    "socialButterflyDesc": "5人フレンド追加",
+    "challenger": "挑戦者",
+    "challengerDesc": "10回フレンドチャレンジ勝利",
+    "dailyWarrior": "日々の戦士",
+    "dailyWarriorDesc": "7日連続チャレンジ完了",
+    "collector": "収集家",
+    "collectorDesc": "1000コイン獲得",
+    "legendary": "伝説",
+    "legendaryDesc": "他の全実績解除"
   },
 
   "errors": {
-    "networkError": "接続エラー",
+    "network": "ネットワークエラー。接続を確認してください。",
+    "auth": "認証エラー。",
+    "generic": "エラーが発生しました。",
+    "tryAgain": "再試行してください。",
+    "noInternet": "インターネット接続なし",
     "serverError": "サーバーエラー",
-    "authError": "認証エラー",
     "notFound": "見つかりません",
     "permissionDenied": "権限がありません",
-    "unknown": "不明なエラー",
-    "signOutFailed": "サインアウトに失敗しました。もう一度お試しください。",
-    "tryAgainLater": "後でもう一度お試しください",
-    "checkConnection": "接続を確認してください"
+    "invalidData": "無効なデータ",
+    "signOutFailed": "サインアウト失敗"
   },
 
   "notifications": {
-    "friendRequest": "{{name}}がフレンド申請",
-    "challengeReceived": "{{name}}からチャレンジ",
-    "challengeWon": "{{name}}とのチャレンジに勝利!",
-    "challengeLost": "{{name}}がチャレンジに勝利",
-    "dailyChallengeReady": "新しいデイリーチャレンジ!",
-    "achievementUnlocked": "実績アンロック: {{achievement}}!",
-    "levelUp": "レベル{{level}}到達!",
-    "streakReminder": "{{days}}日連続を維持しよう!"
+    "title": "通知",
+    "dismiss": "閉じる",
+    "view": "表示",
+    "newNotification": "通知を受信",
+    "dailyChallengeReady": "🎯 新しいデイリーチャレンジ利用可能！",
+    "friendRequest": "新しいフレンドリクエスト 👥",
+    "friendRequestBody": "{{name}}がフレンド申請",
+    "friendAccepted": "リクエスト承認済み！ ✅",
+    "friendAcceptedBody": "{{name}}がフレンドリクエスト承認",
+    "challengeReceived": "新しいチャレンジ！ 🎮",
+    "challengeReceivedBody": "{{name}}が{{mode}}モードで挑戦",
+    "challengeAccepted": "チャレンジ承認済み！ ✅",
+    "challengeAcceptedBody": "{{name}}がチャレンジ承認",
+    "opponentPlayed": "相手がプレイ！ ⚡",
+    "opponentPlayedBody": "{{name}}が{{score}}ポイントで終了",
+    "victory": "勝利！ 🏆",
+    "victoryBody": "{{name}}を勝利！",
+    "defeat": "敗北 😔",
+    "defeatBody": "{{name}}に{{points}}ポイント差で敗北",
+    "newAchievement": "🎉 実績解除: {{achievement}}"
   },
 
   "tips": {
-    "title": "今日のヒント",
-    "tip1": "グリッドの中心に集中して全シーケンスを把握",
-    "tip2": "禅モードでプレッシャーなく練習",
-    "tip3": "サウンドがシーケンスの記憶を助けます",
-    "tip4": "集中力維持のため定期的に休憩を",
-    "tip5": "フレンド挑戦でより多くのXPを獲得",
-    "tip6": "デイリーチャレンジで追加報酬",
-    "tip7": "タイムアタックはスコア連続に最適",
-    "tip8": "シーケンスのパターンを探す",
-    "tip9": "定期的な練習が記憶力を向上",
-    "tip10": "究極の挑戦のためフォーカスチャレンジをアンロック"
+    "memorization": "💡 位置を頭の中で視覚化",
+    "patterns": "💡 反復パターンを探す",
+    "focus": "💡 周囲の妨害を排除",
+    "practice": "💡 定期的な練習が記憶力を向上",
+    "breaks": "💡 集中力を保つために休憩を取る",
+    "sleep": "💡 良質な睡眠が記憶力を向上",
+    "chunking": "💡 3-4個のブロックにグループ化",
+    "rhythm": "💡 記憶のためのリズムを作成"
   }
 }

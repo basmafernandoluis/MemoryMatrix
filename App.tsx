@@ -24,10 +24,12 @@ import { adManager } from './src/services/adManager';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { i18nService } from './src/services/i18nService';
 import { LanguageSelectionScreen } from './src/screens/LanguageSelectionScreen';
+import { useTranslation } from './src/hooks/useTranslation';
 
 type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges' | 'language';
 
 export default function App() {
+  const { t } = useTranslation();
   const [currentScreen, setCurrentScreen] = useState<Screen>('onboarding');
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
@@ -363,9 +365,9 @@ export default function App() {
         <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Memory Matrix</Text>
-              <Text style={styles.loadingText}>By AppWizards</Text>
-              <Text style={styles.loadingSubtext}>Chargement...</Text>
+              <Text style={styles.loadingText}>{t('common.appTitle')}</Text>
+              <Text style={styles.loadingText}>{t('common.byAppWizards')}</Text>
+              <Text style={styles.loadingSubtext}>{t('common.loading')}</Text>
             </View>
           ) : showProfileSetup ? (
             // Show empty screen while profile modal is displayed

@@ -21,7 +21,9 @@
     "settings": "Paramètres",
     "easy": "Facile",
     "medium": "Moyen",
-    "hard": "Difficile"
+    "hard": "Difficile",
+    "appTitle": "Memory Matrix",
+    "byAppWizards": "Par AppWizards"
   },
 
   "login": {
