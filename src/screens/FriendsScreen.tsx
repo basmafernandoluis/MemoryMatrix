@@ -317,7 +317,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       {/* Header */}
       <View style={styles.header}>
         <BackButton onPress={onBack} color={colors.primary} backgroundColor={colors.surface} />
-        <Text style={[styles.title, { color: colors.text }]}>Amis</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('friends.title')}</Text>
         <View style={styles.placeholder} />
       </View>
 

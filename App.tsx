@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
@@ -44,6 +45,29 @@ export default function App() {
   // Notification navigation params
   const [notificationTab, setNotificationTab] = useState<'pending' | 'active' | 'history' | undefined>(undefined);
   const [notificationChallengeId, setNotificationChallengeId] = useState<string | undefined>(undefined);
+
+  // Manage screen orientation based on device size
+  useEffect(() => {
+    const setupOrientation = async () => {
+      const { width } = Dimensions.get('window');
+      
+      // Allow all orientations on tablets (width > 600dp), lock to portrait on phones
+      if (width > 600) {
+        await ScreenOrientation.unlockAsync();
+      } else {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+      }
+    };
+    
+    setupOrientation();
+    
+    // Listen for dimension changes (e.g., device rotation, foldable devices)
+    const subscription = Dimensions.addEventListener('change', setupOrientation);
+    
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
 
   // Initialize audio, AdMob, i18n and check onboarding status
   useEffect(() => {
