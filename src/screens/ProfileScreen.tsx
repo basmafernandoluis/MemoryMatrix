@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  Switch,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,12 +13,10 @@ import { UserProgress } from '../types';
 import { firebaseService } from '../services/firebase';
 import { firestoreService } from '../services/firestore';
 import { EditProfileModal } from '../components/EditProfileModal';
-import { ThemeSelector } from '../components/ThemeSelector';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT } from '../constants/designTokens';
 import { useTheme } from '../context/ThemeContext';
 import { BackButton } from '../components/BackButton';
-import { themeService } from '../services/themeService';
 import { useTranslation } from '../hooks/useTranslation';
 
 interface ProfileScreenProps {
@@ -43,7 +40,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const { t } = useTranslation();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isThemeSelectorVisible, setIsThemeSelectorVisible] = useState(false);
 
   const displayName = userProgress?.displayName || `Guest_${userId.substring(0, 6)}`;
   const avatarEmoji = userProgress?.avatarEmoji || '👤';
@@ -105,11 +101,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
   const achievementCount = userProgress?.achievements?.length || 0;
   const totalAchievements = 16; // Total achievements available (7 levels + 4 games + 5 scores)
-  
-  // Calculate level from XP
-  const calculateLevel = (xp: number): number => {
-    return Math.floor(xp / 100) + 1;
-  };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]} edges={['top', 'left', 'right']}>
@@ -137,87 +128,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           >
             <Text style={styles.editButtonText}>✏️ {t('profile.editProfile')}</Text>
           </TouchableOpacity>
-          
-          {/* Themes Button */}
-          <TouchableOpacity
-            style={[styles.editButton, { backgroundColor: colors.secondary }]}
-            onPress={() => setIsThemeSelectorVisible(true)}
-          >
-            <Text style={styles.editButtonText}>🎨 {t('profile.themes')}</Text>
-          </TouchableOpacity>
-          
-          {/* Visual Effects Settings */}
-          <View style={styles.effectsSection}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>✨ {t('profile.visualEffects')}</Text>
-            
-            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>🎆 {t('profile.particles')}</Text>
-              <Switch
-                value={userPreferences?.effects.particlesEnabled ?? true}
-                onValueChange={async (value) => {
-                  const newEffects = {
-                    ...userPreferences?.effects,
-                    ...theme.effects,
-                    particlesEnabled: value,
-                  };
-                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
-                }}
-                trackColor={{ false: '#767577', true: colors.primary }}
-                thumbColor={userPreferences?.effects.particlesEnabled ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-            
-            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>🎊 {t('profile.confetti')}</Text>
-              <Switch
-                value={userPreferences?.effects.confettiEnabled ?? true}
-                onValueChange={async (value) => {
-                  const newEffects = {
-                    ...userPreferences?.effects,
-                    ...theme.effects,
-                    confettiEnabled: value,
-                  };
-                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
-                }}
-                trackColor={{ false: '#767577', true: colors.primary }}
-                thumbColor={userPreferences?.effects.confettiEnabled ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-            
-            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>✨ {t('profile.glowEffects')}</Text>
-              <Switch
-                value={userPreferences?.effects.glowEffects ?? true}
-                onValueChange={async (value) => {
-                  const newEffects = {
-                    ...userPreferences?.effects,
-                    ...theme.effects,
-                    glowEffects: value,
-                  };
-                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
-                }}
-                trackColor={{ false: '#767577', true: colors.primary }}
-                thumbColor={userPreferences?.effects.glowEffects ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-            
-            <View style={[styles.effectRow, { backgroundColor: colors.surfaceLight }]}>
-              <Text style={[styles.effectLabel, { color: colors.text }]}>📳 {t('profile.shakeEffects')}</Text>
-              <Switch
-                value={userPreferences?.effects.shakeEffects ?? true}
-                onValueChange={async (value) => {
-                  const newEffects = {
-                    ...userPreferences?.effects,
-                    ...theme.effects,
-                    shakeEffects: value,
-                  };
-                  await themeService.updateEffectsPreferences(userId, { effects: newEffects });
-                }}
-                trackColor={{ false: '#767577', true: theme.colors.primary }}
-                thumbColor={userPreferences?.effects.shakeEffects ? '#fff' : '#f4f3f4'}
-              />
-            </View>
-          </View>
           
           {/* XP and Coins Display */}
           <View style={[styles.currencyContainer, { backgroundColor: colors.surfaceLight, borderColor: colors.border }]}>
@@ -332,22 +242,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         currentAvatarEmoji={avatarEmoji}
         onSave={handleSaveProfile}
         onCancel={() => setIsEditModalVisible(false)}
-      />
-      
-      {/* Theme Selector Modal */}
-      <ThemeSelector
-        visible={isThemeSelectorVisible}
-        onClose={() => setIsThemeSelectorVisible(false)}
-        userCoins={userProgress?.coins || 0}
-        userXP={userProgress?.xp || 0}
-        userLevel={calculateLevel(userProgress?.xp || 0)}
-        onCoinsChanged={async () => {
-          // Reload user progress after purchasing a theme
-          const updatedProgress = await firestoreService.getUserProgress(userId);
-          if (updatedProgress) {
-            onProfileUpdated(updatedProgress);
-          }
-        }}
       />
     </LinearGradient>
     </SafeAreaView>
@@ -516,27 +410,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 15,
-  },
-  effectsSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 20,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  effectRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  effectLabel: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '500',
   },
   achievementsContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

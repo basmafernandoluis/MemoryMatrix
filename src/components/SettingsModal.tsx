@@ -1,6 +1,6 @@
 /**
  * Settings Modal Component
- * Allows users to configure sound and haptics preferences
+ * Allows users to configure sound, haptics, themes and visual effects
  */
 
 import React, { useState, useEffect } from 'react';
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Switch,
+  ScrollView,
 } from 'react-native';
 import { SPACING, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
 import { 
@@ -20,21 +21,33 @@ import {
   setHapticsEnabled 
 } from '../utils/soundManager';
 import { useTranslation } from '../hooks/useTranslation';
+import { useTheme } from '../context/ThemeContext';
+import { themeService } from '../services/themeService';
+import { ThemeSelector } from './ThemeSelector';
+import { UserProgress } from '../types';
 
 interface SettingsModalProps {
   visible: boolean;
   onClose: () => void;
   onOpenLanguageSelection?: () => void;
+  userId?: string;
+  userProgress?: UserProgress | null;
+  onProfileUpdated?: (progress: UserProgress) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ 
   visible, 
   onClose,
-  onOpenLanguageSelection 
+  onOpenLanguageSelection,
+  userId,
+  userProgress,
+  onProfileUpdated,
 }) => {
   const { t, currentLanguage } = useTranslation();
+  const { theme, userPreferences, colors } = useTheme();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hapticsEnabled, setHapticsEnabledState] = useState(true);
+  const [isThemeSelectorVisible, setIsThemeSelectorVisible] = useState(false);
 
   useEffect(() => {
     // Load current settings when modal opens
@@ -54,7 +67,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     await setHapticsEnabled(value);
   };
 
+  const calculateLevel = (xp: number): number => {
+    return Math.floor(xp / 100) + 1;
+  };
+
   return (
+    <>
     <Modal
       animationType="fade"
       transparent={true}
@@ -63,74 +81,194 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.title}>{t('settings.title')}</Text>
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Text style={styles.title}>{t('settings.title')}</Text>
 
-          {/* Language Selection */}
-          {onOpenLanguageSelection && (
+            {/* Language Selection */}
+            {onOpenLanguageSelection && (
+              <TouchableOpacity 
+                style={styles.languageRow}
+                onPress={() => {
+                  onClose();
+                  onOpenLanguageSelection();
+                }}
+              >
+                <View style={styles.settingInfo}>
+                  <Text style={styles.settingLabel}>🌐 {t('settings.language')}</Text>
+                  <Text style={styles.settingDescription}>
+                    {currentLanguage?.nativeName || 'Français'}
+                  </Text>
+                </View>
+                <Text style={styles.chevron}>›</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Themes Button */}
             <TouchableOpacity 
               style={styles.languageRow}
-              onPress={() => {
-                onClose();
-                onOpenLanguageSelection();
-              }}
+              onPress={() => setIsThemeSelectorVisible(true)}
             >
               <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>{t('settings.language')}</Text>
+                <Text style={styles.settingLabel}>🎨 {t('profile.themes')}</Text>
                 <Text style={styles.settingDescription}>
-                  {currentLanguage?.nativeName || 'Français'}
+                  {t('settings.chooseTheme')}
                 </Text>
               </View>
               <Text style={styles.chevron}>›</Text>
             </TouchableOpacity>
-          )}
 
-          {/* Sound Setting */}
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.sound')}</Text>
-              <Text style={styles.settingDescription}>
-                {t('settings.soundDescription')}
-              </Text>
+            {/* Sound Setting */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingInfo}>
+                <Text style={styles.settingLabel}>🔊 {t('settings.sound')}</Text>
+                <Text style={styles.settingDescription}>
+                  {t('settings.soundDescription')}
+                </Text>
+              </View>
+              <Switch
+                value={soundEnabled}
+                onValueChange={handleSoundToggle}
+                trackColor={{ 
+                  false: '#666666', 
+                  true: '#4CAF50' 
+                }}
+                thumbColor={soundEnabled ? '#fff' : '#f4f3f4'}
+                ios_backgroundColor="#666666"
+              />
             </View>
-            <Switch
-              value={soundEnabled}
-              onValueChange={handleSoundToggle}
-              trackColor={{ 
-                false: '#666666', 
-                true: '#4CAF50' 
-              }}
-              thumbColor={soundEnabled ? '#fff' : '#f4f3f4'}
-              ios_backgroundColor="#666666"
-            />
-          </View>
 
-          {/* Haptics Setting */}
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>{t('settings.haptics')}</Text>
-              <Text style={styles.settingDescription}>
-                {t('settings.hapticsDescription')}
-              </Text>
+            {/* Haptics Setting */}
+            <View style={styles.settingRow}>
+              <View style={styles.settingInfo}>
+                <Text style={styles.settingLabel}>📳 {t('settings.haptics')}</Text>
+                <Text style={styles.settingDescription}>
+                  {t('settings.hapticsDescription')}
+                </Text>
+              </View>
+              <Switch
+                value={hapticsEnabled}
+                onValueChange={handleHapticsToggle}
+                trackColor={{ 
+                  false: '#666666', 
+                  true: '#4CAF50' 
+                }}
+                thumbColor={hapticsEnabled ? '#fff' : '#f4f3f4'}
+                ios_backgroundColor="#666666"
+              />
             </View>
-            <Switch
-              value={hapticsEnabled}
-              onValueChange={handleHapticsToggle}
-              trackColor={{ 
-                false: '#666666', 
-                true: '#4CAF50' 
-              }}
-              thumbColor={hapticsEnabled ? '#fff' : '#f4f3f4'}
-              ios_backgroundColor="#666666"
-            />
-          </View>
 
-          {/* Close Button */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>{t('common.close')}</Text>
-          </TouchableOpacity>
+            {/* Visual Effects Section */}
+            {userId && (
+              <View style={styles.effectsSection}>
+                <Text style={styles.sectionTitle}>✨ {t('profile.visualEffects')}</Text>
+                
+                <View style={styles.effectRow}>
+                  <Text style={styles.effectLabel}>🎆 {t('profile.particles')}</Text>
+                  <Switch
+                    value={userPreferences?.effects.particlesEnabled ?? true}
+                    onValueChange={async (value) => {
+                      const newEffects = {
+                        ...userPreferences?.effects,
+                        ...theme.effects,
+                        particlesEnabled: value,
+                      };
+                      await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                    }}
+                    trackColor={{ false: '#666666', true: '#4CAF50' }}
+                    thumbColor={userPreferences?.effects.particlesEnabled ? '#fff' : '#f4f3f4'}
+                    ios_backgroundColor="#666666"
+                  />
+                </View>
+                
+                <View style={styles.effectRow}>
+                  <Text style={styles.effectLabel}>🎊 {t('profile.confetti')}</Text>
+                  <Switch
+                    value={userPreferences?.effects.confettiEnabled ?? true}
+                    onValueChange={async (value) => {
+                      const newEffects = {
+                        ...userPreferences?.effects,
+                        ...theme.effects,
+                        confettiEnabled: value,
+                      };
+                      await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                    }}
+                    trackColor={{ false: '#666666', true: '#4CAF50' }}
+                    thumbColor={userPreferences?.effects.confettiEnabled ? '#fff' : '#f4f3f4'}
+                    ios_backgroundColor="#666666"
+                  />
+                </View>
+                
+                <View style={styles.effectRow}>
+                  <Text style={styles.effectLabel}>✨ {t('profile.glowEffects')}</Text>
+                  <Switch
+                    value={userPreferences?.effects.glowEffects ?? true}
+                    onValueChange={async (value) => {
+                      const newEffects = {
+                        ...userPreferences?.effects,
+                        ...theme.effects,
+                        glowEffects: value,
+                      };
+                      await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                    }}
+                    trackColor={{ false: '#666666', true: '#4CAF50' }}
+                    thumbColor={userPreferences?.effects.glowEffects ? '#fff' : '#f4f3f4'}
+                    ios_backgroundColor="#666666"
+                  />
+                </View>
+                
+                <View style={[styles.effectRow, styles.lastEffectRow]}>
+                  <Text style={styles.effectLabel}>📳 {t('profile.shakeEffects')}</Text>
+                  <Switch
+                    value={userPreferences?.effects.shakeEffects ?? true}
+                    onValueChange={async (value) => {
+                      const newEffects = {
+                        ...userPreferences?.effects,
+                        ...theme.effects,
+                        shakeEffects: value,
+                      };
+                      await themeService.updateEffectsPreferences(userId, { effects: newEffects });
+                    }}
+                    trackColor={{ false: '#666666', true: '#4CAF50' }}
+                    thumbColor={userPreferences?.effects.shakeEffects ? '#fff' : '#f4f3f4'}
+                    ios_backgroundColor="#666666"
+                  />
+                </View>
+              </View>
+            )}
+
+            {/* Close Button */}
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Text style={styles.closeButtonText}>{t('common.close')}</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </View>
     </Modal>
+
+    {/* Theme Selector Modal */}
+    {userId && userProgress && (
+      <ThemeSelector
+        visible={isThemeSelectorVisible}
+        onClose={() => setIsThemeSelectorVisible(false)}
+        userCoins={userProgress.coins || 0}
+        userXP={userProgress.xp || 0}
+        userLevel={calculateLevel(userProgress.xp || 0)}
+        onCoinsChanged={async () => {
+          // Reload user progress after purchasing a theme
+          if (onProfileUpdated) {
+            const { firestoreService } = await import('../services/firestore');
+            const updatedProgress = await firestoreService.getUserProgress(userId);
+            if (updatedProgress) {
+              onProfileUpdated(updatedProgress);
+            }
+          }
+        }}
+      />
+    )}
+    </>
   );
 };
 
@@ -144,16 +282,19 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#1a1a2e',
     borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.xxl,
-    width: '85%',
-    maxWidth: 400,
+    width: '90%',
+    maxWidth: 450,
+    maxHeight: '85%',
     ...SHADOW.large,
+  },
+  scrollContent: {
+    padding: SPACING.xxl,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: SPACING.xxl,
+    marginBottom: SPACING.xl,
     textAlign: 'center',
   },
   languageRow: {
@@ -167,6 +308,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     marginHorizontal: -SPACING.md,
     marginBottom: SPACING.sm,
+    borderRadius: BORDER_RADIUS.md,
   },
   chevron: {
     fontSize: 28,
@@ -186,14 +328,42 @@ const styles = StyleSheet.create({
     marginRight: SPACING.lg,
   },
   settingLabel: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
     marginBottom: 4,
   },
   settingDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#a0a0a0',
+  },
+  effectsSection: {
+    marginTop: SPACING.lg,
+    paddingTop: SPACING.lg,
+    borderTopWidth: 2,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: SPACING.md,
+  },
+  effectRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  lastEffectRow: {
+    borderBottomWidth: 0,
+  },
+  effectLabel: {
+    fontSize: 15,
+    color: '#ffffff',
+    fontWeight: '500',
   },
   closeButton: {
     marginTop: SPACING.xxl,

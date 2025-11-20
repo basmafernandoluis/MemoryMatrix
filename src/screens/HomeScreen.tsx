@@ -470,6 +470,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         visible={showSettings}
         onClose={() => setShowSettings(false)}
         onOpenLanguageSelection={onOpenLanguageSelection}
+        userId={currentUserId || undefined}
+        userProgress={userProgress}
+        onProfileUpdated={(updatedProgress) => {
+          // This will be handled by parent component
+          console.log('Profile updated from settings:', updatedProgress);
+        }}
       />
 
       {/* Unlock Mode Animation */}
