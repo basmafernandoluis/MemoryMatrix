@@ -23,7 +23,8 @@
     "medium": "Médio",
     "hard": "Difícil",
     "appTitle": "Memory Matrix",
-    "byAppWizards": "Por AppWizards"
+    "byAppWizards": "Por AppWizards",
+    "later": "Mais tarde"
   },
 
   "login": {
@@ -344,6 +345,9 @@
     "subtitle": "Crie, aceite e vença duelos ⚔️",
     "newChallenge": "Novo desafio",
     "new": "🔔 Novo",
+    "challengeComplete": "Desafio Concluído! 🎉",
+    "viewResults": "Ambos os jogadores terminaram. Deseja ver os resultados agora?",
+    "viewNow": "Ver Resultados",
     "stats": {
       "challenges": "Desafios",
       "wins": "Vitórias",

@@ -18,6 +18,7 @@ interface GameOverScreenProps {
   onPlayAgain: () => void;
   onBackToHome: () => void;
   onContinue?: () => void; // Nouveau: callback pour continuer avec une vie
+  onNavigateToChallenges?: () => void; // Nouveau: navigation vers l'écran des défis
   mode?: GameMode;
   rank?: number;
   challengeId?: string;
@@ -31,6 +32,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
   onPlayAgain,
   onBackToHome,
   onContinue,
+  onNavigateToChallenges,
   mode = 'classic',
   rank,
   challengeId,
@@ -76,14 +78,40 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
     const submitChallengeScore = async () => {
       if (challengeId && userId && !scoreSubmitted) {
         try {
-          await friendChallengesService.submitChallengeScore(
+          const isChallengeCompleted = await friendChallengesService.submitChallengeScore(
             userId,
             challengeId,
             score,
             level
           );
           setScoreSubmitted(true);
-          console.log('Challenge score submitted:', { challengeId, score, level });
+          console.log('Challenge score submitted:', { challengeId, score, level, isChallengeCompleted });
+          
+          // Si le défi est terminé (les deux joueurs ont joué), afficher une alerte
+          if (isChallengeCompleted) {
+            setTimeout(() => {
+              Alert.alert(
+                t('friendChallenges.challengeComplete'),
+                t('friendChallenges.viewResults'),
+                [
+                  { 
+                    text: t('common.later'), 
+                    style: 'cancel',
+                    onPress: () => console.log('User chose to see results later')
+                  },
+                  { 
+                    text: t('friendChallenges.viewNow'),
+                    onPress: () => {
+                      console.log('Navigating to challenge history');
+                      if (onNavigateToChallenges) {
+                        onNavigateToChallenges();
+                      }
+                    }
+                  }
+                ]
+              );
+            }, 1500); // Petit délai pour que le joueur voie l'écran Game Over
+          }
         } catch (error) {
           console.error('Error submitting challenge score:', error);
         }
@@ -91,7 +119,7 @@ export const GameOverScreen: React.FC<GameOverScreenProps> = ({
     };
 
     submitChallengeScore();
-  }, [challengeId, userId, score, level, scoreSubmitted]);
+  }, [challengeId, userId, score, level, scoreSubmitted, onNavigateToChallenges, t]);
 
   // Afficher un interstitial quand le joueur arrive sur GameOver
   useEffect(() => {

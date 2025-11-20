@@ -23,7 +23,8 @@
     "medium": "中等",
     "hard": "困难",
     "appTitle": "Memory Matrix",
-    "byAppWizards": "由AppWizards制作"
+    "byAppWizards": "由AppWizards制作",
+    "later": "稍后"
   },
 
   "login": {
@@ -344,6 +345,9 @@
     "subtitle": "创建、接受并赢得对决 ⚔️",
     "newChallenge": "新挑战",
     "new": "🔔 新",
+    "challengeComplete": "挑战完成！🎉",
+    "viewResults": "双方玩家已完成。现在查看结果吗？",
+    "viewNow": "查看结果",
     "stats": {
       "challenges": "挑战",
       "wins": "胜利",

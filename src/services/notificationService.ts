@@ -432,11 +432,13 @@ class NotificationService {
       
       case 'challenge_score_submitted':
       case 'challenge_completed':
-        // Naviguer vers l'écran des défis, onglet approprié
-        const tab = type === 'challenge_completed' ? 'completed' : 'active';
-        console.log(`Navigating to friendChallenges/${tab}`);
+        // Naviguer vers l'écran des défis
+        // - challenge_score_submitted → onglet "Actifs" (partie en cours)
+        // - challenge_completed → onglet "Historique" (partie terminée, voir résultat et réclamer coins)
+        const tab = type === 'challenge_completed' ? 'history' : 'active';
+        console.log(`Navigating to friendChallenges/${tab} for challenge: ${challengeId}`);
         this.navigationCallback('friendChallenges', { 
-          tab: type === 'challenge_completed' ? 'completed' : 'active', 
+          tab, 
           challengeId 
         });
         break;

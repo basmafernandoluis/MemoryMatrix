@@ -23,7 +23,8 @@
     "medium": "Mittel",
     "hard": "Schwer",
     "appTitle": "Memory Matrix",
-    "byAppWizards": "Von AppWizards"
+    "byAppWizards": "Von AppWizards",
+    "later": "Später"
   },
 
   "login": {
@@ -344,6 +345,9 @@
     "subtitle": "Erstelle, akzeptiere und gewinne Duelle ⚔️",
     "newChallenge": "Neue Herausforderung",
     "new": "🔔 Neu",
+    "challengeComplete": "Herausforderung Abgeschlossen! 🎉",
+    "viewResults": "Beide Spieler haben gespielt. Möchten Sie die Ergebnisse jetzt sehen?",
+    "viewNow": "Ergebnisse Anzeigen",
     "stats": {
       "challenges": "Herausforderungen",
       "wins": "Siege",

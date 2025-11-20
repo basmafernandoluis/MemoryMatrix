@@ -169,13 +169,14 @@ class FriendChallengesService {
 
   /**
    * Soumettre un score pour un défi
+   * @returns true si le défi est terminé (les deux joueurs ont joué), false sinon
    */
   async submitChallengeScore(
     userId: string,
     challengeId: string,
     score: number,
     level: number
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       const challengeDoc = await this.challengesCollection.doc(challengeId).get();
 
@@ -301,7 +302,13 @@ class FriendChallengesService {
           // Le joueur devra cliquer sur "Réclamer" dans l'historique
           console.log(`🏆 User ${userId} won the challenge! Reward can be claimed from history.`);
         }
+        
+        // Retourner true car le défi est terminé
+        return true;
       }
+      
+      // Retourner false car le défi n'est pas encore terminé (un seul joueur a joué)
+      return false;
     } catch (error) {
       console.error('Error submitting challenge score:', error);
       throw error;

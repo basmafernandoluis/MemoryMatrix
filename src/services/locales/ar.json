@@ -23,7 +23,8 @@
     "medium": "متوسط",
     "hard": "صعب",
     "appTitle": "Memory Matrix",
-    "byAppWizards": "من إبداع AppWizards"
+    "byAppWizards": "من إبداع AppWizards",
+    "later": "لاحقاً"
   },
 
   "login": {
@@ -344,6 +345,9 @@
     "subtitle": "أنشئ، اقبل واربح المبارازات ⚔️",
     "newChallenge": "تحدي جديد",
     "new": "🔔 جديد",
+    "challengeComplete": "التحدي مكتمل! 🎉",
+    "viewResults": "أنهى كلا اللاعبين. هل تريد رؤية النتائج الآن؟",
+    "viewNow": "عرض النتائج",
     "stats": {
       "challenges": "التحديات",
       "wins": "الانتصارات",

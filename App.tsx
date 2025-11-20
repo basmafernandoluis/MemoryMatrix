@@ -312,6 +312,12 @@ export default function App() {
     transitionToScreen('home');
   };
 
+  const handleNavigateToChallengeHistory = () => {
+    // Navigate to friendChallenges History tab after challenge completion
+    setNotificationTab('history');
+    transitionToScreen('friendChallenges');
+  };
+
   const handleOpenLanguageSelection = () => {
     transitionToScreen('language');
   };
@@ -486,6 +492,7 @@ export default function App() {
             onPlayAgain={handlePlayAgain}
             onBackToHome={handleBackToHome}
             onContinue={handleContinueGame}
+            onNavigateToChallenges={handleNavigateToChallengeHistory}
             mode={selectedGameMode}
             challengeId={activeChallengeId}
             userId={currentUser?.uid}

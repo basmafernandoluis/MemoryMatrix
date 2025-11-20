@@ -23,7 +23,8 @@
     "medium": "Medio",
     "hard": "Difícil",
     "appTitle": "Memory Matrix",
-    "byAppWizards": "Por AppWizards"
+    "byAppWizards": "Por AppWizards",
+    "later": "Más tarde"
   },
 
   "login": {
@@ -344,6 +345,9 @@
     "subtitle": "Crea, acepta y gana duelos ⚔️",
     "newChallenge": "Nuevo desafío",
     "new": "🔔 Nuevo",
+    "challengeComplete": "¡Desafío Completado! 🎉",
+    "viewResults": "Ambos jugadores han terminado. ¿Quieres ver los resultados ahora?",
+    "viewNow": "Ver Resultados",
     "stats": {
       "challenges": "Desafíos",
       "wins": "Victorias",
