@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { friendsService } from '../services/friendsService';
+import { firestoreService } from '../services/firestore';
 import { Friend, FriendRequest, UserSearchResult, UserProgress } from '../types';
 import { BannerAdComponent } from '../components/BannerAdComponent';
 import { useTheme } from '../context/ThemeContext';
@@ -49,6 +50,7 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
   const [friends, setFriends] = useState<Friend[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
+  const [sentRequestsDetails, setSentRequestsDetails] = useState<Record<string, { name: string; avatar: string }>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +106,23 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
       ]);
       setReceivedRequests(received);
       setSentRequests(sent);
+      
+      // Charger les détails des destinataires pour les demandes envoyées
+      const details: Record<string, { name: string; avatar: string }> = {};
+      for (const request of sent) {
+        try {
+          const userDoc = await firestoreService.getUserProgress(request.toUserId);
+          if (userDoc) {
+            details[request.toUserId] = {
+              name: userDoc.displayName || 'Guest',
+              avatar: userDoc.avatarEmoji || '🎮',
+            };
+          }
+        } catch (err) {
+          console.error('Error loading user details:', err);
+        }
+      }
+      setSentRequestsDetails(details);
     } catch (error) {
       console.error('Error loading friend requests:', error);
     }
@@ -209,14 +228,18 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
             style={[styles.challengeButton, { backgroundColor: colors.primary }]}
             onPress={() => onChallengeFriend(item.userId)}
           >
-            <Text style={styles.challengeButtonText}>⚔️</Text>
+            <Text style={[styles.actionButtonText, { color: '#FFFFFF' }]}>
+              {t('friends.challenge')}
+            </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
           style={[styles.removeButton, { backgroundColor: colors.error }]}
           onPress={() => handleRemoveFriend(item.userId, item.displayName)}
         >
-          <Text style={styles.removeButtonText}>❌</Text>
+          <Text style={[styles.actionButtonText, { color: '#FFFFFF' }]}>
+            {t('friends.remove')}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -250,25 +273,33 @@ export const FriendsScreen: React.FC<FriendsScreenProps> = ({
     </View>
   );
 
-  const renderSentRequest = ({ item }: { item: FriendRequest }) => (
-    <View style={[styles.sentRequestCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <View style={styles.friendInfo}>
-        <Text style={styles.friendAvatar}>⏳</Text>
-        <View style={styles.friendDetails}>
-          <Text style={[styles.friendName, { color: colors.text }]}>Envoyée</Text>
-          <Text style={[styles.requestDate, { color: colors.textSecondary }]}>
-            {new Date(item.createdAt).toLocaleDateString('fr-FR')}
-          </Text>
+  const renderSentRequest = ({ item }: { item: FriendRequest }) => {
+    const recipientDetails = sentRequestsDetails[item.toUserId];
+    return (
+      <View style={[styles.sentRequestCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={styles.friendInfo}>
+          <Text style={styles.friendAvatar}>{recipientDetails?.avatar || '👤'}</Text>
+          <View style={styles.friendDetails}>
+            <Text style={[styles.friendName, { color: colors.text }]}>
+              {recipientDetails?.name || t('common.loading')}
+            </Text>
+            <Text style={[styles.sentRequestLabel, { color: colors.warning }]}>
+              ➤ {t('friends.waitingForResponse')}
+            </Text>
+            <Text style={[styles.requestDate, { color: colors.textSecondary }]}>
+              {t('friends.sentOn')} {new Date(item.createdAt).toLocaleDateString()}
+            </Text>
+          </View>
         </View>
+        <TouchableOpacity
+          style={[styles.cancelButton, { backgroundColor: colors.error }]}
+          onPress={() => handleCancelRequest(item.id)}
+        >
+          <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={[styles.cancelButton, { backgroundColor: colors.error }]}
-        onPress={() => handleCancelRequest(item.id)}
-      >
-        <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    );
+  };
 
   const renderSearchResult = ({ item }: { item: UserSearchResult }) => (
     <View style={[styles.searchCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -576,22 +607,22 @@ const styles = StyleSheet.create({
   challengeButton: {
     backgroundColor: '#FF9800',
     borderRadius: 8,
-    padding: 8,
-    minWidth: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    minWidth: 80,
     alignItems: 'center',
   },
-  challengeButtonText: {
-    fontSize: 18,
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   removeButton: {
     backgroundColor: '#f44336',
     borderRadius: 8,
-    padding: 8,
-    minWidth: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    minWidth: 80,
     alignItems: 'center',
-  },
-  removeButtonText: {
-    fontSize: 18,
   },
   requestCard: {
     flexDirection: 'row',
@@ -608,6 +639,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#666',
     marginTop: 2,
+  },
+  sentRequestLabel: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginTop: 4,
+    marginBottom: 2,
   },
   requestActions: {
     flexDirection: 'row',

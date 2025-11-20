@@ -97,35 +97,63 @@ export class LeaderboardService {
           level, // Dernier niveau atteint
         }, { merge: true });
 
-      // Save to daily leaderboard (avec mode)
+      // Save to daily leaderboard (avec mode) - GARDER LE MEILLEUR SCORE
+      const dailyDocId = `daily_${today}_${mode}_${userId}`;
+      const dailyDoc = await firestore()
+        .collection(this.COLLECTION)
+        .doc(dailyDocId)
+        .get();
+      
+      const dailyData = dailyDoc.exists() ? dailyDoc.data() : null;
+      const currentDailyScore = dailyData?.[modeScoreField] || 0;
+      const currentDailyGlobal = dailyData?.globalScore || 0;
+      
+      // Ne sauvegarder que si c'est un MEILLEUR score
+      const newDailyScore = Math.max(currentDailyScore, score);
+      const newDailyGlobal = Math.max(currentDailyGlobal, globalPoints);
+      
       await firestore()
         .collection(this.COLLECTION)
-        .doc(`daily_${today}_${mode}_${userId}`)
+        .doc(dailyDocId)
         .set({
           ...baseData,
-          [modeScoreField]: score,
-          globalScore: globalPoints,
+          [modeScoreField]: newDailyScore, // ✅ MEILLEUR score du jour
+          globalScore: newDailyGlobal,
           timestamp: firestore.FieldValue.serverTimestamp(),
           period: 'daily',
           date: today,
           mode,
-          level,
+          level: newDailyScore > currentDailyScore ? level : (dailyData?.level || level), // Niveau du meilleur score
         }, { merge: true });
 
-      // Save to weekly leaderboard (avec mode)
+      // Save to weekly leaderboard (avec mode) - GARDER LE MEILLEUR SCORE
+      const weeklyDocId = `weekly_${year}_${weekNumber}_${mode}_${userId}`;
+      const weeklyDoc = await firestore()
+        .collection(this.COLLECTION)
+        .doc(weeklyDocId)
+        .get();
+      
+      const weeklyData = weeklyDoc.exists() ? weeklyDoc.data() : null;
+      const currentWeeklyScore = weeklyData?.[modeScoreField] || 0;
+      const currentWeeklyGlobal = weeklyData?.globalScore || 0;
+      
+      // Ne sauvegarder que si c'est un MEILLEUR score
+      const newWeeklyScore = Math.max(currentWeeklyScore, score);
+      const newWeeklyGlobal = Math.max(currentWeeklyGlobal, globalPoints);
+      
       await firestore()
         .collection(this.COLLECTION)
-        .doc(`weekly_${year}_${weekNumber}_${mode}_${userId}`)
+        .doc(weeklyDocId)
         .set({
           ...baseData,
-          [modeScoreField]: score,
-          globalScore: globalPoints,
+          [modeScoreField]: newWeeklyScore, // ✅ MEILLEUR score de la semaine
+          globalScore: newWeeklyGlobal,
           timestamp: firestore.FieldValue.serverTimestamp(),
           period: 'weekly',
           week: weekNumber,
           year,
           mode,
-          level,
+          level: newWeeklyScore > currentWeeklyScore ? level : (weeklyData?.level || level), // Niveau du meilleur score
         }, { merge: true });
     } catch (error) {
       console.error('Error saving score to leaderboard:', error);

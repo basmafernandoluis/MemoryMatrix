@@ -306,6 +306,11 @@
     "accept": "接受",
     "reject": "拒绝",
     "remove": "移除",
+    "challenge": "挑战",
+    "waitingForResponse": "等待回复",
+    "sentOn": "发送于",
+    "requestsReceived": "收到的请求",
+    "requestsSent": "已发送的请求",
     "tabs": {
       "friends": "好友 ({{count}})",
       "requests": "请求 ({{count}})",

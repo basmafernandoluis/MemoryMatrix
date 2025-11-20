@@ -15,6 +15,7 @@ import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { UserProgress, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
 import { useTheme } from '../context/ThemeContext';
+import { notificationService } from '../services/notificationService';
 
 interface GameScreenProps {
   onGameOver: (score: number, level: number) => void;
@@ -72,6 +73,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   useEffect(() => {
     startGame(mode);
     challengeTracking.resetGameStats();
+    
+    // Signaler que la partie commence
+    notificationService.setGameActive(true);
+    
+    // Cleanup: signaler que la partie est terminée
+    return () => {
+      notificationService.setGameActive(false);
+    };
   }, [mode]);
 
   // Handle continue after rewarded ad

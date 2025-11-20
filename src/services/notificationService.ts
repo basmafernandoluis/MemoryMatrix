@@ -42,11 +42,20 @@ class NotificationService {
   private handlersSetup: boolean = false;
   private clickHandlersSetup: boolean = false;
   private pendingNotification: FirebaseMessagingTypes.RemoteMessage | null = null;
+  private isGameActive: boolean = false; // Flag pour suivre si une partie est en cours
 
   constructor() {
     // Configurer les handlers de clic IMMÉDIATEMENT, même sans callback
     // Si une notification est cliquée, on la garde en attente
     this.setupClickHandlers();
+  }
+
+  /**
+   * Définir si une partie est active (empêche les alertes)
+   */
+  setGameActive(active: boolean): void {
+    console.log(`[NotificationService] Game active state changed: ${active}`);
+    this.isGameActive = active;
   }
 
   /**
@@ -190,9 +199,11 @@ class NotificationService {
             break;
           case 'challenge_completed':
             console.log('Case: challenge_completed');
-            const wonValue = String(data.won);
-            const won = wonValue === 'true' || wonValue === 'True';
-            if (won) {
+            // Vérifier isWinner (envoyé par notifyChallengeCompleted)
+            const isWinnerValue = data.isWinner !== undefined ? String(data.isWinner) : String(data.won);
+            const isWinner = isWinnerValue === 'true' || isWinnerValue === 'True';
+            
+            if (isWinner) {
               title = i18n.t('notifications.victory');
               body = i18n.t('notifications.victoryBody', { 
                 name: data.opponentName || data.senderName || 'votre adversaire' 
@@ -201,7 +212,7 @@ class NotificationService {
               title = i18n.t('notifications.defeat');
               body = i18n.t('notifications.defeatBody', { 
                 name: data.opponentName || data.senderName || 'votre adversaire',
-                points: data.points || data.score || '0'
+                points: data.scoreDifference || data.points || data.score || '0'
               });
             }
             break;
@@ -234,6 +245,13 @@ class NotificationService {
         
         console.log('Final alert - title:', title);
         console.log('Final alert - body:', body);
+        console.log('Game active:', this.isGameActive);
+        
+        // Ne pas afficher d'alerte pendant une partie en cours
+        if (this.isGameActive) {
+          console.log('[NotificationService] Game is active - notification suppressed, will show in notification tray');
+          return; // La notification reste visible dans la barre de notification
+        }
         
         Alert.alert(
           title,
@@ -520,6 +538,15 @@ class NotificationService {
     isWinner: boolean,
     scoreDifference?: number
   ): Promise<void> {
+    console.log('[DEBUG] notifyChallengeCompleted called:', {
+      recipientId,
+      opponentId,
+      opponentName,
+      challengeId,
+      isWinner,
+      scoreDifference
+    });
+    
     const title = isWinner 
       ? i18n.t('notifications.victory') 
       : i18n.t('notifications.defeat');
@@ -529,6 +556,13 @@ class NotificationService {
           name: opponentName, 
           points: scoreDifference || 0 
         });
+
+    console.log('[DEBUG] Notification content:', {
+      title,
+      body,
+      isWinner,
+      message: isWinner ? 'VICTORY message' : 'DEFEAT message'
+    });
 
     await this.sendNotification(recipientId, {
       type: 'challenge_completed',

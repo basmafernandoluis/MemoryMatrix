@@ -306,6 +306,11 @@
     "accept": "Aceptar",
     "reject": "Rechazar",
     "remove": "Eliminar",
+    "challenge": "Desafiar",
+    "waitingForResponse": "Esperando respuesta",
+    "sentOn": "Enviada el",
+    "requestsReceived": "Solicitudes Recibidas",
+    "requestsSent": "Solicitudes Enviadas",
     "tabs": {
       "friends": "Amigos ({{count}})",
       "requests": "Solicitudes ({{count}})",

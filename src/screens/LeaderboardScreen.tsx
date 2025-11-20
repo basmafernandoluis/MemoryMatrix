@@ -202,8 +202,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({ onBack, cu
           onPress={handleBack}
           color={colors.primary}
           backgroundColor={colors.surface}
-          label=""
-          style={{ width:40, justifyContent:'center' }}
         />
         <Text style={[styles.title, { color: colors.text }]}>{t('leaderboard.title')}</Text>
         <View style={styles.placeholder} />
@@ -466,21 +464,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.lg,
     backgroundColor: COLORS.background,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: COLORS.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonPressed: {
-    opacity: 0.7,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: COLORS.text,
   },
   title: {
     fontSize: 24,

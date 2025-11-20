@@ -306,6 +306,9 @@
     "accept": "Accepter",
     "reject": "Refuser",
     "remove": "Retirer",
+    "challenge": "Défier",
+    "waitingForResponse": "En attente de réponse",
+    "sentOn": "Envoyée le",
     "tabs": {
       "friends": "Amis ({{count}})",
       "requests": "Demandes ({{count}})",

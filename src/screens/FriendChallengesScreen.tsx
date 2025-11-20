@@ -151,7 +151,10 @@ export const FriendChallengesScreen: React.FC<FriendChallengesScreenProps> = ({
     try {
       await friendChallengesService.acceptChallenge(userId, challengeId);
       Alert.alert(t('common.success'), t('friendChallenges.alerts.challengeAccepted'));
-      loadData();
+      // Recharger les données AVANT de basculer vers l'onglet Actif
+      await loadData();
+      // Basculer vers l'onglet Actif après que les données soient chargées
+      setActiveTab('active');
     } catch (error: any) {
       Alert.alert(t('common.error'), error.message || t('friendChallenges.errors.acceptFailed'));
     }

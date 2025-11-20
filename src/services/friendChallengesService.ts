@@ -258,18 +258,39 @@ class FriendChallengesService {
       if (updateData.status === 'completed' && updateData.winnerId) {
         const isCurrentUserWinner = updateData.winnerId === userId;
         
+        console.log('[DEBUG] Challenge completed notification:', {
+          challengeId,
+          winnerId: updateData.winnerId,
+          currentUserId: userId,
+          isCurrentUserWinner,
+          opponentId,
+          challengerScore: updatedChallenge.challengerScore,
+          opponentScore: updatedChallenge.opponentScore
+        });
+        
         const scoreDiff = Math.abs(
           (updatedChallenge.challengerScore || 0) - (updatedChallenge.opponentScore || 0)
         );
 
         // Notifier uniquement l'adversaire (pas soi-même)
         // L'utilisateur actuel est le senderId (celui qui vient de jouer)
+        // isWinner pour l'adversaire = inverse de isCurrentUserWinner
+        const isOpponentWinner = !isCurrentUserWinner;
+        
+        console.log('[DEBUG] Sending notification to opponent:', {
+          recipientId: opponentId,
+          senderId: userId,
+          senderName: playerName,
+          isOpponentWinner,
+          message: isOpponentWinner ? 'VICTORY for opponent' : 'DEFEAT for opponent'
+        });
+        
         await notificationService.notifyChallengeCompleted(
           opponentId, // destinataire
           userId, // expéditeur (joueur actuel)
           playerName, // nom de l'expéditeur
           challengeId,
-          !isCurrentUserWinner, // l'adversaire a gagné si on a perdu
+          isOpponentWinner, // l'adversaire a gagné si le joueur actuel a perdu
           scoreDiff
         );
         

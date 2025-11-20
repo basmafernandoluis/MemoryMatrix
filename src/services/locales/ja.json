@@ -306,6 +306,11 @@
     "accept": "承認",
     "reject": "拒否",
     "remove": "削除",
+    "challenge": "挑戦",
+    "waitingForResponse": "応答待ち",
+    "sentOn": "送信日",
+    "requestsReceived": "受信リクエスト",
+    "requestsSent": "送信リクエスト",
     "tabs": {
       "friends": "フレンド ({{count}})",
       "requests": "リクエスト ({{count}})",

@@ -306,6 +306,11 @@
     "accept": "قبول",
     "reject": "رفض",
     "remove": "إزالة",
+    "challenge": "تحدي",
+    "waitingForResponse": "في انتظار الرد",
+    "sentOn": "تم الإرسال في",
+    "requestsReceived": "الطلبات المستلمة",
+    "requestsSent": "الطلبات المرسلة",
     "tabs": {
       "friends": "الأصدقاء ({{count}})",
       "requests": "الطلبات ({{count}})",
