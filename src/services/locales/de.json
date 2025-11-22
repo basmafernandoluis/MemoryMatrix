@@ -490,7 +490,8 @@
         "emptyName": "Benutzername darf nicht leer sein",
         "tooShort": "Benutzername muss mindestens 3 Zeichen lang sein",
         "tooLong": "Benutzername darf nicht länger als 20 Zeichen sein",
-        "saveFailed": "Profil konnte nicht gespeichert werden"
+        "saveFailed": "Profil konnte nicht gespeichert werden",
+        "nameTaken": "Dieser Benutzername wird bereits von einem anderen Spieler verwendet"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "Du hast {{name}} besiegt!",
     "defeat": "Niederlage 😔",
     "defeatBody": "{{name}} hat dich um {{points}} Punkte besiegt",
-    "newAchievement": "🎉 Errungenschaft freigeschaltet: {{achievement}}"
+    "newAchievement": "🎉 Errungenschaft freigeschaltet: {{achievement}}",
+    "permission": {
+      "title": "Bleibe verbunden!",
+      "description": "Aktiviere Benachrichtigungen, um keine wichtigen Momente zu verpassen und mit deinen Freunden in Kontakt zu bleiben.",
+      "benefit1Title": "Echtzeit-Herausforderungen",
+      "benefit1Description": "Werde benachrichtigt, wenn deine Freunde dich herausfordern und antworte sofort.",
+      "benefit2Title": "Freundesanfragen",
+      "benefit2Description": "Erhalte neue Freundesanfragen sofort.",
+      "benefit3Title": "Tägliche Herausforderungen",
+      "benefit3Description": "Erinnerungen an deine täglichen Herausforderungen, um nie eine Chance auf Belohnungen zu verpassen.",
+      "allow": "Benachrichtigungen aktivieren",
+      "skip": "Später",
+      "info": "Du kannst diese Einstellung jederzeit in den Einstellungen ändern."
+    }
   },
 
   "tips": {

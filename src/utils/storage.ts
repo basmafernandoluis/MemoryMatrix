@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   USER_PROGRESS: '@MemoryMatrix:userProgress',
   HIGH_SCORE: '@MemoryMatrix:highScore',
   ONBOARDING_COMPLETED: '@MemoryMatrix:onboardingCompleted',
+  NOTIFICATION_PERMISSION_ASKED: '@MemoryMatrix:notificationPermissionAsked',
 };
 
 // Helper to get today's date in YYYY-MM-DD format
@@ -217,6 +218,26 @@ export const setOnboardingCompleted = async (): Promise<void> => {
     await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
   } catch (error) {
     console.error('Error setting onboarding completed:', error);
+  }
+};
+
+// Check if notification permission has been asked
+export const hasAskedNotificationPermission = async (): Promise<boolean> => {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.NOTIFICATION_PERMISSION_ASKED);
+    return value === 'true';
+  } catch (error) {
+    console.error('Error checking notification permission status:', error);
+    return false;
+  }
+};
+
+// Mark notification permission as asked
+export const setNotificationPermissionAsked = async (): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_PERMISSION_ASKED, 'true');
+  } catch (error) {
+    console.error('Error setting notification permission asked:', error);
   }
 };
 

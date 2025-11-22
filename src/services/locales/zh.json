@@ -490,7 +490,8 @@
         "emptyName": "用户名不能为空",
         "tooShort": "用户名必须至少3个字符",
         "tooLong": "用户名不能超过20个字符",
-        "saveFailed": "无法保存个人资料"
+        "saveFailed": "无法保存个人资料",
+        "nameTaken": "此用户名已被其他玩家使用"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "你击败了 {{name}}！",
     "defeat": "失败 😔",
     "defeatBody": "{{name}} 以 {{points}} 分击败了你",
-    "newAchievement": "🎉 成就已解锁: {{achievement}}"
+    "newAchievement": "🎉 成就已解锁: {{achievement}}",
+    "permission": {
+      "title": "保持联系！",
+      "description": "启用通知以不错过任何重要时刻，与朋友保持联系。",
+      "benefit1Title": "实时挑战",
+      "benefit1Description": "当朋友向你发起挑战时收到通知并立即响应。",
+      "benefit2Title": "好友请求",
+      "benefit2Description": "即时接收新的好友请求。",
+      "benefit3Title": "每日挑战",
+      "benefit3Description": "每日挑战提醒，让你不错过赢取奖励的机会。",
+      "allow": "启用通知",
+      "skip": "稍后",
+      "info": "你可以随时在设置中更改此设置。"
+    }
   },
 
   "tips": {

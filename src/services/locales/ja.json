@@ -490,7 +490,8 @@
         "emptyName": "ユーザー名必須",
         "tooShort": "ユーザー名は3文字以上",
         "tooLong": "ユーザー名は20文字以内",
-        "saveFailed": "プロフィール保存失敗"
+        "saveFailed": "プロフィール保存失敗",
+        "nameTaken": "このユーザー名は既に他のプレイヤーに使用されています"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "{{name}}を勝利！",
     "defeat": "敗北 😔",
     "defeatBody": "{{name}}に{{points}}ポイント差で敗北",
-    "newAchievement": "🎉 実績解除: {{achievement}}"
+    "newAchievement": "🎉 実績解除: {{achievement}}",
+    "permission": {
+      "title": "つながり続けましょう！",
+      "description": "重要な瞬間を見逃さず、友達との連絡を保つために通知を有効にしてください。",
+      "benefit1Title": "リアルタイムチャレンジ",
+      "benefit1Description": "友達から挑戦を受けたときに通知を受け取り、即座に応答できます。",
+      "benefit2Title": "フレンドリクエスト",
+      "benefit2Description": "新しいフレンドリクエストを即座に受信します。",
+      "benefit3Title": "デイリーチャレンジ",
+      "benefit3Description": "報酬獲得のチャンスを逃さないためのデイリーチャレンジのリマインダー。",
+      "allow": "通知を有効にする",
+      "skip": "後で",
+      "info": "この設定は設定からいつでも変更できます。"
+    }
   },
 
   "tips": {

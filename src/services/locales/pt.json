@@ -490,7 +490,8 @@
         "emptyName": "Nome de usuário não pode estar vazio",
         "tooShort": "Nome de usuário deve ter pelo menos 3 caracteres",
         "tooLong": "Nome de usuário não pode exceder 20 caracteres",
-        "saveFailed": "Não foi possível salvar o perfil"
+        "saveFailed": "Não foi possível salvar o perfil",
+        "nameTaken": "Este nome de usuário já está sendo usado por outro jogador"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "Você venceu {{name}}!",
     "defeat": "Derrota 😔",
     "defeatBody": "{{name}} venceu você por {{points}} pontos",
-    "newAchievement": "🎉 Conquista desbloqueada: {{achievement}}"
+    "newAchievement": "🎉 Conquista desbloqueada: {{achievement}}",
+    "permission": {
+      "title": "Fique conectado!",
+      "description": "Ative as notificações para não perder nenhum momento importante e manter contato com seus amigos.",
+      "benefit1Title": "Desafios em tempo real",
+      "benefit1Description": "Seja notificado quando seus amigos te desafiarem e responda instantaneamente.",
+      "benefit2Title": "Solicitações de amizade",
+      "benefit2Description": "Receba novas solicitações de amizade instantaneamente.",
+      "benefit3Title": "Desafios diários",
+      "benefit3Description": "Lembretes dos seus desafios diários para nunca perder uma oportunidade de ganhar recompensas.",
+      "allow": "Ativar notificações",
+      "skip": "Mais tarde",
+      "info": "Você pode alterar esta configuração a qualquer momento nas configurações."
+    }
   },
 
   "tips": {

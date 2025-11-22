@@ -490,7 +490,8 @@
         "emptyName": "Username cannot be empty",
         "tooShort": "Username must be at least 3 characters",
         "tooLong": "Username cannot exceed 20 characters",
-        "saveFailed": "Unable to save profile"
+        "saveFailed": "Unable to save profile",
+        "nameTaken": "This username is already taken by another player"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "You beat {{name}}!",
     "defeat": "Defeat 😔",
     "defeatBody": "{{name}} beat you by {{points}} points",
-    "newAchievement": "🎉 Achievement unlocked: {{achievement}}"
+    "newAchievement": "🎉 Achievement unlocked: {{achievement}}",
+    "permission": {
+      "title": "Stay Connected!",
+      "description": "Enable notifications to never miss a challenge or friend request.",
+      "benefit1Title": "Real-time Challenges",
+      "benefit1Description": "Get notified when friends challenge you or finish a game",
+      "benefit2Title": "Friend Requests",
+      "benefit2Description": "Instantly receive new friendship requests",
+      "benefit3Title": "Daily Challenges",
+      "benefit3Description": "Reminders for your daily challenges and streaks",
+      "allow": "Enable Notifications",
+      "skip": "Later",
+      "info": "You can change this setting anytime in settings"
+    }
   },
 
   "tips": {

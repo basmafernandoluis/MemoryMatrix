@@ -14,7 +14,7 @@ import MobileAds, {
   TestIds,
   InterstitialAd,
   AdEventType,
-  RewardedAd,
+  RewardedInterstitialAd,
   RewardedAdEventType,
 } from 'react-native-google-mobile-ads';
 
@@ -29,7 +29,7 @@ const ADMOB_IDS = {
 const TEST_IDS = {
   BANNER: TestIds.BANNER,
   INTERSTITIAL: TestIds.INTERSTITIAL,
-  REWARDED: TestIds.REWARDED,
+  REWARDED: TestIds.REWARDED_INTERSTITIAL, // Utiliser l'ID de test pour Rewarded Interstitial
 };
 
 // Utiliser les test IDs en développement, production en release
@@ -69,7 +69,7 @@ class AdManagerService {
   private adsShownThisSession: number = 0;
   private sessionStartTime: number = Date.now();
   
-  private rewardedAd: RewardedAd | null = null;
+  private rewardedAd: RewardedInterstitialAd | null = null;
   private rewardedLoaded: boolean = false;
   private rewardedRetryCount: number = 0;
   private rewardedRetryTimeout: NodeJS.Timeout | null = null;
@@ -154,7 +154,7 @@ class AdManagerService {
   }
 
   /**
-   * Précharger une publicité vidéo récompensée
+   * Précharger une publicité Rewarded Interstitial (interstitiel avec récompense)
    * Conforme à Families Policy avec filtrage de contenu
    * IMPORTANT: En production, les rewarded ads ont un taux de remplissage plus faible
    * et nécessitent des retry plus agressifs
@@ -166,9 +166,9 @@ class AdManagerService {
       this.rewardedRetryTimeout = null;
     }
 
-    console.log(`[REWARDED] Loading rewarded ad (attempt ${this.rewardedRetryCount + 1})`);
+    console.log(`[REWARDED_INTERSTITIAL] Loading rewarded interstitial ad (attempt ${this.rewardedRetryCount + 1})`);
     
-    this.rewardedAd = RewardedAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
+    this.rewardedAd = RewardedInterstitialAd.createForAdRequest(AD_UNIT_IDS.REWARDED, {
       requestNonPersonalizedAdsOnly: true, // Pas de publicité personnalisée pour les enfants
       // Keywords optimisés pour maximiser le fill rate et les revenus
       // Catégories à haute valeur: Jeux, Éducation, Famille, Apps mobiles
@@ -194,17 +194,17 @@ class AdManagerService {
     });
     
     this.rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
-      console.log('[REWARDED] ✅ Rewarded ad loaded successfully (child-safe, non-personalized)');
+      console.log('[REWARDED_INTERSTITIAL] ✅ Rewarded interstitial ad loaded successfully (child-safe, non-personalized)');
       this.rewardedLoaded = true;
       this.rewardedRetryCount = 0; // Reset retry counter sur succès
     });
 
     this.rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, (reward) => {
-      console.log('[REWARDED] 🎁 User earned reward:', reward);
+      console.log('[REWARDED_INTERSTITIAL] 🎁 User earned reward:', reward);
     });
 
     this.rewardedAd.addAdEventListener(AdEventType.ERROR, (error) => {
-      console.error('[REWARDED] ❌ Failed to load:', error);
+      console.error('[REWARDED_INTERSTITIAL] ❌ Failed to load:', error);
       this.rewardedLoaded = false;
       
       // Stratégie de retry agressive avec backoff exponentiel
@@ -215,7 +215,7 @@ class AdManagerService {
       const delayIndex = Math.min(this.rewardedRetryCount - 1, retryDelays.length - 1);
       const retryDelay = retryDelays[delayIndex];
       
-      console.log(`[REWARDED] Retry #${this.rewardedRetryCount} in ${retryDelay / 1000}s...`);
+      console.log(`[REWARDED_INTERSTITIAL] Retry #${this.rewardedRetryCount} in ${retryDelay / 1000}s...`);
       
       this.rewardedRetryTimeout = setTimeout(() => {
         this.loadRewarded();
@@ -223,7 +223,7 @@ class AdManagerService {
     });
 
     this.rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
-      console.log('[REWARDED] 👋 Rewarded ad closed');
+      console.log('[REWARDED_INTERSTITIAL] 👋 Rewarded interstitial ad closed');
       this.rewardedLoaded = false;
       this.rewardedRetryCount = 0; // Reset pour le prochain chargement
       // Précharger la prochaine après 2 secondes
@@ -331,7 +331,7 @@ class AdManagerService {
    */
   isRewardedAvailable(): boolean {
     const available = this.initialized && this.rewardedLoaded;
-    console.log('[REWARDED] isRewardedAvailable():', {
+    console.log('[REWARDED_INTERSTITIAL] isRewardedAvailable():', {
       initialized: this.initialized,
       loaded: this.rewardedLoaded,
       available,
@@ -343,14 +343,14 @@ class AdManagerService {
   }
 
   /**
-   * Afficher une vidéo récompensée
+   * Afficher une vidéo récompensée (Rewarded Interstitial)
    * Retourne une Promise qui résout avec le statut de succès
    */
   async showRewarded(onReward: () => void): Promise<boolean> {
-    console.log('[REWARDED] showRewarded() called');
+    console.log('[REWARDED_INTERSTITIAL] showRewarded() called');
     
     if (!this.isRewardedAvailable() || !this.rewardedAd) {
-      console.error('[REWARDED] ❌ Rewarded ad not available', {
+      console.error('[REWARDED_INTERSTITIAL] ❌ Rewarded interstitial ad not available', {
         initialized: this.initialized,
         loaded: this.rewardedLoaded,
         hasAdInstance: !!this.rewardedAd,
@@ -359,7 +359,7 @@ class AdManagerService {
       
       // Si l'annonce n'est pas chargée, déclencher un retry immédiat
       if (this.initialized && !this.rewardedLoaded) {
-        console.log('[REWARDED] 🔄 Triggering immediate reload...');
+        console.log('[REWARDED_INTERSTITIAL] 🔄 Triggering immediate reload...');
         this.loadRewarded();
       }
       
@@ -367,13 +367,13 @@ class AdManagerService {
     }
 
     try {
-      console.log('[REWARDED] 🎬 Attempting to show rewarded ad...');
+      console.log('[REWARDED_INTERSTITIAL] 🎬 Attempting to show rewarded interstitial ad...');
       
       // Écouter l'événement de récompense
       const unsubscribe = this.rewardedAd.addAdEventListener(
         RewardedAdEventType.EARNED_REWARD,
         (reward) => {
-          console.log('[REWARDED] 🎁 User earned reward:', reward);
+          console.log('[REWARDED_INTERSTITIAL] 🎁 User earned reward:', reward);
           onReward();
           unsubscribe();
         }
@@ -382,13 +382,13 @@ class AdManagerService {
       await this.rewardedAd.show();
       this.rewardedLoaded = false; // Sera rechargé via l'event CLOSED
       
-      console.log('[REWARDED] ✅ Rewarded ad shown successfully');
+      console.log('[REWARDED_INTERSTITIAL] ✅ Rewarded interstitial ad shown successfully');
       return true;
     } catch (error) {
-      console.error('[REWARDED] ❌ Error showing rewarded ad:', error);
+      console.error('[REWARDED_INTERSTITIAL] ❌ Error showing rewarded interstitial ad:', error);
       
       // En cas d'erreur d'affichage, recharger immédiatement
-      console.log('[REWARDED] 🔄 Reloading after show error...');
+      console.log('[REWARDED_INTERSTITIAL] 🔄 Reloading after show error...');
       this.rewardedLoaded = false;
       this.loadRewarded();
       

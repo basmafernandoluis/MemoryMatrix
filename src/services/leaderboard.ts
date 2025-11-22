@@ -80,6 +80,10 @@ export class LeaderboardService {
       const currentModeBest = existingData?.[modeScoreField] || 0;
       const newModeBest = Math.max(currentModeBest, score);
       
+      // Mettre à jour le meilleur niveau atteint (maximum)
+      const currentMaxLevel = existingData?.level || 1;
+      const newMaxLevel = Math.max(currentMaxLevel, level);
+      
       // Save to all-time leaderboard
       await firestore()
         .collection(this.COLLECTION)
@@ -94,7 +98,7 @@ export class LeaderboardService {
           focusChallengeBest: mode === 'focusChallenge' ? newModeBest : (existingData?.focusChallengeBest || 0),
           timestamp: firestore.FieldValue.serverTimestamp(),
           period: 'alltime',
-          level, // Dernier niveau atteint
+          level: newMaxLevel, // Meilleur niveau atteint (pas le dernier)
         }, { merge: true });
 
       // Save to daily leaderboard (avec mode) - GARDER LE MEILLEUR SCORE

@@ -490,7 +490,8 @@
         "emptyName": "Le pseudo ne peut pas être vide",
         "tooShort": "Le pseudo doit contenir au moins 3 caractères",
         "tooLong": "Le pseudo ne peut pas dépasser 20 caractères",
-        "saveFailed": "Impossible de sauvegarder le profil"
+        "saveFailed": "Impossible de sauvegarder le profil",
+        "nameTaken": "Ce pseudo est déjà utilisé par un autre joueur"
       }
     }
   },
@@ -650,7 +651,20 @@
     "victoryBody": "Vous avez battu {{name}} !",
     "defeat": "Défaite 😔",
     "defeatBody": "{{name}} vous a battu de {{points}} points",
-    "newAchievement": "🎉 Succès débloqué : {{achievement}}"
+    "newAchievement": "🎉 Succès débloqué : {{achievement}}",
+    "permission": {
+      "title": "Restez connecté !",
+      "description": "Activez les notifications pour ne jamais manquer un défi ou une demande d'ami.",
+      "benefit1Title": "Défis en temps réel",
+      "benefit1Description": "Soyez averti quand vos amis vous défient ou terminent une partie",
+      "benefit2Title": "Demandes d'amis",
+      "benefit2Description": "Recevez instantanément les nouvelles demandes d'amitié",
+      "benefit3Title": "Défis quotidiens",
+      "benefit3Description": "Rappels pour vos défis et streaks quotidiens",
+      "allow": "Activer les notifications",
+      "skip": "Plus tard",
+      "info": "Vous pouvez changer ce paramètre à tout moment dans les réglages"
+    }
   },
 
   "tips": {

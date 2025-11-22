@@ -13,9 +13,10 @@ import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ChallengesScreen } from './src/screens/ChallengesScreen';
 import { FriendsScreen } from './src/screens/FriendsScreen';
 import { FriendChallengesScreen } from './src/screens/FriendChallengesScreen';
+import { NotificationPermissionScreen } from './src/screens/NotificationPermissionScreen';
 import { EditProfileModal } from './src/components/EditProfileModal';
 import { initializeAudio, playIntroSound } from './src/utils/soundManager';
-import { hasCompletedOnboarding, setOnboardingCompleted } from './src/utils/storage';
+import { hasCompletedOnboarding, setOnboardingCompleted, hasAskedNotificationPermission, setNotificationPermissionAsked as saveNotificationPermissionAsked } from './src/utils/storage';
 import { UserProgress, GameMode } from './src/types';
 import { firebaseService, FirebaseUser } from './src/services/firebase';
 import { firestoreService } from './src/services/firestore';
@@ -27,7 +28,7 @@ import { i18nService } from './src/services/i18nService';
 import { LanguageSelectionScreen } from './src/screens/LanguageSelectionScreen';
 import { useTranslation } from './src/hooks/useTranslation';
 
-type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges' | 'language';
+type Screen = 'onboarding' | 'login' | 'home' | 'game' | 'gameover' | 'leaderboard' | 'profile' | 'challenges' | 'friends' | 'friendChallenges' | 'language' | 'notificationPermission';
 
 export default function App() {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedGameMode, setSelectedGameMode] = useState<GameMode>('classic');
   const [onboardingDone, setOnboardingDone] = useState(false);
+  const [notificationPermissionAsked, setNotificationPermissionAsked] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [activeChallengeId, setActiveChallengeId] = useState<string | undefined>(undefined);
   const [shouldContinueGame, setShouldContinueGame] = useState(false); // Pour le continue après rewarded ad
@@ -77,6 +79,8 @@ export default function App() {
       await adManager.initialize(); // Initialiser AdMob
       const onboardingCompleted = await hasCompletedOnboarding();
       setOnboardingDone(onboardingCompleted);
+      const notificationPermissionAsked = await hasAskedNotificationPermission();
+      setNotificationPermissionAsked(notificationPermissionAsked);
     };
     initialize();
   }, []);
@@ -104,8 +108,8 @@ export default function App() {
           setUserProgress(newProgress);
         }
         
-        // Initialize notifications (callback will be set by separate useEffect)
-        await notificationService.initialize(user.uid);
+        // DON'T initialize notifications here - wait for user to accept in NotificationPermissionScreen
+        // Notifications will be initialized when user clicks "Allow" or when they navigate to home
       }
       setIsLoading(false);
     });
@@ -115,15 +119,23 @@ export default function App() {
 
   // Handle navigation based on user and onboarding state
   useEffect(() => {
-    console.log('Navigation effect:', { isLoading, onboardingDone, currentUser: !!currentUser, currentScreen });
+    console.log('Navigation effect:', { isLoading, onboardingDone, notificationPermissionAsked, showProfileSetup, currentUser: !!currentUser, currentScreen });
     
     if (isLoading) return; // Don't navigate while loading
+    if (showProfileSetup) return; // Don't navigate while profile setup modal is shown
 
     if (!onboardingDone) {
       // Onboarding not completed - show onboarding
       if (currentScreen !== 'onboarding') {
         console.log('Navigating to onboarding');
         setCurrentScreen('onboarding');
+      }
+    } else if (!notificationPermissionAsked) {
+      // Onboarding done but notification permission not asked yet
+      // Only navigate if we're coming from onboarding or not on notification screen
+      if (currentScreen !== 'notificationPermission') {
+        console.log('Navigating to notification permission');
+        setCurrentScreen('notificationPermission');
       }
     } else if (!currentUser) {
       // Onboarding done but no user - show login
@@ -133,12 +145,23 @@ export default function App() {
       }
     } else {
       // User is authenticated and onboarding is done - show home if coming from onboarding/login
-      if (currentScreen === 'onboarding' || currentScreen === 'login') {
+      if (currentScreen === 'onboarding' || currentScreen === 'login' || currentScreen === 'notificationPermission') {
         console.log('Navigating to home');
         setCurrentScreen('home');
       }
     }
-  }, [currentUser, onboardingDone, isLoading, currentScreen]);
+  }, [currentUser, onboardingDone, notificationPermissionAsked, isLoading, showProfileSetup, currentScreen]);
+
+  // Initialize notifications when user is on home screen and has accepted permission
+  useEffect(() => {
+    const initNotifications = async () => {
+      if (currentScreen === 'home' && currentUser && notificationPermissionAsked) {
+        console.log('Initializing notifications for user on home screen');
+        await notificationService.initialize(currentUser.uid);
+      }
+    };
+    initNotifications();
+  }, [currentScreen, currentUser, notificationPermissionAsked]);
 
   // Handle navigation from notifications
   const handleNotificationNavigation = useCallback((screen: string, params?: any) => {
@@ -354,12 +377,30 @@ export default function App() {
     setShowProfileSetup(true);
   };
 
+  const handleAllowNotifications = async () => {
+    console.log('User allowed notifications');
+    await saveNotificationPermissionAsked();
+    setNotificationPermissionAsked(true);
+    
+    // If user is already logged in, request permission immediately
+    if (currentUser) {
+      console.log('User already logged in, requesting notification permission now');
+      await notificationService.initialize(currentUser.uid);
+    }
+    // Otherwise, permission will be requested when user logs in (see auth listener)
+  };
+
+  const handleSkipNotifications = async () => {
+    console.log('User skipped notifications');
+    await saveNotificationPermissionAsked();
+    setNotificationPermissionAsked(true);
+  };
+
   const handleProfileSetupComplete = async (displayName: string, avatarEmoji: string) => {
+    // Don't close modal yet - let it stay open during save
+    // The modal's isSaving state will show loading
+    
     try {
-      // Show loading screen while creating user
-      setShowProfileSetup(false);
-      setIsLoading(true);
-      
       // Create anonymous user if not already logged in
       if (!currentUser) {
         await firebaseService.signInAnonymously();
@@ -374,19 +415,22 @@ export default function App() {
         await firestoreService.updateProfile(user.uid, displayName, avatarEmoji);
         const updatedProgress = await firestoreService.getUserProgress(user.uid);
         setUserProgress(updatedProgress);
+        
+        // Only close modal and navigate if successful
+        setShowProfileSetup(false);
+        setCurrentScreen('notificationPermission');
       }
-      
-      setIsLoading(false);
     } catch (error) {
       console.error('Error setting up profile:', error);
-      setIsLoading(false);
-      setShowProfileSetup(false);
+      // Re-throw error so EditProfileModal can display it
+      throw error;
     }
   };
 
   const handleProfileSetupSkip = () => {
-    // If user skips, just go to login as before
+    // If user skips, close modal and go to notification screen
     setShowProfileSetup(false);
+    setCurrentScreen('notificationPermission');
   };
 
   return (
@@ -406,6 +450,12 @@ export default function App() {
             <>
               {currentScreen === 'onboarding' && !onboardingDone && (
                 <OnboardingScreen onComplete={handleOnboardingComplete} />
+              )}
+              {currentScreen === 'notificationPermission' && (
+                <NotificationPermissionScreen 
+                  onAllow={handleAllowNotifications}
+                  onSkip={handleSkipNotifications}
+                />
               )}
               {currentScreen === 'login' && (
                 <LoginScreen 
