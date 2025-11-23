@@ -15,6 +15,7 @@ import { FriendsScreen } from './src/screens/FriendsScreen';
 import { FriendChallengesScreen } from './src/screens/FriendChallengesScreen';
 import { NotificationPermissionScreen } from './src/screens/NotificationPermissionScreen';
 import { EditProfileModal } from './src/components/EditProfileModal';
+import { ScreenTransition } from './src/components/ScreenTransition';
 import { initializeAudio, playIntroSound } from './src/utils/soundManager';
 import { hasCompletedOnboarding, setOnboardingCompleted, hasAskedNotificationPermission, setNotificationPermissionAsked as saveNotificationPermissionAsked } from './src/utils/storage';
 import { UserProgress, GameMode } from './src/types';
@@ -464,32 +465,38 @@ export default function App() {
                 />
               )}
         {currentScreen === 'home' && (
-          <HomeScreen 
-            onStartGame={handleStartGame}
-            onOpenLeaderboard={handleOpenLeaderboard}
-            onOpenProfile={handleOpenProfile}
-            onOpenChallenges={handleOpenChallenges}
-            onOpenFriends={handleOpenFriends}
-            onOpenLanguageSelection={handleOpenLanguageSelection}
-            userProgress={userProgress}
-            currentUserId={currentUser?.uid}
-          />
+          <ScreenTransition visible={currentScreen === 'home'} type="fade" duration={400}>
+            <HomeScreen 
+              onStartGame={handleStartGame}
+              onOpenLeaderboard={handleOpenLeaderboard}
+              onOpenProfile={handleOpenProfile}
+              onOpenChallenges={handleOpenChallenges}
+              onOpenFriends={handleOpenFriends}
+              onOpenLanguageSelection={handleOpenLanguageSelection}
+              userProgress={userProgress}
+              currentUserId={currentUser?.uid}
+            />
+          </ScreenTransition>
         )}
         {currentScreen === 'leaderboard' && (
-          <LeaderboardScreen
-            onBack={handleCloseLeaderboard}
-            currentUserId={currentUser?.uid || null}
-          />
+          <ScreenTransition visible={currentScreen === 'leaderboard'} type="slide-right" duration={350}>
+            <LeaderboardScreen
+              onBack={handleCloseLeaderboard}
+              currentUserId={currentUser?.uid || null}
+            />
+          </ScreenTransition>
         )}
         {currentScreen === 'profile' && currentUser && (
-          <ProfileScreen
-            userProgress={userProgress}
-            userId={currentUser.uid}
-            isAnonymous={currentUser.isAnonymous}
-            onBack={handleCloseProfile}
-            onSignOut={handleSignOut}
-            onProfileUpdated={handleProfileUpdated}
-          />
+          <ScreenTransition visible={currentScreen === 'profile'} type="slide-left" duration={350}>
+            <ProfileScreen
+              userProgress={userProgress}
+              userId={currentUser.uid}
+              isAnonymous={currentUser.isAnonymous}
+              onBack={handleCloseProfile}
+              onSignOut={handleSignOut}
+              onProfileUpdated={handleProfileUpdated}
+            />
+          </ScreenTransition>
         )}
         {currentScreen === 'challenges' && currentUser && (
           <ChallengesScreen
@@ -525,28 +532,32 @@ export default function App() {
           />
         )}
                 {currentScreen === 'game' && (
-          <GameScreen 
-            onGameOver={handleGameOver}
-            userProgress={userProgress}
-            userId={currentUser?.uid ?? null}
-            mode={selectedGameMode}
-            shouldContinue={shouldContinueGame}
-            onContinueComplete={() => setShouldContinueGame(false)}
-          />
+          <ScreenTransition visible={currentScreen === 'game'} type="slide-up" duration={400}>
+            <GameScreen 
+              onGameOver={handleGameOver}
+              userProgress={userProgress}
+              userId={currentUser?.uid ?? null}
+              mode={selectedGameMode}
+              shouldContinue={shouldContinueGame}
+              onContinueComplete={() => setShouldContinueGame(false)}
+            />
+          </ScreenTransition>
         )}
         {currentScreen === 'gameover' && (
-          <GameOverScreen
-            score={gameResult.score}
-            level={gameResult.level}
-            userProgress={userProgress}
-            onPlayAgain={handlePlayAgain}
-            onBackToHome={handleBackToHome}
-            onContinue={handleContinueGame}
-            onNavigateToChallenges={handleNavigateToChallengeHistory}
-            mode={selectedGameMode}
-            challengeId={activeChallengeId}
-            userId={currentUser?.uid}
-          />
+          <ScreenTransition visible={currentScreen === 'gameover'} type="blur-fade" duration={500}>
+            <GameOverScreen
+              score={gameResult.score}
+              level={gameResult.level}
+              userProgress={userProgress}
+              onPlayAgain={handlePlayAgain}
+              onBackToHome={handleBackToHome}
+              onContinue={handleContinueGame}
+              onNavigateToChallenges={handleNavigateToChallengeHistory}
+              mode={selectedGameMode}
+              challengeId={activeChallengeId}
+              userId={currentUser?.uid}
+            />
+          </ScreenTransition>
         )}
           </>
         )}

@@ -27,6 +27,23 @@
     "later": "Más tarde"
   },
 
+  "neuro": {
+    "greeting": "¿Listo para entrenar tu cerebro?",
+    "welcomeBack": "¡Bienvenido de nuevo!",
+    "levelUp": "¡Increíble! ¡Nivel superado!",
+    "correct": "¡Perfecto!",
+    "excellent": "¡Excelente!",
+    "wrong": "¡No te preocupes, inténtalo de nuevo!",
+    "keepGoing": "¡Sigue así!",
+    "excited": "¡Estás en llamas!",
+    "almostThere": "¡Casi lo logras!",
+    "goodJob": "¡Buen trabajo!",
+    "thinking": "Déjame pensar...",
+    "ready": "¡Listo cuando tú lo estés!",
+    "letsDo": "¡Vamos!",
+    "awesome": "¡Increíble!"
+  },
+
   "login": {
     "title": "Memory Matrix",
     "subtitle": "Desafío",

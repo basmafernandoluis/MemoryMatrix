@@ -57,6 +57,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
     isPaused: false,
     hintsRemaining: 3,
     isHintReplay: false,
+    combo: 0,
   });
 
   const [shouldShowContinueModal, setShouldShowContinueModal] = useState(false);
@@ -251,6 +252,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
       isPaused: false,
       hintsRemaining: 3,
       isHintReplay: false,
+      combo: 0,
     });
 
     setGameModeState({
@@ -352,6 +354,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
       currentSequence: sequence,
       userSequence: [],
       isShowingSequence: true,
+      // Keep combo when advancing to next level
     }));
     setGameStatus('showing');
     
@@ -405,6 +408,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
           ...prev,
           score: prev.score + totalPoints,
           userSequence: newUserSequence,
+          combo: prev.combo + 1,
         }));
 
         setTimeout(async () => {
@@ -422,6 +426,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
         setGameState(prev => ({
           ...prev,
           userSequence: newUserSequence,
+          combo: prev.combo + 1,
         }));
       }
     } else {
@@ -464,6 +469,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
             ...prev,
             userSequence: [],
             isShowingSequence: true,
+            combo: 0,
           }));
           setGameStatus('showing');
         }, 1000);
@@ -477,6 +483,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
           setGameState(prev => ({
             ...prev,
             lives: 0,
+            combo: 0,
             // NE PAS mettre isGameOver à true encore
           }));
           // Le game over sera déclenché si le joueur refuse la pub
@@ -487,6 +494,7 @@ export const useGameLogicExtended = (initialMode: GameMode = 'classic') => {
               lives: newLives,
               userSequence: [],
               isShowingSequence: true,
+              combo: 0,
             }));
             setGameStatus('showing');
           }, 1000);

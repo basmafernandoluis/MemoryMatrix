@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
 import { UserProgress, DailyChallenge, Achievement, GameMode } from '../types';
@@ -13,6 +14,7 @@ import { BannerAdComponent, BannerSpacer } from '../components/BannerAdComponent
 import firestore from '@react-native-firebase/firestore';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
+import { NeuroCharacter } from '../components/NeuroCharacter';
 
 interface HomeScreenProps {
   onStartGame: (mode?: GameMode) => void;
@@ -42,6 +44,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
   const [showInstructions, setShowInstructions] = useState(false);
   const [showModeSelector, setShowModeSelector] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -125,21 +128,41 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.03,
-          duration: 1200,
+          toValue: 1.05,
+          duration: 1000,
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
-          duration: 1200,
+          duration: 1000,
           useNativeDriver: true,
         }),
       ])
     );
     pulse.start();
 
-    return () => pulse.stop();
-  }, [fadeAnim, scaleAnim, pulseAnim]);
+    // Glow animation for play button
+    const glow = Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+      ])
+    );
+    glow.start();
+
+    return () => {
+      pulse.stop();
+      glow.stop();
+    };
+  }, [fadeAnim, scaleAnim, pulseAnim, glowAnim]);
   const handleStartGame = async () => {
     await feedback.buttonPress();
     setShowModeSelector(true);
@@ -177,17 +200,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <Animated.View 
-        style={[
-          styles.content, 
-          { 
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          }
-        ]}
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.title, { color: colors.primary }]}>{t('home.title')}</Text>
-        <Text style={[styles.subtitle, { color: colors.secondary }]}>{t('home.subtitle')}</Text>
+        <Animated.View 
+          style={[
+            styles.content, 
+            { 
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            }
+          ]}
+        >
+          {/* Neuro Character */}
+          <View style={styles.neuroContainer}>
+            <NeuroCharacter 
+              emotion="happy" 
+              size={70} 
+              visible={true}
+              message={t('neuro.greeting')}
+            />
+          </View>
+
+          <Text style={[styles.title, { color: colors.primary }]}>{t('home.title')}</Text>
+          <Text style={[styles.subtitle, { color: colors.secondary }]}>{t('home.subtitle')}</Text>
         
         {dailyChallenge && (
           <View style={[styles.dailyChallengeCard, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
@@ -234,15 +272,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           )}
         </View>
         
-        <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+        <Animated.View style={{ 
+          transform: [{ scale: pulseAnim }],
+        }}>
           <Pressable 
             style={({ pressed }) => [
-              styles.playButton,
+              styles.playButtonContainer,
               pressed && styles.playButtonPressed
             ]}
             onPress={handleStartGame}
           >
-            <Text style={styles.playButtonText}>▶ {t('home.play')}</Text>
+            {/* Glow effect */}
+            <Animated.View
+              style={[
+                styles.playButtonGlow,
+                {
+                  opacity: glowAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.3, 0.8],
+                  }),
+                },
+              ]}
+            />
+            
+            {/* Gradient button */}
+            <LinearGradient
+              colors={[colors.primary, colors.secondary, colors.accent]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.playButton}
+            >
+              <Text style={styles.playButtonText}>▶ {t('home.play')}</Text>
+            </LinearGradient>
           </Pressable>
         </Animated.View>
 
@@ -326,7 +387,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         >
           <Text style={styles.instructionsButtonText}>❓ {t('home.instructionsTitle')}</Text>
         </Pressable>
-      </Animated.View>
+        </Animated.View>
+      </ScrollView>
 
       {/* Instructions Modal */}
       <Modal
@@ -501,11 +563,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  content: {
+  scrollView: {
     flex: 1,
-    padding: 15,
-    paddingBottom: 100, // Espace pour la bannière publicitaire (50px banner + 50px marge)
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 80, // Espace pour la bannière publicitaire (50px banner + 30px marge)
+  },
+  content: {
+    padding: 12,
+    paddingTop: 8,
     justifyContent: 'flex-start',
+    alignItems: 'center',
+    minHeight: SCREEN_HEIGHT - 150, // Assure qu'on peut scroller si nécessaire
+  },
+  neuroContainer: {
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.sm,
     alignItems: 'center',
   },
   title: {
@@ -513,20 +587,20 @@ const styles = StyleSheet.create({
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
     marginBottom: SPACING.xs,
-    marginTop: SPACING.md,
+    marginTop: SPACING.xs,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: FONT_SIZE.xl,
     color: COLORS.warning,
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.md,
     fontWeight: FONT_WEIGHT.semibold,
   },
   dailyChallengeCard: {
     backgroundColor: COLORS.surface,
-    padding: SPACING.lg,
+    padding: SPACING.md,
     borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.md,
     width: '100%',
     maxWidth: 350,
     borderWidth: 2,
@@ -568,14 +642,14 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
+    gap: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   statCard: {
     backgroundColor: COLORS.surface,
-    padding: SPACING.md,
+    padding: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
-    minWidth: 80,
+    minWidth: 75,
     alignItems: 'center',
     ...SHADOW.small,
   },
@@ -590,39 +664,55 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  playButton: {
+  playButtonContainer: {
+    position: 'relative',
+    marginBottom: SPACING.md,
+    marginTop: SPACING.sm,
+  },
+  playButtonGlow: {
+    position: 'absolute',
+    top: -6,
+    left: -6,
+    right: -6,
+    bottom: -6,
+    borderRadius: BORDER_RADIUS.xxl,
     backgroundColor: COLORS.primary,
+    opacity: 0.3,
+  },
+  playButton: {
     paddingHorizontal: 50,
-    paddingVertical: SPACING.lg,
-    borderRadius: BORDER_RADIUS.xl,
-    marginBottom: SPACING.xl,
-    ...SHADOW.medium,
+    paddingVertical: 14,
+    borderRadius: BORDER_RADIUS.xxl,
+    ...SHADOW.large,
   },
   playButtonPressed: {
-    backgroundColor: COLORS.primary,
-    opacity: 0.85,
-    transform: [{ scale: 0.97 }],
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
   playButtonText: {
     fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.text,
-    letterSpacing: 1,
+    color: '#FFFFFF',
+    letterSpacing: 2,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   menuContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: SPACING.md,
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.xl,
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.md,
     flexWrap: 'wrap',
-    paddingHorizontal: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
   },
   menuIcon: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 65,
+    height: 65,
+    borderRadius: 33,
     backgroundColor: COLORS.surface,
     justifyContent: 'center',
     alignItems: 'center',
@@ -728,10 +818,11 @@ const styles = StyleSheet.create({
   },
   instructionsButton: {
     backgroundColor: COLORS.surface,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
     borderRadius: BORDER_RADIUS.lg,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
+    marginTop: SPACING.xs,
     borderWidth: 2,
     borderColor: COLORS.primary,
     ...SHADOW.small,

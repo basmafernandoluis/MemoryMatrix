@@ -27,6 +27,23 @@
     "later": "稍后"
   },
 
+  "neuro": {
+    "greeting": "准备好训练大脑了吗？",
+    "welcomeBack": "欢迎回来！",
+    "levelUp": "太棒了！升级了！",
+    "correct": "完美！",
+    "excellent": "优秀！",
+    "wrong": "别担心，再试一次！",
+    "keepGoing": "继续保持！",
+    "excited": "你太棒了！",
+    "almostThere": "就快成功了！",
+    "goodJob": "干得好！",
+    "thinking": "让我想想...",
+    "ready": "准备好就开始！",
+    "letsDo": "开始吧！",
+    "awesome": "太棒了！"
+  },
+
   "login": {
     "title": "记忆矩阵",
     "subtitle": "挑战",

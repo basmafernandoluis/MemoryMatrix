@@ -24,6 +24,7 @@ export const useGameLogic = () => {
     isPaused: false,
     hintsRemaining: 3, // 3 astuces par partie
     isHintReplay: false, // Pas de replay hint au départ
+    combo: 0,
   });
 
   const [gameStatus, setGameStatus] = useState<GameStatus>('idle');
@@ -53,6 +54,7 @@ export const useGameLogic = () => {
       isPaused: false,
       hintsRemaining: 3, // Reset hints at start
       isHintReplay: false,
+      combo: 0,
     });
     setGameStatus('showing');
     

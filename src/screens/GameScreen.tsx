@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Pressable, Text, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GameHeader } from '../components/GameHeader';
 import { GameGrid } from '../components/GameGrid';
@@ -8,6 +8,7 @@ import { DistractionEffect } from '../components/DistractionEffect';
 import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
 import { ContinueModal } from '../components/ContinueModal';
+import { NeuroCharacter } from '../components/NeuroCharacter';
 import { useGameLogicExtended } from '../hooks/useGameLogicExtended';
 import { useChallengeTracking } from '../hooks/useChallengeTracking';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
@@ -15,6 +16,7 @@ import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { UserProgress, GameMode } from '../types';
 import { feedback } from '../utils/soundManager';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 import { notificationService } from '../services/notificationService';
 
 interface GameScreenProps {
@@ -35,6 +37,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   onContinueComplete,
 }) => {
   const { colors } = useTheme(); // Get theme colors
+  const { t } = useTranslation(); // Get translation function
   const {
     gameState,
     gameModeState,
@@ -65,9 +68,56 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   const [showPauseModal, setShowPauseModal] = useState(false);
   const [previousLevel, setPreviousLevel] = useState(1);
   const [previousScore, setPreviousScore] = useState(0);
+  const [neuroMessage, setNeuroMessage] = useState<string>('');
+  const [showNeuroMessage, setShowNeuroMessage] = useState(false);
   const animationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const messageTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const messageFadeAnim = useRef(new Animated.Value(0)).current;
+  const messageScaleAnim = useRef(new Animated.Value(0.8)).current;
   const sequenceRef = useRef<number[]>([]);
   const currentIndexRef = useRef(0);
+
+  // Get message based on game status (same logic as StatusMessage component)
+  const getGameMessage = () => {
+    if (gameStatus === 'showing' && gameState.isShowingSequence) {
+      if (mode === 'focusChallenge') {
+        return t('game.memorizeFocusShapes', { count: gameState.currentSequence.length });
+      }
+      return t('game.memorizeSequence', { count: gameState.currentSequence.length });
+    }
+    if (gameStatus === 'playing') {
+      if (mode === 'focusChallenge') {
+        return t('game.clickShapesInOrder');
+      }
+      return t('game.yourTurn');
+    }
+    if (gameStatus === 'correct') {
+      // Encouraging messages based on milestones
+      if (gameState.level === 5) {
+        return t('game.level5');
+      }
+      if (gameState.level === 10) {
+        return t('game.level10');
+      }
+      if (gameState.level === 15) {
+        return t('game.level15');
+      }
+      if (gameState.level === 20) {
+        return t('game.level20');
+      }
+      if (gameState.level === 25) {
+        return t('game.level25');
+      }
+      if (gameState.level === 30) {
+        return t('game.level30');
+      }
+      return t('game.excellent');
+    }
+    if (gameStatus === 'wrong') {
+      return t('game.tryAgain');
+    }
+    return t('game.ready');
+  };
 
   // Start game on mount
   useEffect(() => {
@@ -80,8 +130,57 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     // Cleanup: signaler que la partie est terminée
     return () => {
       notificationService.setGameActive(false);
+      if (messageTimerRef.current) {
+        clearTimeout(messageTimerRef.current);
+      }
     };
   }, [mode]);
+
+  // Function to show Neuro message
+  const showNeuroMessageWithDelay = (message: string, duration: number = 3000) => {
+    // Clear previous timer
+    if (messageTimerRef.current) {
+      clearTimeout(messageTimerRef.current);
+    }
+    
+    setNeuroMessage(message);
+    setShowNeuroMessage(true);
+    
+    // Animate in
+    Animated.parallel([
+      Animated.timing(messageFadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.spring(messageScaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    
+    // Hide after duration
+    messageTimerRef.current = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(messageFadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(messageScaleAnim, {
+          toValue: 0.8,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setShowNeuroMessage(false);
+        messageFadeAnim.setValue(0);
+        messageScaleAnim.setValue(0.8);
+      });
+    }, duration);
+  };
 
   // Handle continue after rewarded ad
   useEffect(() => {
@@ -113,6 +212,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   useEffect(() => {
     challengeTracking.updateLives(gameState.lives);
   }, [gameState.lives]);
+
+  // Update message based on game status and show in bubble
+  useEffect(() => {
+    const message = getGameMessage();
+    if (message) {
+      showNeuroMessageWithDelay(message, 2500);
+    }
+  }, [gameStatus, gameState.isShowingSequence, gameState.level, gameState.currentSequence.length]);
 
   // Handle game over
   useEffect(() => {
@@ -291,14 +398,63 @@ export const GameScreen: React.FC<GameScreenProps> = ({
             </Text>
           </View>
         )}
+
+        {/* Neuro Character - réagit au combo */}
+        <View style={styles.neuroContainer}>
+          {/* Message bubble */}
+          {showNeuroMessage && (
+            <Animated.View 
+              style={[
+                styles.messageBubble,
+                {
+                  opacity: messageFadeAnim,
+                  transform: [{ scale: messageScaleAnim }],
+                }
+              ]}
+            >
+              <Text style={styles.messageText}>{neuroMessage}</Text>
+              <View style={styles.bubbleArrow} />
+            </Animated.View>
+          )}
+          
+          <NeuroCharacter
+            emotion={(() => {
+              const combo = gameState.combo ?? 0; // Safety: default to 0 if undefined
+              console.log('🎯 Combo actuel:', combo, 'Status:', gameStatus);
+              if (combo >= 10) {
+                console.log('⭐ Emotion: COMBO');
+                return 'combo';
+              }
+              if (combo >= 5) {
+                console.log('🔥 Emotion: EXCITED');
+                return 'excited';
+              }
+              if (combo >= 3) {
+                console.log('😊 Emotion: HAPPY (combo)');
+                return 'happy';
+              }
+              if (gameStatus === 'correct') {
+                console.log('✅ Emotion: HAPPY (correct)');
+                return 'happy';
+              }
+              if (gameStatus === 'wrong') {
+                console.log('❌ Emotion: SAD');
+                return 'sad';
+              }
+              if (gameState.isShowingSequence) {
+                console.log('👀 Emotion: FOCUSED');
+                return 'focused';
+              }
+              console.log('😐 Emotion: NEUTRAL');
+              return 'neutral';
+            })()}
+            combo={gameState.combo ?? 0}
+            size={60}
+            visible={!gameState.isGameOver}
+          />
+        </View>
         
-        <StatusMessage
-          gameStatus={gameStatus}
-          isShowingSequence={gameState.isShowingSequence}
-          sequenceLength={gameState.currentSequence.length}
-          level={gameState.level}
-          mode={mode}
-        />
+        {/* StatusMessage is now displayed in the bubble next to NeuroCharacter */}
         
         {mode === 'focusChallenge' ? (
           <FocusGameGrid
@@ -379,5 +535,52 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  neuroContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    opacity: 0.85,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  messageBubble: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
+    marginRight: 12,
+    maxWidth: 220,
+    minWidth: 100,
+    shadowColor: '#4A90E2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    position: 'relative',
+    borderWidth: 2,
+    borderColor: 'rgba(74, 144, 226, 0.3)',
+  },
+  bubbleArrow: {
+    position: 'absolute',
+    right: -8,
+    top: '50%',
+    marginTop: -8,
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderLeftColor: '#FFFFFF',
+    borderTopWidth: 8,
+    borderTopColor: 'transparent',
+    borderBottomWidth: 8,
+    borderBottomColor: 'transparent',
+  },
+  messageText: {
+    color: '#1a1a1a',
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

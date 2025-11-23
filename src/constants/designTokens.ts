@@ -36,6 +36,7 @@ export const BORDER_RADIUS = {
   md: 12,
   lg: 16,
   xl: 20,
+  xxl: 28,
   round: 999,
   full: 999, // Alias for round
 };

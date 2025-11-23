@@ -1,0 +1,414 @@
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Animated, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+type NeuroEmotion = 'neutral' | 'happy' | 'focused' | 'excited' | 'sad';
+
+interface NeuroCharacterProps {
+  emotion?: NeuroEmotion;
+  size?: number;
+  visible?: boolean;
+  message?: string;
+}
+
+export const NeuroCharacter: React.FC<NeuroCharacterProps> = ({
+  emotion = 'neutral',
+  size = 100,
+  visible = true,
+  message,
+}) => {
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0.3)).current;
+
+  useEffect(() => {
+    if (!visible) return;
+
+    switch (emotion) {
+      case 'happy':
+        animateHappy();
+        break;
+      case 'excited':
+        animateExcited();
+        break;
+      case 'focused':
+        animateFocused();
+        break;
+      case 'sad':
+        animateSad();
+        break;
+      default:
+        animateNeutral();
+        break;
+    }
+  }, [emotion]);
+
+  const animateNeutral = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -5,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.timing(glowAnim, {
+      toValue: 0.3,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const animateHappy = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -10,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.timing(glowAnim, {
+      toValue: 0.6,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const animateExcited = () => {
+    Animated.parallel([
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceAnim, {
+            toValue: -15,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+          Animated.timing(bounceAnim, {
+            toValue: 0,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(rotateAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(rotateAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+    ]).start();
+
+    Animated.timing(glowAnim, {
+      toValue: 0.8,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const animateFocused = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.08,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    Animated.timing(glowAnim, {
+      toValue: 0.5,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const animateSad = () => {
+    Animated.timing(bounceAnim, {
+      toValue: 5,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(scaleAnim, {
+      toValue: 0.92,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(glowAnim, {
+      toValue: 0.2,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '10deg'],
+  });
+
+  const renderEyes = () => {
+    switch (emotion) {
+      case 'happy':
+      case 'excited':
+        return (
+          <>
+            <View style={[styles.eye, { left: size * 0.3 }]} />
+            <View style={[styles.eye, { right: size * 0.3 }]} />
+          </>
+        );
+      case 'focused':
+        return (
+          <>
+            <View style={[styles.eye, styles.eyeFocused, { left: size * 0.3 }]} />
+            <View style={[styles.eye, styles.eyeFocused, { right: size * 0.3 }]} />
+          </>
+        );
+      case 'sad':
+        return (
+          <>
+            <View style={[styles.eye, { left: size * 0.3, top: size * 0.35 }]} />
+            <View style={[styles.eye, { right: size * 0.3, top: size * 0.35 }]} />
+          </>
+        );
+      default:
+        return (
+          <>
+            <View style={[styles.eye, { left: size * 0.3 }]} />
+            <View style={[styles.eye, { right: size * 0.3 }]} />
+          </>
+        );
+    }
+  };
+
+  const renderMouth = () => {
+    switch (emotion) {
+      case 'happy':
+        return <View style={[styles.mouthHappy, { width: size * 0.4 }]} />;
+      case 'excited':
+        return <View style={[styles.mouthExcited, { width: size * 0.5 }]} />;
+      case 'focused':
+        return <View style={[styles.mouthFocused, { width: size * 0.3 }]} />;
+      case 'sad':
+        return <View style={[styles.mouthSad, { width: size * 0.4 }]} />;
+      default:
+        return <View style={[styles.mouthNeutral, { width: size * 0.3 }]} />;
+    }
+  };
+
+  if (!visible) return null;
+
+  return (
+    <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.character,
+          {
+            width: size,
+            height: size,
+            transform: [
+              { translateY: bounceAnim },
+              { scale: scaleAnim },
+              { rotate },
+            ],
+          },
+        ]}
+      >
+        <Animated.View
+          style={[
+            styles.glow,
+            {
+              width: size * 1.3,
+              height: size * 1.3,
+              opacity: glowAnim,
+            },
+          ]}
+        />
+
+        <LinearGradient
+          colors={['#FF6B9D', '#A78BFA', '#60A5FA']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.body, { width: size, height: size, borderRadius: size / 2 }]}
+        >
+          <View style={styles.brainPattern}>
+            <View style={[styles.brainLine, { width: size * 0.3 }]} />
+            <View style={[styles.brainLine, { width: size * 0.25, left: size * 0.15 }]} />
+            <View style={[styles.brainLine, { width: size * 0.35, top: size * 0.2 }]} />
+          </View>
+
+          {renderEyes()}
+          {renderMouth()}
+        </LinearGradient>
+      </Animated.View>
+
+      {message && (
+        <View style={styles.messageBubble}>
+          <Text style={styles.messageText}>{message}</Text>
+          <View style={styles.bubbleTail} />
+        </View>
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  character: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  glow: {
+    position: 'absolute',
+    backgroundColor: '#A78BFA',
+    borderRadius: 1000,
+    opacity: 0.3,
+  },
+  body: {
+    position: 'relative',
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  brainPattern: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  brainLine: {
+    position: 'absolute',
+    height: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 2,
+    top: '25%',
+    left: '10%',
+  },
+  eye: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 4,
+    top: '30%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+  },
+  eyeFocused: {
+    width: 6,
+    height: 10,
+  },
+  mouthNeutral: {
+    position: 'absolute',
+    height: 2,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+    bottom: '25%',
+  },
+  mouthHappy: {
+    position: 'absolute',
+    height: 15,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 3,
+    borderBottomColor: '#FFFFFF',
+    borderRadius: 20,
+    bottom: '20%',
+  },
+  mouthExcited: {
+    position: 'absolute',
+    height: 20,
+    backgroundColor: 'transparent',
+    borderBottomWidth: 4,
+    borderBottomColor: '#FFFFFF',
+    borderRadius: 25,
+    bottom: '18%',
+  },
+  mouthFocused: {
+    position: 'absolute',
+    height: 2,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 2,
+    bottom: '23%',
+  },
+  mouthSad: {
+    position: 'absolute',
+    height: 15,
+    backgroundColor: 'transparent',
+    borderTopWidth: 3,
+    borderTopColor: '#FFFFFF',
+    borderRadius: 20,
+    bottom: '20%',
+  },
+  messageBubble: {
+    marginTop: 12,
+    backgroundColor: '#1A1A2E',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#A78BFA',
+    maxWidth: 250,
+    shadowColor: '#A78BFA',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  messageText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  bubbleTail: {
+    position: 'absolute',
+    top: -6,
+    left: '50%',
+    marginLeft: -6,
+    width: 0,
+    height: 0,
+    borderLeftWidth: 6,
+    borderRightWidth: 6,
+    borderBottomWidth: 6,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: '#A78BFA',
+  },
+});

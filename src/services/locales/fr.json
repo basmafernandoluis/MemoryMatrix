@@ -27,6 +27,23 @@
     "later": "Plus tard"
   },
 
+  "neuro": {
+    "greeting": "Prêt à entraîner ton cerveau ?",
+    "welcomeBack": "Content de te revoir !",
+    "levelUp": "Incroyable ! Niveau suivant !",
+    "correct": "Parfait !",
+    "excellent": "Excellent !",
+    "wrong": "Ne t'inquiète pas, réessaye !",
+    "keepGoing": "Continue comme ça !",
+    "excited": "Tu es en feu !",
+    "almostThere": "Presque !",
+    "goodJob": "Bien joué !",
+    "thinking": "Laisse-moi réfléchir...",
+    "ready": "Prêt quand tu veux !",
+    "letsDo": "C'est parti !",
+    "awesome": "Génial !"
+  },
+
   "login": {
     "title": "Memory Matrix",
     "subtitle": "Challenge",

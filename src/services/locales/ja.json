@@ -27,6 +27,23 @@
     "later": "後で"
   },
 
+  "neuro": {
+    "greeting": "脳を鍛える準備はできましたか？",
+    "welcomeBack": "おかえりなさい！",
+    "levelUp": "すごい！レベルアップ！",
+    "correct": "完璧！",
+    "excellent": "素晴らしい！",
+    "wrong": "大丈夫、もう一度！",
+    "keepGoing": "その調子！",
+    "excited": "絶好調！",
+    "almostThere": "もう少し！",
+    "goodJob": "よくできました！",
+    "thinking": "考えてみよう...",
+    "ready": "準備ができたら始めましょう！",
+    "letsDo": "さあ、始めよう！",
+    "awesome": "最高！"
+  },
+
   "login": {
     "title": "メモリーマトリックス",
     "subtitle": "チャレンジ",

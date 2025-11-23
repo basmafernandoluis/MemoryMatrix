@@ -117,7 +117,7 @@ const neonTheme: Theme = {
   isPremium: true,
   unlockRequirements: {
     type: 'coins',
-    value: 200,
+    value: 0,
   },
   effects: {
     ...defaultEffects,
@@ -350,6 +350,57 @@ const christmasTheme: Theme = {
   },
 };
 
+// 🧠 THÈME NEURO GAMING
+const neuroGamingTheme: Theme = {
+  id: 'neuroGaming',
+  name: 'Neuro Gaming',
+  description: 'L\'univers gaming de Neuro avec néons cyberpunk',
+  category: 'premium',
+  icon: '🧠',
+  preview: '',
+  isPremium: true,
+  unlockRequirements: {
+    type: 'xp',
+    value: 0,
+  },
+  effects: {
+    ...defaultEffects,
+    particlesIntensity: 'high',
+    glowEffects: true,
+    animationSpeed: 'fast',
+  },
+  colors: {
+    primary: '#A78BFA',
+    primaryDark: '#7C3AED',
+    primaryLight: '#C4B5FD',
+    secondary: '#FF6B9D',
+    accent: '#60A5FA',
+    
+    background: '#0F0F1E',
+    surface: '#1A1A2E',
+    surfaceLight: '#252538',
+    border: '#353B5F',
+    
+    text: '#FFFFFF',
+    textSecondary: '#C4B5FD',
+    textDisabled: '#6B6B80',
+    
+    cellActive: '#FF6B9D',
+    cellInactive: '#1A1A2E',
+    cellCorrect: '#60A5FA',
+    cellIncorrect: '#EF4444',
+    
+    success: '#60A5FA',
+    warning: '#FBBF24',
+    error: '#EF4444',
+    info: '#A78BFA',
+    
+    shadow: 'rgba(255, 107, 157, 0.4)',
+    overlay: 'rgba(15, 15, 30, 0.9)',
+    glow: 'rgba(167, 139, 250, 0.6)',
+  },
+};
+
 // 🎃 THÈME HALLOWEEN (Saisonnier)
 const halloweenTheme: Theme = {
   id: 'halloween',
@@ -406,6 +457,7 @@ export const AVAILABLE_THEMES: Theme[] = [
   classicTheme,
   darkTheme,
   neonTheme,
+  neuroGamingTheme,
   natureTheme,
   oceanTheme,
   sunsetTheme,
