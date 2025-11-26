@@ -13,6 +13,8 @@ interface GridCellProps {
   onPress: (index: number) => void;
   gameStatus: GameStatus;
   currentStep: number;
+  isWrong?: boolean;
+  isCorrect?: boolean;
 }
 
 const GridCell: React.FC<GridCellProps> = ({ 
@@ -21,7 +23,9 @@ const GridCell: React.FC<GridCellProps> = ({
   isInUserSequence, 
   onPress,
   gameStatus,
-  currentStep
+  currentStep,
+  isWrong = false,
+  isCorrect = false,
 }) => {
   const { colors } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -205,6 +209,28 @@ const GridCell: React.FC<GridCellProps> = ({
         zIndex: 10,
       };
     }
+    // Show wrong cell in red
+    if (isWrong && gameStatus === 'wrong') {
+      return { 
+        ...baseStyle,
+        backgroundColor: colors.cellIncorrect,
+        borderColor: '#FF0000',
+        borderWidth: 2,
+        borderBottomWidth: 4,
+        borderBottomColor: 'rgba(0,0,0,0.2)',
+      };
+    }
+    // Show correct sequence cells in RED when wrong (not green)
+    if (isCorrect && gameStatus === 'wrong') {
+      return { 
+        ...baseStyle,
+        backgroundColor: colors.cellIncorrect,
+        borderColor: '#FF6B6B',
+        borderWidth: 2,
+        borderBottomWidth: 4,
+        borderBottomColor: 'rgba(0,0,0,0.2)',
+      };
+    }
     if (gameStatus === 'correct' && isInUserSequence) {
       return { 
         ...baseStyle,
@@ -260,6 +286,8 @@ interface GameGridProps {
   isShowingSequence: boolean;
   gameStatus: GameStatus;
   highlightedCell: number | null;
+  wrongCell?: number | null; // La cellule cliquée incorrecte
+  correctCells?: number[]; // Les cellules de la séquence correcte
 }
 
 export const GameGrid: React.FC<GameGridProps> = ({
@@ -268,12 +296,28 @@ export const GameGrid: React.FC<GameGridProps> = ({
   onCellPress,
   gameStatus,
   highlightedCell,
+  wrongCell = null,
+  correctCells = [],
 }) => {
   const gridSize = GAME_CONFIG.GRID_SIZE;
   const cells = Array.from({ length: gridSize * gridSize }, (_, i) => i);
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  // Shake animation when wrong
+  useEffect(() => {
+    if (gameStatus === 'wrong') {
+      Animated.sequence([
+        Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [gameStatus]);
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { transform: [{ translateX: shakeAnim }] }]}>
       <View style={styles.grid}>
         {cells.map((cellIndex) => (
           <GridCell
@@ -284,10 +328,12 @@ export const GameGrid: React.FC<GameGridProps> = ({
             onPress={onCellPress}
             gameStatus={gameStatus}
             currentStep={userSequence.length}
+            isWrong={wrongCell === cellIndex}
+            isCorrect={correctCells.includes(cellIndex)}
           />
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

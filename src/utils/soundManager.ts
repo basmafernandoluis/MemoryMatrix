@@ -31,12 +31,15 @@ let isChronoPlaying = false;
 // Initialize audio system
 export const initializeAudio = async () => {
   try {
-    // Configure audio mode
+    // Configure audio mode with more permissive settings
     await Audio.setAudioModeAsync({
       playsInSilentModeIOS: true,
       staysActiveInBackground: false,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
+      allowsRecordingIOS: false,
+      interruptionModeIOS: 1, // Do not mix with other audio
+      interruptionModeAndroid: 1, // Do not duck other audio
     });
 
     // Load user preferences
@@ -133,24 +136,127 @@ export const getAudioEnabled = () => audioEnabled;
 export const getHapticsEnabled = () => hapticsEnabled;
 
 // Play a sound with overlap prevention
-const playSound = async (soundKey: keyof SoundCache) => {
-  if (!audioEnabled || !soundCache[soundKey]) return;
+const playSound = async (soundKey: keyof SoundCache, options?: { rate?: number }) => {
+  if (!audioEnabled) return;
 
   try {
-    const sound = soundCache[soundKey];
+    let sound = soundCache[soundKey];
+    
+    // Recreate sound if it doesn't exist or is unloaded
+    if (!sound) {
+      console.log(`Recreating sound: ${soundKey}`);
+      const soundFiles: Record<keyof SoundCache, any> = {
+        intro: require('../../assets/Sound/intro.mp3'),
+        click: require('../../assets/Sound/click.mp3'),
+        bien2: require('../../assets/Sound/bien2.mp3'),
+        coins: require('../../assets/Sound/coins.mp3'),
+        alertefaill: require('../../assets/Sound/alertefaill.mp3'),
+        chrono: require('../../assets/Sound/CHRONO.mp3'),
+        passe: require('../../assets/Sound/passe.mp3'),
+      };
+      
+      if (soundFiles[soundKey]) {
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          soundFiles[soundKey],
+          { shouldPlay: false, volume: soundKey === 'intro' ? 0.5 : soundKey === 'passe' ? 0.4 : soundKey === 'click' ? 0.6 : soundKey === 'alertefaill' ? 0.8 : 0.7 }
+        );
+        soundCache[soundKey] = newSound;
+        sound = newSound;
+      }
+    }
+    
     if (!sound) return;
 
-    // Stop and rewind the sound if it's already playing
+    // Check if sound is loaded
     const status = await sound.getStatusAsync();
+    if (!status.isLoaded) {
+      console.log(`Sound ${soundKey} not loaded, recreating...`);
+      // Recreate the sound
+      const soundFiles: Record<keyof SoundCache, any> = {
+        intro: require('../../assets/Sound/intro.mp3'),
+        click: require('../../assets/Sound/click.mp3'),
+        bien2: require('../../assets/Sound/bien2.mp3'),
+        coins: require('../../assets/Sound/coins.mp3'),
+        alertefaill: require('../../assets/Sound/alertefaill.mp3'),
+        chrono: require('../../assets/Sound/CHRONO.mp3'),
+        passe: require('../../assets/Sound/passe.mp3'),
+      };
+      
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        soundFiles[soundKey],
+        { shouldPlay: false, volume: soundKey === 'intro' ? 0.5 : soundKey === 'passe' ? 0.4 : soundKey === 'click' ? 0.6 : soundKey === 'alertefaill' ? 0.8 : 0.7 }
+      );
+      soundCache[soundKey] = newSound;
+      sound = newSound;
+    }
+
+    // Stop and rewind the sound if it's already playing
     if (status.isLoaded && status.isPlaying) {
       await sound.stopAsync();
     }
     
     // Reset position and play
     await sound.setPositionAsync(0);
+    
+    if (options?.rate) {
+      await sound.setRateAsync(options.rate, true);
+    } else {
+      // Reset rate to normal if not specified
+      await sound.setRateAsync(1.0, true);
+    }
+
     await sound.playAsync();
-  } catch (error) {
-    console.error(`Error playing sound ${soundKey}:`, error);
+  } catch (error: any) {
+    // Handle "Player does not exist" error by recreating the sound
+    if (error?.message?.includes('Player does not exist')) {
+      console.log(`Player destroyed for ${soundKey}, recreating and retrying...`);
+      try {
+        const soundFiles: Record<keyof SoundCache, any> = {
+          intro: require('../../assets/Sound/intro.mp3'),
+          click: require('../../assets/Sound/click.mp3'),
+          bien2: require('../../assets/Sound/bien2.mp3'),
+          coins: require('../../assets/Sound/coins.mp3'),
+          alertefaill: require('../../assets/Sound/alertefaill.mp3'),
+          chrono: require('../../assets/Sound/CHRONO.mp3'),
+          passe: require('../../assets/Sound/passe.mp3'),
+        };
+        
+        if (soundFiles[soundKey]) {
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            soundFiles[soundKey],
+            { 
+              shouldPlay: true, // Play immediately
+              volume: soundKey === 'intro' ? 0.5 : soundKey === 'passe' ? 0.4 : soundKey === 'click' ? 0.6 : soundKey === 'alertefaill' ? 0.8 : 0.7 
+            }
+          );
+          soundCache[soundKey] = newSound;
+          console.log(`✅ ${soundKey} recreated and playing`);
+        }
+      } catch (retryError) {
+        console.log(`Could not recreate sound ${soundKey}:`, retryError);
+      }
+      return;
+    }
+    
+    // Handle audio focus error gracefully
+    if (error?.message?.includes('AudioFocusNotAcquiredException')) {
+      console.log(`Audio focus not available for ${soundKey}, skipping...`);
+      // Try to reconfigure audio mode and retry once
+      try {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+          allowsRecordingIOS: false,
+          interruptionModeAndroid: 1,
+        });
+      } catch (reconfigError) {
+        console.log('Could not reconfigure audio mode');
+      }
+    } else {
+      console.error(`Error playing sound ${soundKey}:`, error);
+    }
   }
 };
 
@@ -272,6 +378,13 @@ export const playHapticWarning = async () => {
 // Game-specific sound functions
 export const playClickSound = async () => {
   await playSound('click');
+};
+
+// Play click sound with pitch based on sequence progress
+export const playSequenceStepSound = async (stepIndex: number) => {
+  // Pitch increases by 0.1 for each step, capped at 2.0
+  const pitch = Math.min(1.0 + (stepIndex * 0.1), 2.0);
+  await playSound('click', { rate: pitch });
 };
 
 export const playCorrectSound = async () => {

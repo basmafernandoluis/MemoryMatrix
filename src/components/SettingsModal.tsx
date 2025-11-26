@@ -160,8 +160,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
             </View>
 
-            {/* Visual Effects Section */}
-            {userId && (
+            {/* Visual Effects Section - Hidden as requested */}
+            {false && userId && (
               <View style={styles.effectsSection}>
                 <Text style={styles.sectionTitle}>✨ {t('profile.visualEffects')}</Text>
                 

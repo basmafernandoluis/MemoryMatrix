@@ -486,6 +486,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({
             isShowingSequence={gameState.isShowingSequence}
             gameStatus={gameStatus}
             highlightedCell={highlightedCell}
+            wrongCell={
+              gameStatus === 'wrong' && gameState.userSequence.length > 0
+                ? gameState.userSequence[gameState.userSequence.length - 1]
+                : null
+            }
+            correctCells={
+              gameStatus === 'wrong'
+                ? gameState.currentSequence
+                : []
+            }
           />
         )}
         
