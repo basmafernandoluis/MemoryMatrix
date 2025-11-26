@@ -569,6 +569,7 @@ export default function App() {
           currentAvatarEmoji="🎮"
           onSave={handleProfileSetupComplete}
           onCancel={handleProfileSetupSkip}
+          isRequired={true}
         />
       </Animated.View>
       </ThemeProvider>

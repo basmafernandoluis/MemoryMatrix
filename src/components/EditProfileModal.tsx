@@ -17,6 +17,7 @@ interface EditProfileModalProps {
   currentAvatarEmoji: string;
   onSave: (displayName: string, avatarEmoji: string) => Promise<void>;
   onCancel: () => void;
+  isRequired?: boolean; // If true, hides the cancel button (for initial setup)
 }
 
 const AVAILABLE_EMOJIS = [
@@ -33,6 +34,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   currentAvatarEmoji,
   onSave,
   onCancel,
+  isRequired = false,
 }) => {
   const { t } = useTranslation();
   const [displayName, setDisplayName] = useState(currentDisplayName);
@@ -121,19 +123,22 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
           {/* Buttons */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={onCancel}
-              disabled={isSaving}
-            >
-              <Text style={styles.cancelButtonText}>{t('profile.editModal.cancel')}</Text>
-            </TouchableOpacity>
+            {!isRequired && (
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={onCancel}
+                disabled={isSaving}
+              >
+                <Text style={styles.cancelButtonText}>{t('profile.editModal.cancel')}</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity
               style={[
                 styles.button,
                 styles.saveButton,
                 isSaving && styles.saveButtonDisabled,
+                isRequired && styles.saveButtonFull,
               ]}
               onPress={handleSave}
               disabled={isSaving}
@@ -248,6 +253,9 @@ const styles = StyleSheet.create({
   },
   saveButtonDisabled: {
     backgroundColor: 'rgba(78, 205, 196, 0.5)',
+  },
+  saveButtonFull: {
+    flex: 1,
   },
   saveButtonText: {
     color: '#1a1a2e',
