@@ -307,86 +307,102 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </Pressable>
         </Animated.View>
 
-        {/* Menu circulaire gaming */}
+        {/* Menu en grille 3x2 avec design moderne */}
         <View style={styles.menuContainer}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.menuIcon,
-              pressed && styles.menuIconPressed,
-            ]}
-            onPress={handleOpenLeaderboard}
-          >
-            <Text style={styles.menuIconEmoji}>🏆</Text>
-            <Text style={styles.menuIconLabel}>{t('home.leaderboard')}</Text>
-          </Pressable>
-
-          <Pressable
-            style={({ pressed }) => [
-              styles.menuIcon,
-              pressed && styles.menuIconPressed,
-            ]}
-            onPress={handleOpenChallenges}
-          >
-            <Text style={styles.menuIconEmoji}>🎯</Text>
-            <Text style={styles.menuIconLabel}>{t('home.challenges')}</Text>
-          </Pressable>
-
-          {onOpenFriends && (
+          <View style={styles.menuRow}>
             <Pressable
               style={({ pressed }) => [
                 styles.menuIcon,
                 pressed && styles.menuIconPressed,
               ]}
-              onPress={handleOpenFriends}
+              onPress={handleOpenLeaderboard}
             >
-              <Text style={styles.menuIconEmoji}>👥</Text>
-              <Text style={styles.menuIconLabel}>{t('home.friends')}</Text>
-              {notificationCount > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.badgeText}>
-                    {notificationCount > 99 ? '99+' : notificationCount}
-                  </Text>
-                </View>
-              )}
+              <View style={[styles.iconCircle, { backgroundColor: colors.primary + '15' }]}>
+                <Text style={styles.menuIconEmoji}>🏆</Text>
+              </View>
+              <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.leaderboard')}</Text>
             </Pressable>
-          )}
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.menuIcon,
-              pressed && styles.menuIconPressed,
-            ]}
-            onPress={handleOpenProfile}
-          >
-            <Text style={styles.menuIconEmoji}>👤</Text>
-            <Text style={styles.menuIconLabel}>{t('home.profile')}</Text>
-          </Pressable>
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuIcon,
+                pressed && styles.menuIconPressed,
+              ]}
+              onPress={handleOpenChallenges}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: colors.warning + '15' }]}>
+                <Text style={styles.menuIconEmoji}>🎯</Text>
+              </View>
+              <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.challenges')}</Text>
+            </Pressable>
 
-          <Pressable
-            style={({ pressed }) => [
-              styles.menuIcon,
-              pressed && styles.menuIconPressed,
-            ]}
-            onPress={handleOpenSettings}
-          >
-            <Text style={styles.menuIconEmoji}>⚙️</Text>
-            <Text style={styles.menuIconLabel}>{t('home.settings')}</Text>
-          </Pressable>
+            {onOpenFriends && (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.menuIcon,
+                  pressed && styles.menuIconPressed,
+                ]}
+                onPress={handleOpenFriends}
+              >
+                <View style={[styles.iconCircle, { backgroundColor: colors.secondary + '15' }]}>
+                  <Text style={styles.menuIconEmoji}>👥</Text>
+                  {notificationCount > 0 && (
+                    <View style={styles.notificationBadge}>
+                      <Text style={styles.badgeText}>
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.friends')}</Text>
+              </Pressable>
+            )}
+          </View>
+
+          <View style={styles.menuRow}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuIcon,
+                pressed && styles.menuIconPressed,
+              ]}
+              onPress={handleOpenProfile}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: colors.accent + '15' }]}>
+                <Text style={styles.menuIconEmoji}>👤</Text>
+              </View>
+              <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.profile')}</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuIcon,
+                pressed && styles.menuIconPressed,
+              ]}
+              onPress={handleOpenSettings}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: colors.primary + '15' }]}>
+                <Text style={styles.menuIconEmoji}>⚙️</Text>
+              </View>
+              <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.settings')}</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.menuIcon,
+                pressed && styles.menuIconPressed,
+              ]}
+              onPress={async () => {
+                await feedback.buttonPress();
+                setShowInstructions(true);
+              }}
+            >
+              <View style={[styles.iconCircle, { backgroundColor: colors.success + '15' }]}>
+                <Text style={styles.menuIconEmoji}>❓</Text>
+              </View>
+              <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.instructionsTitle')}</Text>
+            </Pressable>
+          </View>
         </View>
-        
-        {/* Instructions Button - moved up before achievements */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.instructionsButton,
-            pressed && styles.instructionsButtonPressed,
-          ]}
-          onPress={async () => {
-            await feedback.buttonPress();
-            setShowInstructions(true);
-          }}
-        >
-          <Text style={styles.instructionsButtonText}>❓ {t('home.instructionsTitle')}</Text>
-        </Pressable>
         </Animated.View>
       </ScrollView>
 
@@ -571,60 +587,60 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Espace pour la bannière publicitaire (50px banner + 30px marge)
   },
   content: {
-    padding: 12,
-    paddingTop: 8,
+    padding: SPACING.sm,
+    paddingTop: SPACING.xs,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    minHeight: SCREEN_HEIGHT - 150, // Assure qu'on peut scroller si nécessaire
+    minHeight: SCREEN_HEIGHT - 150,
   },
   neuroContainer: {
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.sm,
+    marginTop: 2,
+    marginBottom: SPACING.xs,
     alignItems: 'center',
   },
   title: {
-    fontSize: FONT_SIZE.massive,
+    fontSize: FONT_SIZE.xxxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
-    marginBottom: SPACING.xs,
-    marginTop: SPACING.xs,
+    marginBottom: 2,
+    marginTop: 2,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: FONT_SIZE.lg,
     color: COLORS.warning,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     fontWeight: FONT_WEIGHT.semibold,
   },
   dailyChallengeCard: {
     backgroundColor: COLORS.surface,
-    padding: SPACING.md,
+    padding: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     width: '100%',
     maxWidth: 350,
     borderWidth: 2,
     borderColor: COLORS.warning,
   },
   challengeTitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: FONT_SIZE.md,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.warning,
     textAlign: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   challengeTarget: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   progressBarContainer: {
-    height: 10,
+    height: 8,
     backgroundColor: COLORS.cellDefault,
     borderRadius: BORDER_RADIUS.sm,
     overflow: 'hidden',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   progressBar: {
     height: '100%',
@@ -643,31 +659,31 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     gap: SPACING.sm,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   statCard: {
     backgroundColor: COLORS.surface,
-    padding: SPACING.sm,
+    padding: SPACING.xs,
     borderRadius: BORDER_RADIUS.md,
-    minWidth: 75,
+    minWidth: 70,
     alignItems: 'center',
     ...SHADOW.small,
   },
   statValue: {
-    fontSize: FONT_SIZE.xxxl,
+    fontSize: FONT_SIZE.xxl,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
-    marginBottom: SPACING.xs,
+    marginBottom: 2,
   },
   statLabel: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 10,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
   playButtonContainer: {
     position: 'relative',
-    marginBottom: SPACING.md,
-    marginTop: SPACING.sm,
+    marginBottom: SPACING.sm,
+    marginTop: SPACING.xs,
   },
   playButtonGlow: {
     position: 'absolute',
@@ -680,8 +696,8 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   playButton: {
-    paddingHorizontal: 50,
-    paddingVertical: 14,
+    paddingHorizontal: 40,
+    paddingVertical: 12,
     borderRadius: BORDER_RADIUS.xxl,
     ...SHADOW.large,
   },
@@ -690,7 +706,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   playButtonText: {
-    fontSize: FONT_SIZE.xxl,
+    fontSize: FONT_SIZE.xl,
     fontWeight: FONT_WEIGHT.bold,
     color: '#FFFFFF',
     letterSpacing: 2,
@@ -700,57 +716,71 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   menuContainer: {
+    width: '100%',
+    maxWidth: 400,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+  },
+  menuRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
     gap: SPACING.sm,
-    marginTop: SPACING.sm,
     marginBottom: SPACING.md,
-    flexWrap: 'wrap',
-    paddingHorizontal: SPACING.xs,
   },
   menuIcon: {
-    width: 65,
-    height: 65,
-    borderRadius: 33,
-    backgroundColor: COLORS.surface,
-    justifyContent: 'center',
     alignItems: 'center',
-    ...SHADOW.medium,
-    borderWidth: 2,
-    borderColor: 'rgba(74, 144, 226, 0.3)',
+    justifyContent: 'center',
+    minWidth: 90,
+    minHeight: 90,
   },
   menuIconPressed: {
-    transform: [{ scale: 0.92 }],
-    opacity: 0.8,
+    transform: [{ scale: 0.95 }],
+    opacity: 0.7,
+  },
+  iconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+    ...SHADOW.medium,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    position: 'relative',
   },
   menuIconEmoji: {
-    fontSize: 28,
-    marginBottom: 2,
+    fontSize: 30,
   },
   menuIconLabel: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
+    fontSize: 11,
     fontWeight: FONT_WEIGHT.semibold,
     textAlign: 'center',
+    letterSpacing: 0.3,
+  },
+  menuIconPlaceholder: {
+    width: 90,
+    height: 90,
   },
   notificationBadge: {
     position: 'absolute',
-    top: -5,
-    right: -5,
+    top: -6,
+    right: -6,
     backgroundColor: '#FF3B30',
-    borderRadius: 10,
-    minWidth: 20,
-    height: 20,
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 5,
-    borderWidth: 2,
+    paddingHorizontal: 6,
+    borderWidth: 3,
     borderColor: COLORS.background,
+    ...SHADOW.small,
   },
   badgeText: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: FONT_WEIGHT.bold,
   },
   leaderboardButton: {
@@ -815,27 +845,6 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: 'center',
     letterSpacing: 0.5,
-  },
-  instructionsButton: {
-    backgroundColor: COLORS.surface,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: BORDER_RADIUS.lg,
-    marginBottom: SPACING.lg,
-    marginTop: SPACING.xs,
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    ...SHADOW.small,
-  },
-  instructionsButtonPressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.98 }],
-  },
-  instructionsButtonText: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: FONT_WEIGHT.bold,
-    color: COLORS.primary,
-    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
