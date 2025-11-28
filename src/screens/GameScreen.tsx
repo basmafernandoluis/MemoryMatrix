@@ -9,8 +9,10 @@ import { StatusMessage } from '../components/StatusMessage';
 import { PauseModal } from '../components/PauseModal';
 import { ContinueModal } from '../components/ContinueModal';
 import { NeuroCharacter } from '../components/NeuroCharacter';
+import { LevelUpAnimation } from '../components/LevelUpAnimation';
 import { useGameLogicExtended } from '../hooks/useGameLogicExtended';
 import { useChallengeTracking } from '../hooks/useChallengeTracking';
+import { useLevelUp } from '../hooks/useLevelUp';
 import { GAME_CONFIG, COLORS } from '../constants/gameConfig';
 import { SPACING, BORDER_RADIUS } from '../constants/designTokens';
 import { UserProgress, GameMode } from '../types';
@@ -63,6 +65,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
   // Challenge tracking hook
   const challengeTracking = useChallengeTracking(userId);
+
+  // Level Up animation hook
+  const { showLevelUp, currentLevel, isAnimating: isLevelUpAnimating, handleLevelUpComplete } = useLevelUp(gameState.level);
 
   const [highlightedCell, setHighlightedCell] = useState<number | null>(null);
   const [showPauseModal, setShowPauseModal] = useState(false);
@@ -289,6 +294,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({
 
   // Show sequence animation
   useEffect(() => {
+    // NOUVEAU : Bloquer si l'animation Level Up est en cours
+    if (isLevelUpAnimating) {
+      console.log('⏸️ Sequence animation blocked - Level Up animation in progress');
+      return;
+    }
+
     if (!gameState.isShowingSequence || gameStatus !== 'showing') {
       return;
     }
@@ -348,7 +359,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         animationTimerRef.current = null;
       }
     };
-  }, [gameState.isShowingSequence, gameStatus, gameState.level]);
+  }, [gameState.isShowingSequence, gameStatus, gameState.level, isLevelUpAnimating]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -519,6 +530,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         visible={shouldShowContinueModal}
         onContinue={acceptContinue}
         onDecline={declineContinue}
+      />
+
+      <LevelUpAnimation
+        visible={showLevelUp}
+        level={currentLevel}
+        onAnimationComplete={handleLevelUpComplete}
       />
     </SafeAreaView>
   );
