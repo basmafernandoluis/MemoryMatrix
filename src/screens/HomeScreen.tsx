@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, ScrollView, Modal, Dimensions, ImageBackground, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS, SHADOW } from '../constants/designTokens';
 import { UserProgress, DailyChallenge, Achievement, GameMode } from '../types';
@@ -45,6 +46,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
+  const titleRotateAnim = useRef(new Animated.Value(0)).current;
+  const titleBounceAnim = useRef(new Animated.Value(0)).current;
   const [showInstructions, setShowInstructions] = useState(false);
   const [showModeSelector, setShowModeSelector] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -158,11 +161,48 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     );
     glow.start();
 
+    // Title animation - subtle rotation with bounce
+    const titleRotate = Animated.loop(
+      Animated.sequence([
+        Animated.timing(titleRotateAnim, {
+          toValue: 1,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(titleRotateAnim, {
+          toValue: 0,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    titleRotate.start();
+
+    const titleBounce = Animated.loop(
+      Animated.sequence([
+        Animated.spring(titleBounceAnim, {
+          toValue: -5,
+          friction: 3,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+        Animated.spring(titleBounceAnim, {
+          toValue: 0,
+          friction: 3,
+          tension: 40,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    titleBounce.start();
+
     return () => {
       pulse.stop();
       glow.stop();
+      titleRotate.stop();
+      titleBounce.stop();
     };
-  }, [fadeAnim, scaleAnim, pulseAnim, glowAnim]);
+  }, [fadeAnim, scaleAnim, pulseAnim, glowAnim, titleRotateAnim, titleBounceAnim]);
   const handleStartGame = async () => {
     await feedback.buttonPress();
     setShowModeSelector(true);
@@ -199,21 +239,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View 
-          style={[
-            styles.content, 
-            { 
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }],
-            }
-          ]}
-        >
+    <ImageBackground
+      source={require('../../assets/homescreen-background.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <Animated.View 
+              style={[
+                styles.content, 
+                { 
+                  opacity: fadeAnim,
+                  transform: [{ scale: scaleAnim }],
+                }
+              ]}
+            >
           {/* Neuro Character */}
           <View style={styles.neuroContainer}>
             <NeuroCharacter 
@@ -224,7 +270,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             />
           </View>
 
-          <Text style={[styles.title, { color: colors.primary }]}>{t('home.title')}</Text>
+          <Animated.View
+            style={{
+              transform: [
+                { 
+                  rotate: titleRotateAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['-2deg', '2deg'],
+                  })
+                },
+                { translateY: titleBounceAnim },
+              ],
+            }}
+          >
+            <Text style={[styles.title, { color: colors.primary }]}>{t('home.title')}</Text>
+          </Animated.View>
           <Text style={[styles.subtitle, { color: colors.secondary }]}>{t('home.subtitle')}</Text>
         
         {dailyChallenge && (
@@ -345,7 +405,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 onPress={handleOpenFriends}
               >
                 <View style={[styles.iconCircle, { backgroundColor: colors.secondary + '15' }]}>
-                  <Text style={styles.menuIconEmoji}>👥</Text>
+                  <Text style={styles.menuIconEmoji}>🤝</Text>
                   {notificationCount > 0 && (
                     <View style={styles.notificationBadge}>
                       <Text style={styles.badgeText}>
@@ -402,11 +462,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <Text style={[styles.menuIconLabel, { color: colors.text }]}>{t('home.instructionsTitle')}</Text>
             </Pressable>
           </View>
-        </View>
-        </Animated.View>
-      </ScrollView>
 
-      {/* Instructions Modal */}
+          {/* Social Media Links */}
+          <View style={styles.socialMediaContainer}>
+            <Text style={[styles.socialMediaTitle, { color: colors.text }]}>Suivez AppWizards</Text>
+            <View style={styles.socialMediaRow}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.socialIcon,
+                  pressed && styles.socialIconPressed,
+                ]}
+                onPress={async () => {
+                  await feedback.buttonPress();
+                  Linking.openURL('https://play.google.com/store/apps/developer?id=AppWizards');
+                }}
+              >
+                <View style={[styles.socialIconCircle, { backgroundColor: '#34A853' + '20' }]}>
+                  <MaterialCommunityIcons name="google-play" size={32} color="#34A853" />
+                </View>
+                <Text style={[styles.socialIconLabel, { color: colors.text }]}>Play Store</Text>
+              </Pressable>
+
+              <Pressable
+                style={({ pressed }) => [
+                  styles.socialIcon,
+                  pressed && styles.socialIconPressed,
+                ]}
+                onPress={async () => {
+                  await feedback.buttonPress();
+                  Linking.openURL('https://www.tiktok.com/@appwizards?_r=1&_t=ZG-91q2J4tdFQX');
+                }}
+              >
+                <View style={[styles.socialIconCircle, { backgroundColor: '#000000' + '20' }]}>
+                  <MaterialCommunityIcons name="music-note" size={32} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.socialIconLabel, { color: colors.text }]}>TikTok</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+            </Animated.View>
+          </ScrollView>
+
+          {/* Instructions Modal */}
       <Modal
         visible={showInstructions}
         transparent={true}
@@ -568,16 +666,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Bannière publicitaire en bas */}
       <BannerAdComponent position="bottom" />
-    </SafeAreaView>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Overlay semi-transparent pour améliorer la lisibilité
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollView: {
     flex: 1,
@@ -599,21 +707,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: FONT_SIZE.xxxl,
+    fontSize: 42, // Agrandi de 28 à 42
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.primary,
-    marginBottom: 2,
+    marginBottom: 4,
     marginTop: 2,
     textAlign: 'center',
+    textShadowColor: 'rgba(74, 144, 226, 0.6)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 10,
   },
   subtitle: {
-    fontSize: FONT_SIZE.lg,
+    fontSize: 20, // Agrandi de 18 à 20
     color: COLORS.warning,
     marginBottom: SPACING.sm,
     fontWeight: FONT_WEIGHT.semibold,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   dailyChallengeCard: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: 'rgba(26, 29, 41, 0.85)', // Semi-transparent pour voir l'arrière-plan
     padding: SPACING.sm,
     borderRadius: BORDER_RADIUS.md,
     marginBottom: SPACING.sm,
@@ -621,16 +735,17 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     borderWidth: 2,
     borderColor: COLORS.warning,
+    ...SHADOW.large,
   },
   challengeTitle: {
-    fontSize: FONT_SIZE.md,
+    fontSize: 18, // Agrandi de 14 à 18
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.warning,
     textAlign: 'center',
     marginBottom: SPACING.xs,
   },
   challengeTarget: {
-    fontSize: FONT_SIZE.xs,
+    fontSize: 13, // Agrandi de 11 à 13
     color: COLORS.textSecondary,
     textAlign: 'center',
     marginBottom: SPACING.sm,
@@ -651,7 +766,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.success,
   },
   challengeProgress: {
-    fontSize: FONT_SIZE.sm,
+    fontSize: 13, // Agrandi de 12 à 13
     color: COLORS.text,
     textAlign: 'center',
     fontWeight: FONT_WEIGHT.semibold,
@@ -662,21 +777,21 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   statCard: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: 'rgba(26, 29, 41, 0.85)', // Semi-transparent
     padding: SPACING.xs,
     borderRadius: BORDER_RADIUS.md,
     minWidth: 70,
     alignItems: 'center',
-    ...SHADOW.small,
+    ...SHADOW.large,
   },
   statValue: {
-    fontSize: FONT_SIZE.xxl,
+    fontSize: 26, // Agrandi de 22 à 26
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
     marginBottom: 2,
   },
   statLabel: {
-    fontSize: 10,
+    fontSize: 11, // Agrandi de 10 à 11
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -706,7 +821,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   playButtonText: {
-    fontSize: FONT_SIZE.xl,
+    fontSize: 24, // Agrandi de 20 à 24
     fontWeight: FONT_WEIGHT.bold,
     color: '#FFFFFF',
     letterSpacing: 2,
@@ -745,19 +860,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.xs,
-    ...SHADOW.medium,
+    ...SHADOW.large,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.2)',
     position: 'relative',
   },
   menuIconEmoji: {
-    fontSize: 30,
+    fontSize: 34, // Agrandi de 30 à 34
   },
   menuIconLabel: {
-    fontSize: 11,
+    fontSize: 12, // Agrandi de 11 à 12
     fontWeight: FONT_WEIGHT.semibold,
     textAlign: 'center',
     letterSpacing: 0.3,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   menuIconPlaceholder: {
     width: 90,
@@ -922,6 +1040,54 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
     fontWeight: FONT_WEIGHT.bold,
     color: COLORS.text,
+  },
+  socialMediaContainer: {
+    width: '100%',
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xl,
+    paddingTop: SPACING.lg,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  socialMediaTitle: {
+    fontSize: 14,
+    fontWeight: FONT_WEIGHT.semibold,
+    textAlign: 'center',
+    marginBottom: SPACING.md,
+    opacity: 0.8,
+  },
+  socialMediaRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: SPACING.xl,
+  },
+  socialIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
+  },
+  socialIconPressed: {
+    opacity: 0.6,
+    transform: [{ scale: 0.95 }],
+  },
+  socialIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    ...SHADOW.medium,
+  },
+  socialIconEmoji: {
+    fontSize: 28,
+  },
+  socialIconLabel: {
+    fontSize: 11,
+    marginTop: SPACING.xs,
+    fontWeight: FONT_WEIGHT.medium,
   },
   achievementsSection: {
     width: '100%',

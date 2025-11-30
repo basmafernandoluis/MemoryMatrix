@@ -44,6 +44,10 @@
     "awesome": "Incrível!"
   },
 
+  "levelUp": {
+    "title": "SUBIU DE NÍVEL!"
+  },
+
   "login": {
     "title": "Memory Matrix",
     "subtitle": "Desafio",

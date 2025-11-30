@@ -44,6 +44,10 @@
     "awesome": "最高！"
   },
 
+  "levelUp": {
+    "title": "レベルアップ！"
+  },
+
   "login": {
     "title": "メモリーマトリックス",
     "subtitle": "チャレンジ",

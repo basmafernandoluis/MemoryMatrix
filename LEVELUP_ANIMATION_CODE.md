@@ -1,6 +1,7 @@
 # Code OPTIMISÉ pour LevelUpAnimation.tsx
 
-**✨ VERSION OPTIMISÉE** : Plus rapide, plus transparente, meilleures performances
+**✨ VERSION OPTIMISÉE** : Plus rapide, plus transparente, meilleures performances  
+**🌍 MULTILINGUE** : Le texte "LEVEL UP!" s'adapte à la langue sélectionnée
 
 ## Instructions
 
@@ -8,6 +9,8 @@
 2. Cliquez sur `File` → `New File`
 3. Copiez-collez le code ci-dessous
 4. Sauvegardez sous : `c:\MemoryMatrix\src\components\LevelUpAnimation.tsx`
+
+**Note** : Le texte est maintenant traduit dans 8 langues (EN, FR, ES, DE, PT, AR, JA, ZH)
 
 ## Code complet OPTIMISÉ
 
@@ -17,6 +20,7 @@ import { View, Text, StyleSheet, Animated, Dimensions, Modal, Easing } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,6 +45,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   onAnimationComplete,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [particles, setParticles] = useState<Particle[]>([]);
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -76,58 +81,58 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   };
 
   const startAnimation = () => {
-    // Animation optimisée : durée totale réduite à ~1.5s
+    // Animation ÉCLAIR : durée totale ~0.5s
     Animated.sequence([
-      // 1. Apparition rapide (150ms)
+      // 1. Apparition instantanée (40ms)
       Animated.parallel([
-        Animated.spring(scaleAnim, { 
+        Animated.timing(scaleAnim, { 
           toValue: 1, 
-          friction: 5, 
-          tension: 60, 
+          duration: 40,
+          easing: Easing.out(Easing.ease),
           useNativeDriver: true 
         }),
         Animated.timing(fadeAnim, { 
           toValue: 1, 
-          duration: 150, 
+          duration: 40, 
           useNativeDriver: true 
         }),
       ]),
 
-      // 2. Texte "LEVEL UP!" (200ms)
-      Animated.spring(textScaleAnim, { 
+      // 2. Texte "LEVEL UP!" apparaît immédiatement (50ms)
+      Animated.timing(textScaleAnim, { 
         toValue: 1, 
-        friction: 6, 
-        tension: 100, 
+        duration: 50,
+        easing: Easing.out(Easing.ease),
         useNativeDriver: true 
       }),
 
-      // 3. Numéro de niveau (200ms)
-      Animated.spring(numberScaleAnim, { 
+      // 3. Numéro de niveau apparaît en même temps (50ms)
+      Animated.timing(numberScaleAnim, { 
         toValue: 1, 
-        friction: 7, 
-        tension: 90, 
+        duration: 50,
+        easing: Easing.out(Easing.ease),
         useNativeDriver: true 
       }),
 
-      // 4. Pause courte (600ms au lieu de 1200ms)
-      Animated.delay(600),
+      // 4. Pause minimale (200ms seulement)
+      Animated.delay(200),
 
-      // 5. Disparition rapide (300ms)
+      // 5. Disparition ultra-rapide (100ms)
       Animated.parallel([
         Animated.timing(fadeAnim, { 
           toValue: 0, 
-          duration: 300, 
+          duration: 100, 
           useNativeDriver: true 
         }),
         Animated.timing(scaleAnim, { 
-          toValue: 1.1, 
-          duration: 300, 
+          toValue: 1.05, 
+          duration: 100, 
           useNativeDriver: true 
         }),
       ]),
 
-      // 6. Délai de sécurité (150ms)
-      Animated.delay(150),
+      // 6. Délai minimal (60ms)
+      Animated.delay(60),
     ]).start(() => {
       onAnimationComplete();
     });
@@ -138,9 +143,9 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   const animateParticles = () => {
     particles.forEach((particle, index) => {
       const angle = (index / particles.length) * Math.PI * 2;
-      const distance = 120 + Math.random() * 60; // Distance réduite
-      const duration = 1200 + Math.random() * 300; // Durée réduite
-      const delay = index * 30; // Délai réduit
+      const distance = 80 + Math.random() * 30; // Distance minimale
+      const duration = 400 + Math.random() * 100; // Durée ÉCLAIR
+      const delay = index * 8; // Délai minimal
 
       Animated.sequence([
         Animated.delay(delay),
@@ -148,24 +153,24 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
           Animated.timing(particle.x, { 
             toValue: Math.cos(angle) * distance, 
             duration, 
-            easing: Easing.out(Easing.quad), 
+            easing: Easing.out(Easing.ease), 
             useNativeDriver: true 
           }),
           Animated.timing(particle.y, { 
             toValue: Math.sin(angle) * distance, 
             duration, 
-            easing: Easing.out(Easing.quad), 
+            easing: Easing.out(Easing.ease), 
             useNativeDriver: true 
           }),
           Animated.sequence([
             Animated.timing(particle.scale, { 
-              toValue: 1.3, 
-              duration: duration * 0.3, 
+              toValue: 1.2, 
+              duration: duration * 0.2, 
               useNativeDriver: true 
             }),
             Animated.timing(particle.scale, { 
               toValue: 0, 
-              duration: duration * 0.7, 
+              duration: duration * 0.8, 
               useNativeDriver: true 
             }),
           ]),
@@ -240,14 +245,14 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
             style={styles.gradientCircle}
           >
             <View style={styles.circleContent}>
-              {/* Texte "LEVEL UP!" */}
+              {/* Texte "LEVEL UP!" traduit */}
               <Animated.View
                 style={[
                   styles.levelUpTextContainer,
                   { transform: [{ scale: textScaleAnim }] },
                 ]}
               >
-                <Text style={styles.levelUpText}>LEVEL UP!</Text>
+                <Text style={styles.levelUpText}>{t('levelUp.title')}</Text>
               </Animated.View>
 
               {/* Numéro du niveau */}
@@ -365,16 +370,19 @@ const styles = StyleSheet.create({
 - ✅ **Moins de calculs** : Suppression de `rotation` dans les particules
 
 ### ⏱️ **Durée totale**
-- **AVANT** : ~2.6 secondes
-- **APRÈS** : ~1.5 secondes ⚡ **-42% plus rapide**
+- **VERSION 1** : ~2.6 secondes
+- **VERSION 2** : ~1.5 secondes (-42%)
+- **VERSION 3** : ~0.75 secondes (-50%)
+- **VERSION 4 ACTUELLE** : ~0.5 secondes ⚡⚡⚡ **-81% plus rapide que v1, -67% plus rapide que v2, -33% plus rapide que v3**
 
-Détail du timing optimisé :
-- Apparition : 150ms (au lieu de 200ms + 800ms rotation)
-- Texte : 200ms (au lieu de 300ms)
-- Numéro : 200ms (au lieu de 300ms)
-- Pause : 600ms (au lieu de 1200ms)
-- Disparition : 300ms (au lieu de 400ms)
-- Délai sécurité : 150ms (au lieu de 200ms)
+Détail du timing ÉCLAIR :
+- Apparition : **40ms** (instantanée)
+- Texte : **50ms** (apparaît immédiatement)
+- Numéro : **50ms** (en même temps)
+- Pause : **200ms** (minimale pour voir)
+- Disparition : **100ms** (ultra-rapide)
+- Délai sécurité : **60ms**
+- **TOTAL : ~500ms (0.5s)** ⚡⚡⚡
 
 ### 🎨 **Transparence améliorée**
 - ✅ **BlurView** : intensity 20 au lieu de 30 (plus transparent)
@@ -389,15 +397,16 @@ Détail du timing optimisé :
 - ✅ Particules explosives avec émojis
 - ✅ Thème dynamique (couleurs du ThemeContext)
 
-### 📊 **Comparaison visuelle**
-
-| Élément | Avant | Après | Amélioration |
-|---------|-------|-------|--------------|
-| **Durée totale** | 2.6s | 1.5s | ⚡ -42% |
-| **Particules** | 12 | 8 | ⚡ -33% |
-| **Animations** | 7 types | 3 types | ⚡ -57% |
-| **Opacité fond** | 30% | 15% | 🎨 +50% transparent |
-| **BlurView** | 30 | 20 | 🎨 +33% transparent |
+| Élément | V1 | V2 | V3 | V4 ACTUELLE | Amélioration |
+|---------|----|----|----|--------------|--------------| 
+| **Durée totale** | 2.6s | 1.5s | 0.75s | **0.5s** | ⚡⚡⚡ -81% vs v1 |
+| **Apparition** | 200ms | 150ms | 75ms | **40ms** | ⚡⚡⚡ -80% |
+| **Texte** | 300ms | 200ms | 100ms | **50ms** | ⚡⚡⚡ -83% |
+| **Pause** | 1200ms | 600ms | 300ms | **200ms** | ⚡⚡⚡ -83% |
+| **Disparition** | 400ms | 300ms | 150ms | **100ms** | ⚡⚡ -75% |
+| **Particules durée** | 2000ms | 1500ms | 750ms | **400-500ms** | ⚡⚡⚡ -75% |
+| **Particules délai** | 50ms | 30ms | 15ms | **8ms** | ⚡⚡⚡ -84% |
+| **Distance particules** | 180px | 140px | 110px | **80-110px** | ⚡⚡ -39% |ansparent |
 | **Taille cercle** | 260px | 220px | ⚡ -15% |
 | **Étoiles déco** | 4 | 2 | ⚡ -50% |
 

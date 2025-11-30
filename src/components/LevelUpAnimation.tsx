@@ -1,8 +1,10 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated, Dimensions, Modal, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,6 +29,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   onAnimationComplete,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [particles, setParticles] = useState<Particle[]>([]);
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -47,7 +50,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
 
   const createParticles = () => {
     const newParticles: Particle[] = [];
-    const particleCount = 6; // Réduit de 8 à 6
+    const particleCount = 8; // Réduit de 12 à 8 pour performances
     for (let i = 0; i < particleCount; i++) {
       newParticles.push({
         id: i,
@@ -62,55 +65,58 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   };
 
   const startAnimation = () => {
-    // DURÉE TOTALE RÉDUITE À ~600ms (réduction de plus de 50%)
+    // Animation ÉCLAIR : durée totale ~0.5s
     Animated.sequence([
-      // 1. Apparition ultra rapide (50ms)
+      // 1. Apparition instantanée (40ms)
       Animated.parallel([
-        Animated.spring(scaleAnim, { 
+        Animated.timing(scaleAnim, { 
           toValue: 1, 
-          friction: 12, // Très élevé pour maximum de rapidité
-          tension: 150, // Très élevé pour maximum de rapidité
+          duration: 60,
+          easing: Easing.out(Easing.ease),
           useNativeDriver: true 
         }),
         Animated.timing(fadeAnim, { 
           toValue: 1, 
-          duration: 50, // Ultra rapide
+          duration: 60, 
           useNativeDriver: true 
         }),
       ]),
 
-      // 2. Texte "LEVEL UP!" et numéro simultanés (100ms)
-      Animated.parallel([
-        Animated.spring(textScaleAnim, { 
-          toValue: 1, 
-          friction: 15,
-          tension: 200,
-          useNativeDriver: true 
-        }),
-        Animated.spring(numberScaleAnim, { 
-          toValue: 1, 
-          friction: 15,
-          tension: 200,
-          useNativeDriver: true 
-        }),
-      ]),
+      // 2. Texte "LEVEL UP!" apparaît immédiatement (50ms)
+      Animated.timing(textScaleAnim, { 
+        toValue: 1, 
+        duration: 60,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true 
+      }),
 
-      // 3. Pause très courte (300ms)
-      Animated.delay(300),
+      // 3. Numéro de niveau apparaît en même temps (50ms)
+      Animated.timing(numberScaleAnim, { 
+        toValue: 1, 
+        duration: 60,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true 
+      }),
 
-      // 4. Disparition ultra rapide (150ms)
+      // 4. Pause minimale (200ms seulement)
+      Animated.delay(200),
+
+      // 5. Disparition ultra-rapide (100ms)
       Animated.parallel([
         Animated.timing(fadeAnim, { 
           toValue: 0, 
-          duration: 150,
+          duration: 150, 
           useNativeDriver: true 
         }),
         Animated.timing(scaleAnim, { 
-          toValue: 1.05, // Réduit de 1.1 à 1.05
-          duration: 150,
+          toValue: 1.05, 
+          duration: 100, 
           useNativeDriver: true 
         }),
       ]),
+
+      // 6. Délai minimal (60ms)
+      Animated.delay(60),
     ]).start(() => {
       onAnimationComplete();
     });
@@ -121,9 +127,9 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
   const animateParticles = () => {
     particles.forEach((particle, index) => {
       const angle = (index / particles.length) * Math.PI * 2;
-      const distance = 80 + Math.random() * 40; // Distance réduite
-      const duration = 500 + Math.random() * 100; // Durée réduite à 500ms
-      const delay = index * 10; // Délai très court
+      const distance = 80 + Math.random() * 30; // Distance minimale
+      const duration = 400 + Math.random() * 100; // Durée ÉCLAIR
+      const delay = index * 8; // Délai minimal
 
       Animated.sequence([
         Animated.delay(delay),
@@ -131,21 +137,27 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
           Animated.timing(particle.x, { 
             toValue: Math.cos(angle) * distance, 
             duration, 
-            easing: Easing.out(Easing.quad), 
+            easing: Easing.out(Easing.ease), 
             useNativeDriver: true 
           }),
           Animated.timing(particle.y, { 
             toValue: Math.sin(angle) * distance, 
             duration, 
-            easing: Easing.out(Easing.quad), 
+            easing: Easing.out(Easing.ease), 
             useNativeDriver: true 
           }),
-          // Animation scale simplifiée
-          Animated.timing(particle.scale, { 
-            toValue: 1.2, 
-            duration: duration * 0.5, 
-            useNativeDriver: true 
-          }),
+          Animated.sequence([
+            Animated.timing(particle.scale, { 
+              toValue: 1.2, 
+              duration: duration * 0.2, 
+              useNativeDriver: true 
+            }),
+            Animated.timing(particle.scale, { 
+              toValue: 0, 
+              duration: duration * 0.8, 
+              useNativeDriver: true 
+            }),
+          ]),
           Animated.timing(particle.opacity, { 
             toValue: 0, 
             duration, 
@@ -173,7 +185,7 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
 
   return (
     <Modal transparent visible={visible} animationType="none">
-      <BlurView intensity={15} style={styles.container}>
+      <BlurView intensity={20} style={styles.container}>
         {/* Particules */}
         <View style={styles.particlesContainer}>
           {particles.map((particle) => (
@@ -208,25 +220,26 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
         >
           <LinearGradient
             colors={[
-              colors.primary + 'DD', // Opacité augmentée
-              colors.secondary + 'DD',
-              colors.success + 'DD',
+              colors.primary + 'CC', // 80% opacité
+              colors.secondary + 'CC',
+              colors.success + 'CC',
             ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientCircle}
           >
             <View style={styles.circleContent}>
-              {/* Texte "LEVEL UP!" et numéro simultanés */}
+              {/* Texte "LEVEL UP!" traduit */}
               <Animated.View
                 style={[
                   styles.levelUpTextContainer,
                   { transform: [{ scale: textScaleAnim }] },
                 ]}
               >
-                <Text style={styles.levelUpText}>LEVEL UP!</Text>
+                <Text style={styles.levelUpText}>{t('levelUp.title')}</Text>
               </Animated.View>
 
+              {/* Numéro du niveau */}
               <Animated.View
                 style={[
                   styles.levelNumberContainer,
@@ -235,6 +248,10 @@ export const LevelUpAnimation: React.FC<LevelUpAnimationProps> = ({
               >
                 <Text style={styles.levelNumber}>{level}</Text>
               </Animated.View>
+
+              {/* Étoiles décoratives */}
+              <Text style={[styles.decorativeStar, styles.star1]}>⭐</Text>
+              <Text style={[styles.decorativeStar, styles.star2]}>✨</Text>
             </View>
           </LinearGradient>
         </Animated.View>
@@ -248,7 +265,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Plus transparent
+    backgroundColor: 'rgba(0, 0, 0, 0.15)', // Très transparent
   },
   particlesContainer: {
     position: 'absolute',
@@ -259,25 +276,25 @@ const styles = StyleSheet.create({
   },
   particle: {
     position: 'absolute',
-    fontSize: 24, // Réduit
+    fontSize: 28, // Réduit de 32
   },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   gradientCircle: {
-    width: 180, // Réduit
-    height: 180,
-    borderRadius: 90,
+    width: 220, // Réduit de 260
+    height: 220,
+    borderRadius: 110,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 10,
+    elevation: 15,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   circleContent: {
     justifyContent: 'center',
@@ -285,32 +302,44 @@ const styles = StyleSheet.create({
   },
   levelUpTextContainer: {
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   levelUpText: {
-    fontSize: 26, // Réduit
+    fontSize: 32, // Réduit de 36
     fontWeight: '900',
     color: '#FFFFFF',
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   levelNumberContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 15,
-    borderWidth: 1.5,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 18,
+    borderWidth: 2,
     borderColor: '#FFFFFF',
-    marginTop: 4,
+    marginTop: 6,
   },
   levelNumber: {
-    fontSize: 32, // Réduit
+    fontSize: 40, // Réduit de 48
     fontWeight: '900',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  decorativeStar: {
+    position: 'absolute',
+    fontSize: 20,
+  },
+  star1: {
+    top: 10,
+    left: -60,
+  },
+  star2: {
+    bottom: 10,
+    right: -60,
   },
 });

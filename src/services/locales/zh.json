@@ -44,6 +44,10 @@
     "awesome": "太棒了！"
   },
 
+  "levelUp": {
+    "title": "升级！"
+  },
+
   "login": {
     "title": "记忆矩阵",
     "subtitle": "挑战",
