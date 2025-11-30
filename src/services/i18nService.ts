@@ -10,6 +10,7 @@
  * - Arabe (ar) - RTL
  * - Chinois simplifié (zh)
  * - Portugais (pt)
+ * - Russe (ru)
  */
 
 import { I18n } from 'i18n-js';
@@ -26,6 +27,7 @@ import ja from './locales/ja.json';
 import ar from './locales/ar.json';
 import zh from './locales/zh.json';
 import pt from './locales/pt.json';
+import ru from './locales/ru.json';
 
 const STORAGE_KEY = '@memory_matrix_language';
 
@@ -39,6 +41,7 @@ const i18n = new I18n({
   ar,
   zh,
   pt,
+  ru,
 });
 
 // Set default locale
@@ -65,6 +68,7 @@ export const SUPPORTED_LANGUAGES: LanguageConfig[] = [
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', isRTL: true },
   { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳', isRTL: false },
   { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', isRTL: false },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', isRTL: false },
 ];
 
 class I18nService {

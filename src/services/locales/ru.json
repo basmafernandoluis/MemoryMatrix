@@ -1,0 +1,701 @@
+{
+  "common": {
+    "play": "Играть",
+    "back": "Назад",
+    "continue": "Продолжить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "ok": "ОК",
+    "yes": "Да",
+    "no": "Нет",
+    "close": "Закрыть",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "warning": "Предупреждение",
+    "tryAgain": "Попробовать снова",
+    "share": "Поделиться",
+    "settings": "Настройки",
+    "easy": "Легко",
+    "medium": "Средне",
+    "hard": "Сложно",
+    "appTitle": "Memory Matrix",
+    "byAppWizards": "От AppWizards",
+    "later": "Позже"
+  },
+
+  "neuro": {
+    "greeting": "Готовы тренировать мозг?",
+    "welcomeBack": "С возвращением!",
+    "levelUp": "Потрясающе! Новый уровень!",
+    "correct": "Отлично!",
+    "excellent": "Превосходно!",
+    "wrong": "Не переживайте, попробуйте снова!",
+    "keepGoing": "Продолжайте!",
+    "excited": "Вы в ударе!",
+    "almostThere": "Почти!",
+    "goodJob": "Хорошая работа!",
+    "thinking": "Дайте подумать...",
+    "ready": "Готов, когда вы готовы!",
+    "letsDo": "Начнём!",
+    "awesome": "Великолепно!"
+  },
+
+  "levelUp": {
+    "title": "НОВЫЙ УРОВЕНЬ!"
+  },
+
+  "login": {
+    "title": "Memory Matrix",
+    "subtitle": "Испытание",
+    "tagline": "Проверь свою память, улучши свой результат! 🧠",
+    "features": {
+      "gameplay": "Захватывающий геймплей",
+      "dailyChallenges": "Ежедневные задания",
+      "achievements": "Разблокируй достижения",
+      "savedProgress": "Прогресс сохраняется"
+    },
+    "guestButton": "👤 НАЧАТЬ",
+    "guestSubtext": "Играть как гость",
+    "disclaimer": "Ваш прогресс будет сохранён автоматически",
+    "connecting": "Подключение..."
+  },
+  
+  "home": {
+    "title": "Memory Matrix",
+    "subtitle": "Испытание",
+    "welcome": "Добро пожаловать",
+    "play": "ИГРАТЬ",
+    "playButton": "Играть",
+    "modesButton": "Режимы игры",
+    "leaderboard": "Рейтинг",
+    "leaderboardButton": "Рейтинг",
+    "challenges": "Задания",
+    "challengesButton": "Ежедневные задания",
+    "profile": "Профиль",
+    "profileButton": "Профиль",
+    "friends": "Друзья",
+    "friendsButton": "Друзья",
+    "friendChallengesButton": "Дуэли с друзьями",
+    "settings": "Настройки",
+    "settingsButton": "Настройки",
+    "dailyChallenge": "Ежедневное задание",
+    "challengeTarget": "Цель: {{target}} очков",
+    "completed": "Выполнено!",
+    "highScore": "Рекорд",
+    "maxLevel": "Макс. уровень",
+    "gamesPlayed": "Игр сыграно",
+    "instructionsTitle": "Как играть",
+    "instruction1": "Смотрите последовательность",
+    "instruction2": "Запомните позиции",
+    "instruction3": "Воспроизведите последовательность",
+    "instruction4": "Прогрессируйте и улучшайте результат!",
+    "instructionsModal": {
+      "gameModes": {
+        "title": "5 игровых режимов",
+        "description": "Классический, Выживание, На время, Дзен и Кастомный. Каждый режим уникален!"
+      },
+      "memorize": {
+        "title": "Запоминайте",
+        "description": "Смотрите последовательность загорающихся ячеек"
+      },
+      "reproduce": {
+        "title": "Воспроизводите",
+        "description": "Нажимайте на ячейки в правильном порядке"
+      },
+      "lives": {
+        "title": "Жизни",
+        "description": "Классический/Таймер: 3 жизни • Выживание/Дзен: бесконечно"
+      },
+      "timeAttack": {
+        "title": "На время",
+        "description": "120 секунд, чтобы набрать максимум очков!"
+      },
+      "dailyChallenges": {
+        "title": "Ежедневные задания",
+        "description": "Новое задание каждый день с наградами"
+      },
+      "leaderboards": {
+        "title": "Рейтинги",
+        "description": "Дневные, недельные и всё время по режимам"
+      },
+      "settings": {
+        "title": "Звуки и настройки",
+        "description": "Настройте игру под себя в настройках ⚙️"
+      },
+      "understood": "Понятно!"
+    },
+    "dailyChallengeTitle": "Ежедневные задания",
+    "dailyChallengeSubtitle": "Новые задания каждый день"
+  },
+
+  "modes": {
+    "title": "Выберите режим",
+    "subtitle": "Выберите стиль игры",
+    "classic": "Классический",
+    "classicDesc": "10 уровней, 5 жизней. Оригинальный режим!",
+    "survival": "Выживание",
+    "survivalDesc": "Бесконечные жизни, растущая сложность. Как далеко вы зайдёте?",
+    "timeAttack": "На время",
+    "timeAttackDesc": "120 секунд, чтобы набрать максимум очков!",
+    "zen": "Дзен",
+    "zenDesc": "Без давления. Не торопитесь, расслабьтесь.",
+    "focus": "Фокус",
+    "focusDesc": "Запоминайте с отвлечениями и цветами",
+    "custom": "Кастомный",
+    "customDesc": "Создайте своё испытание!",
+    "recommended": "Рекомендуется",
+    "locked": "Заблокировано",
+    "unlockHint": "Выиграйте 2 дуэли с друзьями для разблокировки",
+    "unlockInfo": "Пройдите уровни, чтобы разблокировать режимы!",
+    "unlockLevel": "Уровень {{level}}",
+    "unlockFriendWins": "{{count}} побед в дуэлях ({{current}}/{{count}})",
+    "lives": "{{count}} жизней",
+    "infiniteLives": "Бесконечные жизни",
+    "timedMode": "На время"
+  },
+
+  "game": {
+    "level": "Уровень {{level}}",
+    "levelLabel": "Уровень",
+    "score": "Счёт",
+    "lives": "Жизни",
+    "you": "Вы",
+    "world": "Мир",
+    "nearRecord": "🔥 Близко!",
+    "champion": "👑 Чемпион!",
+    "time": "Время",
+    "paused": "Пауза",
+    "resume": "Продолжить",
+    "restart": "Заново",
+    "quit": "Выйти",
+    "memorize": "Запоминайте!",
+    "memorizeSequence": "Запомните последовательность ({{count}} ячеек)",
+    "memorizeFocusShapes": "🎯 Запомните {{count}} фигур!",
+    "yourTurn": "Ваш ход! Воспроизведите последовательность",
+    "clickShapesInOrder": "🎯 Нажимайте на фигуры по порядку!",
+    "ready": "Готовы играть?",
+    "correct": "Правильно!",
+    "wrong": "Неправильно!",
+    "excellent": "✓ Отлично! Продолжайте!",
+    "tryAgain": "✗ Не переживайте! Попробуйте снова, у вас получится!",
+    "level5": "🎯 Уровень 5! Вы на верном пути!",
+    "level10": "🏆 Уровень 10! Вы мастер!",
+    "level15": "🏅 Уровень 15! Чемпион!",
+    "level20": "🏆 Уровень 20! Эксперт подтверждён!",
+    "level25": "👑 Уровень 25! Вы легенда!",
+    "level30": "💎 УРОВЕНЬ 30! АБСОЛЮТНЫЙ ГЕНИЙ!",
+    "perfect": "Идеально!",
+    "goodJob": "Хорошая работа!",
+    "gameOver": "Игра окончена",
+    "newHighScore": "Новый рекорд!",
+    "finalScore": "Финальный счёт",
+    "playAgain": "Играть снова",
+    "backToMenu": "Главное меню",
+    "pauseTitle": "Пауза",
+    "quitConfirm": "Вы действительно хотите выйти?",
+    "restartConfirm": "Хотите начать заново?",
+    "challengeCompleted": "Задание выполнено!",
+    "scoreSubmitted": "Результат отправлен!",
+    "challengeReward": "Победитель получает 50 XP + 25 🪙",
+    "challengeCheckHistory": "Проверьте вкладку ИСТОРИЯ для результата",
+    "challengeOneTry": "Режим дуэли: Одна попытка на задание",
+    "shareScore": "ПОДЕЛИТЬСЯ",
+    "homeButton": "ДОМОЙ",
+    "replayButton": "ИГРАТЬ СНОВА",
+    "successShared": "Результат отправлен!",
+    "bestScore": "Лучший результат",
+    "levelReached": "Достигнут уровень: {{level}}",
+    "newRecord": "НОВЫЙ РЕКОРД!",
+    "pause": "ПАУЗА",
+    "resumeButton": "ПРОДОЛЖИТЬ",
+    "quitButton": "ВЫЙТИ",
+    "bonusTitle": "БОНУС",
+    "bonusSubtitle": "Посмотрите рекламу для бонусов",
+    "boost": {
+      "life": "+1 Жизнь",
+      "hint": "+1 Подсказка",
+      "watchAd": "Смотреть рекламу"
+    }
+  },
+
+  "challenges": {
+    "title": "Ежедневные задания",
+    "subtitle": "Выполните сегодняшние задания",
+    "streak": "Серия",
+    "completed": "Выполнено",
+    "timeRemaining": "Осталось времени",
+    "expired": "Истекло",
+    "loading": "Загрузка заданий...",
+    "timeFormat": "Осталось {{hours}}ч {{minutes}}м",
+    "claimReward": "Получить {{xp}} XP + {{coins}} 🪙",
+    "rewarded": "Награда получена",
+    "inProgress": "В процессе",
+    "locked": "Заблокировано",
+    "infoBanner": "💡 Выполняйте задания, играя в обычные игры. Задания обновляются каждый день!",
+    "types": {
+      "score": "Общий счёт",
+      "speed": "Скорость",
+      "precision": "Точность",
+      "endurance": "Выносливость"
+    },
+    "descriptions": {
+      "scoreGoal": "Достигните {{goal}} очков",
+      "speedGoal": "Пройдите {{goal}} уровней за {{time}}с",
+      "precisionGoal": "{{goal}} правильных ответов подряд",
+      "enduranceGoal": "Выживите {{goal}} уровней без ошибок"
+    },
+    "speed": {
+      "lightningSpeed": {
+        "title": "Скорость молнии",
+        "description": "Достигните уровня 5 за 2 минуты"
+      },
+      "mentalSprinter": {
+        "title": "Ментальный спринтер",
+        "description": "Достигните уровня 8 за 3 минуты"
+      },
+      "memoryFlash": {
+        "title": "Вспышка памяти",
+        "description": "Достигните уровня 10 за 4 минуты"
+      }
+    },
+    "accuracy": {
+      "perfectionist": {
+        "title": "Перфекционист",
+        "description": "Пройдите 5 последовательностей без ошибок"
+      },
+      "absolutePrecision": {
+        "title": "Абсолютная точность",
+        "description": "Пройдите 10 идеальных последовательностей подряд"
+      },
+      "precisionMaster": {
+        "title": "Мастер точности",
+        "description": "Пройдите 15 последовательностей без ошибок"
+      }
+    },
+    "endurance": {
+      "mentalMarathon": {
+        "title": "Ментальный марафон",
+        "description": "Сыграйте 5 игр за одну сессию"
+      },
+      "enduring": {
+        "title": "Выносливый",
+        "description": "Сыграйте 10 игр за один день"
+      },
+      "indestructible": {
+        "title": "Несокрушимый",
+        "description": "Сыграйте 15 игр без выхода"
+      }
+    },
+    "score": {
+      "pointHunter": {
+        "title": "Охотник за очками",
+        "description": "Достигните счёта 3000 очков"
+      },
+      "collector": {
+        "title": "Коллекционер",
+        "description": "Достигните счёта 5000 очков"
+      },
+      "scoreLegend": {
+        "title": "Легенда очков",
+        "description": "Достигните счёта 10000 очков"
+      }
+    },
+    "perfect": {
+      "flawless": {
+        "title": "Безупречный",
+        "description": "Пройдите игру без ошибок до уровня 8"
+      },
+      "absolutePerfection": {
+        "title": "Абсолютное совершенство",
+        "description": "Завершите идеальную игру до уровня 8"
+      }
+    }
+  },
+
+  "friends": {
+    "title": "Друзья",
+    "subtitle": "Управляйте друзьями и запросами",
+    "addFriend": "Добавить друга",
+    "searchPlaceholder": "Имя пользователя или email",
+    "search": "Поиск",
+    "noResults": "Нет результатов",
+    "sendRequest": "Отправить запрос",
+    "requestSent": "Запрос отправлен",
+    "accept": "Принять",
+    "reject": "Отклонить",
+    "remove": "Удалить",
+    "challenge": "Вызов",
+    "waitingForResponse": "Ожидание ответа",
+    "sentOn": "Отправлено",
+    "requestsReceived": "Полученные запросы",
+    "requestsSent": "Отправленные запросы",
+    "tabs": {
+      "friends": "Друзья ({{count}})",
+      "requests": "Запросы ({{count}})",
+      "search": "Поиск"
+    },
+    "emptyFriends": "Пока нет друзей",
+    "emptyFriendsDesc": "Добавьте друзей для дуэлей!",
+    "emptyRequests": "Нет запросов",
+    "friendAdded": "Друг добавлен!",
+    "requestAccepted": "Запрос принят",
+    "requestRejected": "Запрос отклонён",
+    "friendRemoved": "Друг удалён",
+    "errors": {
+      "loadFriends": "Не удалось загрузить список друзей",
+      "searchError": "Ошибка поиска",
+      "sendRequestError": "Не удалось отправить запрос",
+      "acceptError": "Не удалось принять запрос",
+      "rejectError": "Не удалось отклонить запрос",
+      "removeError": "Не удалось удалить друга"
+    },
+    "success": {
+      "requestSent": "Запрос в друзья отправлен!",
+      "requestAccepted": "Запрос принят!",
+      "requestRejected": "Запрос отклонён!",
+      "friendRemoved": "Друг удалён!"
+    }
+  },
+
+  "friendChallenges": {
+    "title": "Дуэли с друзьями",
+    "subtitle": "Создавайте, принимайте и побеждайте ⚔️",
+    "newChallenge": "Новый вызов",
+    "new": "🔔 Новый",
+    "challengeComplete": "Дуэль завершена! 🎉",
+    "viewResults": "Оба игрока закончили. Хотите увидеть результаты?",
+    "viewNow": "Смотреть результаты",
+    "stats": {
+      "challenges": "Дуэли",
+      "wins": "Победы",
+      "losses": "Поражения",
+      "winRate": "Процент побед"
+    },
+    "tabs": {
+      "received": "Полученные ({{count}})",
+      "active": "Активные ({{count}})",
+      "history": "История"
+    },
+    "accept": "✓ Принять",
+    "reject": "✗",
+    "you": "Вы",
+    "playNow": "🎮 Играть",
+    "waitingAcceptance": "⏳ Ожидание принятия",
+    "victory": "🏆 Победа",
+    "defeat": "❌ Поражение",
+    "expiresIn": "Истекает через {{hours}}ч",
+    "claimReward": "🎁 Получить 50 XP + 25 🪙",
+    "rewardClaimed": "✓ Награда получена",
+    "emptyPending": "Нет ожидающих дуэлей",
+    "emptyActive": "Нет активных дуэлей",
+    "emptyActiveDesc": "Создайте дуэль или примите приглашение!",
+    "emptyHistory": "Нет завершённых дуэлей",
+    "modal": {
+      "title": "Создать дуэль",
+      "chooseFriend": "Выберите друга:",
+      "challengeFriend": "Вызвать {{name}} в:",
+      "noFriends": "Нет доступных друзей. Сначала добавьте друзей!",
+      "back": "← Назад"
+    },
+    "alerts": {
+      "challengeAccepted": "Дуэль принята! Начните игру, чтобы отправить результат.",
+      "rejectTitle": "Отклонить дуэль",
+      "rejectMessage": "Вы уверены, что хотите отклонить эту дуэль?",
+      "rejectButton": "Отклонить",
+      "rewardClaimedTitle": "🎉 Награда получена!",
+      "rewardClaimedMessage": "Вы получили 50 XP и 25 монет!",
+      "challengeSent": "Дуэль отправлена {{name}}!",
+      "alreadyActiveTitle": "Дуэль в процессе",
+      "alreadyActiveMessage": "У вас уже есть активная дуэль с {{name}}. Завершите её перед созданием новой."
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить дуэли",
+      "acceptFailed": "Не удалось принять дуэль",
+      "rejectFailed": "Не удалось отклонить дуэль",
+      "claimFailed": "Не удалось получить награду",
+      "createFailed": "Не удалось создать дуэль"
+    }
+  },
+
+  "leaderboard": {
+    "title": "Рейтинг",
+    "subtitle": "Сравните свои результаты",
+    "periods": {
+      "daily": "День",
+      "weekly": "Неделя",
+      "allTime": "Всё время"
+    },
+    "modes": {
+      "all": "Все",
+      "classic": "Классический",
+      "survival": "Выживание",
+      "timeAttack": "Время",
+      "zen": "Дзен"
+    },
+    "rank": "Ранг",
+    "player": "Игрок",
+    "score": "Счёт",
+    "you": "Вы",
+    "yourPosition": "Ваша позиция",
+    "level": "Уровень {{level}}",
+    "empty": "Пока нет результатов",
+    "emptyForPeriod": "Нет результатов за {{period}}",
+    "beFirst": "Будьте первым!",
+    "loading": "Загрузка...",
+    "friendStatus": {
+      "friend": "✓ Друг",
+      "pendingSent": "⏳ Отправлено",
+      "pendingReceived": "Ожидает",
+      "addFriend": "+ Друг"
+    },
+    "acceptRequest": "✓ Принять"
+  },
+
+  "profile": {
+    "title": "Мой профиль",
+    "subtitle": "Ваша статистика и достижения",
+    "editProfile": "Редактировать профиль",
+    "themes": "Темы",
+    "visualEffects": "Визуальные эффекты",
+    "particles": "Частицы",
+    "confetti": "Конфетти",
+    "glowEffects": "Свечение",
+    "shakeEffects": "Тряска",
+    "earnRewards": "Зарабатывайте XP и монеты, выполняя ежедневные задания!",
+    "highScore": "Рекорд",
+    "maxLevel": "Макс. уровень",
+    "gamesPlayed": "Игр сыграно",
+    "achievements": "Достижения",
+    "unlockedAchievements": "Разблокированные достижения",
+    "noAchievements": "Нет достижений. Играйте, чтобы получить!",
+    "signOut": "Выйти",
+    "signingOut": "Выход...",
+    "signOutConfirm": "Вы уверены, что хотите выйти?",
+    "profileUpdated": "Профиль обновлён!",
+    "anonymousInfo": "Ваш профиль сохранён на этом устройстве",
+    "anonymousTip": "Совет: Не выходите, чтобы сохранить данные!",
+    "stats": "Статистика",
+    "settings": "Настройки",
+    "level": "Уровень {{level}}",
+    "xp": "{{current}} / {{next}} XP",
+    "coins": "🪙 {{count}} монет",
+    "totalGames": "Игр сыграно",
+    "bestScore": "Лучший результат",
+    "totalScore": "Общий счёт",
+    "winRate": "Процент побед",
+    "avgScore": "Средний счёт",
+    "perfectGames": "Идеальные игры",
+    "currentStreak": "Текущая серия",
+    "bestStreak": "Лучшая серия",
+    "timePlayed": "Время в игре",
+    "achievementsCount": "{{unlocked}}/{{total}} достижений",
+    "unlocked": "Разблокировано",
+    "locked": "Заблокировано",
+    "progress": "Прогресс: {{current}}/{{target}}",
+    "earnCoinsInfo": "💡 Зарабатывайте XP и монеты, выполняя ежедневные задания!",
+    "editModal": {
+      "title": "Редактировать профиль",
+      "displayName": "Имя пользователя",
+      "avatar": "Аватар",
+      "chooseAvatar": "Выберите аватар",
+      "save": "Сохранить",
+      "saving": "Сохранение...",
+      "cancel": "Отмена",
+      "placeholder": "Введите имя",
+      "characterCount": "{{count}}/20 символов",
+      "errors": {
+        "emptyName": "Имя не может быть пустым",
+        "tooShort": "Имя должно быть минимум 3 символа",
+        "tooLong": "Имя не может превышать 20 символов",
+        "saveFailed": "Не удалось сохранить профиль",
+        "nameTaken": "Это имя уже занято другим игроком"
+      }
+    }
+  },
+
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Настройте игру под себя",
+    "language": "Язык",
+    "selectLanguage": "Выберите язык",
+    "chooseTheme": "Выберите любимую тему",
+    "sound": "Звук",
+    "soundDescription": "Звуковые эффекты игры",
+    "soundOn": "Вкл",
+    "soundOff": "Выкл",
+    "haptics": "Вибрация",
+    "hapticsDescription": "Тактильная обратная связь",
+    "hapticsOn": "Вкл",
+    "hapticsOff": "Выкл",
+    "notifications": "Уведомления",
+    "notificationsOn": "Вкл",
+    "notificationsOff": "Выкл",
+    "theme": "Тема",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "themeAuto": "Авто",
+    "about": "О приложении",
+    "version": "Версия {{version}}",
+    "privacy": "Политика конфиденциальности",
+    "terms": "Условия использования",
+    "support": "Поддержка",
+    "rateApp": "Оценить приложение",
+    "shareApp": "Поделиться",
+    "logout": "Выйти",
+    "logoutConfirm": "Вы уверены, что хотите выйти?",
+    "deleteAccount": "Удалить аккаунт",
+    "deleteConfirm": "Это действие необратимо. Продолжить?"
+  },
+
+  "onboarding": {
+    "skip": "Пропустить →",
+    "next": "Далее",
+    "start": "Начать! 🚀",
+    "slides": {
+      "welcome": {
+        "title": "Добро пожаловать в Memory Matrix!",
+        "description": "Тренируйте память с увлекательной и прогрессивной игрой. Вас ждут 5 разных режимов!",
+        "tip": "Идеально для всех возрастов: от 6 до 100!"
+      },
+      "modes": {
+        "title": "5 уникальных режимов",
+        "description": "Классический, Выживание, На время, Дзен и Фокус. Каждый режим предлагает разный опыт!",
+        "tip": "Разблокируйте Фокус после 2 побед в дуэлях"
+      },
+      "howToPlay": {
+        "title": "Как играть?",
+        "description": "Запомните последовательность загорающихся ячеек, затем воспроизведите её в правильном порядке.",
+        "tip": "Последовательность удлиняется с каждым уровнем"
+      },
+      "lives": {
+        "title": "Жизни и сложность",
+        "description": "Классический и На время: 5 жизней. Выживание и Дзен: бесконечные жизни для расслабленной игры.",
+        "tip": "Выберите режим под свой стиль игры"
+      },
+      "timeAttack": {
+        "title": "Режим На время",
+        "description": "Обгоните время! 120 секунд, чтобы набрать максимум очков. Время не останавливается!",
+        "tip": "Звук таймера сопровождает вас во время игры"
+      },
+      "challenges": {
+        "title": "Ежедневные задания",
+        "description": "Принимайте новое задание каждый день и получайте награды. Поддерживайте серию для большего количества очков!",
+        "tip": "Возвращайтесь каждый день за новыми заданиями"
+      },
+      "friendChallenges": {
+        "title": "Дуэли с друзьями",
+        "description": "Добавляйте друзей и запускайте дуэли! Сравнивайте результаты в Классическом, Выживании, На время или Дзен режиме.",
+        "tip": "Выиграйте 2 дуэли, чтобы разблокировать режим Фокус"
+      },
+      "achievements": {
+        "title": "Достижения и рейтинги",
+        "description": "Разблокируйте 16 достижений, сравнивайте результаты в дневных, недельных и общих рейтингах!",
+        "tip": "Рейтинги по режимам для большей конкуренции"
+      },
+      "customization": {
+        "title": "Звуки и настройка",
+        "description": "Погружающие звуковые эффекты и тактильная обратная связь. Настройте игру под себя!",
+        "tip": "Включайте/выключайте звуки и вибрацию в любое время"
+      }
+    }
+  },
+
+  "achievements": {
+    "firstSteps": "Первые шаги",
+    "firstStepsDesc": "Завершите первую игру",
+    "tenGames": "Новичок",
+    "tenGamesDesc": "Сыграйте 10 игр",
+    "hundredGames": "Ветеран",
+    "hundredGamesDesc": "Сыграйте 100 игр",
+    "score1000": "Начинающий",
+    "score1000Desc": "Достигните 1000 очков",
+    "score5000": "Эксперт",
+    "score5000Desc": "Достигните 5000 очков",
+    "score10000": "Мастер",
+    "score10000Desc": "Достигните 10000 очков",
+    "perfectGame": "Безупречный",
+    "perfectGameDesc": "Завершите игру без ошибок",
+    "speedRunner": "Молния",
+    "speedRunnerDesc": "Пройдите 5 уровней за 30с",
+    "survivor": "Выживший",
+    "survivorDesc": "Достигните уровня 20 в режиме Выживания",
+    "zenMaster": "Мастер Дзен",
+    "zenMasterDesc": "Достигните уровня 30 в режиме Дзен",
+    "timeKeeper": "Хранитель времени",
+    "timeKeeperDesc": "Наберите 3000 очков в режиме На время",
+    "socialButterfly": "Социальный",
+    "socialButterflyDesc": "Добавьте 5 друзей",
+    "challenger": "Челленджер",
+    "challengerDesc": "Выиграйте 10 дуэлей с друзьями",
+    "dailyWarrior": "Ежедневный воин",
+    "dailyWarriorDesc": "Выполняйте задания 7 дней подряд",
+    "collector": "Коллекционер",
+    "collectorDesc": "Заработайте 1000 монет",
+    "legendary": "Легендарный",
+    "legendaryDesc": "Разблокируйте все другие достижения"
+  },
+
+  "errors": {
+    "network": "Ошибка сети. Проверьте подключение.",
+    "auth": "Ошибка аутентификации.",
+    "generic": "Произошла ошибка.",
+    "tryAgain": "Пожалуйста, попробуйте снова.",
+    "noInternet": "Нет подключения к интернету",
+    "serverError": "Ошибка сервера",
+    "notFound": "Не найдено",
+    "permissionDenied": "Доступ запрещён",
+    "invalidData": "Неверные данные",
+    "signOutFailed": "Не удалось выйти"
+  },
+
+  "notifications": {
+    "title": "Уведомление",
+    "dismiss": "Закрыть",
+    "view": "Просмотр",
+    "newNotification": "Вы получили уведомление",
+    "dailyChallengeReady": "🎯 Новые ежедневные задания доступны!",
+    "friendRequest": "Новый запрос в друзья 👥",
+    "friendRequestBody": "{{name}} хочет стать вашим другом",
+    "friendAccepted": "Запрос принят! ✅",
+    "friendAcceptedBody": "{{name}} принял ваш запрос в друзья",
+    "challengeReceived": "Новая дуэль! 🎮",
+    "challengeReceivedBody": "{{name}} вызывает вас в режиме {{mode}}",
+    "challengeAccepted": "Дуэль принята! ✅",
+    "challengeAcceptedBody": "{{name}} принял вашу дуэль",
+    "opponentPlayed": "Противник сыграл! ⚡",
+    "opponentPlayedBody": "{{name}} закончил с {{score}} очками",
+    "victory": "Победа! 🏆",
+    "victoryBody": "Вы победили {{name}}!",
+    "defeat": "Поражение 😔",
+    "defeatBody": "{{name}} победил вас на {{points}} очков",
+    "newAchievement": "🎉 Достижение разблокировано: {{achievement}}",
+    "permission": {
+      "title": "Оставайтесь на связи!",
+      "description": "Включите уведомления, чтобы не пропустить дуэли и запросы в друзья.",
+      "benefit1Title": "Дуэли в реальном времени",
+      "benefit1Description": "Получайте уведомления, когда друзья вызывают вас или заканчивают игру",
+      "benefit2Title": "Запросы в друзья",
+      "benefit2Description": "Мгновенно получайте новые запросы в друзья",
+      "benefit3Title": "Ежедневные задания",
+      "benefit3Description": "Напоминания о ежедневных заданиях и сериях",
+      "allow": "Включить уведомления",
+      "skip": "Позже",
+      "info": "Вы можете изменить это в настройках в любое время"
+    }
+  },
+
+  "tips": {
+    "memorization": "💡 Визуализируйте позиции мысленно",
+    "patterns": "💡 Ищите повторяющиеся паттерны",
+    "focus": "💡 Устраните отвлекающие факторы",
+    "practice": "💡 Регулярная практика улучшает память",
+    "breaks": "💡 Делайте перерывы для концентрации",
+    "sleep": "💡 Хороший сон улучшает запоминание",
+    "chunking": "💡 Группируйте элементы по 3-4",
+    "rhythm": "💡 Создайте ритм для запоминания"
+  }
+}
