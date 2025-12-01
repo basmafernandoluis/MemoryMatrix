@@ -534,6 +534,18 @@
     "notifications": "Notifications",
     "notificationsOn": "On",
     "notificationsOff": "Off",
+    "dailyReminder": "Daily reminders",
+    "music": "Music",
+    "vibration": "Vibration",
+    "general": "General",
+    "audio": "Audio",
+    "notificationEnabled": "Notifications enabled",
+    "notificationEnabledMessage": "You will receive notifications for challenges and friend requests",
+    "notificationBlocked": "Notifications blocked",
+    "notificationBlockedMessage": "Notifications are blocked in system settings. Would you like to open settings to enable them?",
+    "openSettings": "Open settings",
+    "disableNotifications": "Disable notifications",
+    "disableNotificationsMessage": "To disable notifications, you need to do it from system settings. Would you like to open settings?",
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
@@ -649,7 +661,8 @@
     "notFound": "Not found",
     "permissionDenied": "Permission denied",
     "invalidData": "Invalid data",
-    "signOutFailed": "Unable to sign out"
+    "signOutFailed": "Could not sign out",
+    "notificationError": "Could not enable notifications. Please try again."
   },
 
   "notifications": {

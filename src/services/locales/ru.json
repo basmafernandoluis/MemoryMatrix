@@ -519,7 +519,7 @@
 
   "settings": {
     "title": "Настройки",
-    "subtitle": "Настройте игру под себя",
+    "subtitle": "Персонализируйте свой опыт",
     "language": "Язык",
     "selectLanguage": "Выберите язык",
     "chooseTheme": "Выберите любимую тему",
@@ -534,6 +534,18 @@
     "notifications": "Уведомления",
     "notificationsOn": "Вкл",
     "notificationsOff": "Выкл",
+    "dailyReminder": "Ежедневные напоминания",
+    "music": "Музыка",
+    "vibration": "Вибрация",
+    "general": "Общие",
+    "audio": "Аудио",
+    "notificationEnabled": "Уведомления включены",
+    "notificationEnabledMessage": "Вы будете получать уведомления о вызовах и запросах на дружбу",
+    "notificationBlocked": "Уведомления заблокированы",
+    "notificationBlockedMessage": "Уведомления заблокированы в системных настройках. Хотите открыть настройки, чтобы включить их?",
+    "openSettings": "Открыть настройки",
+    "disableNotifications": "Отключить уведомления",
+    "disableNotificationsMessage": "Чтобы отключить уведомления, нужно сделать это в системных настройках. Хотите открыть настройки?",
     "theme": "Тема",
     "themeLight": "Светлая",
     "themeDark": "Тёмная",
@@ -644,12 +656,13 @@
     "auth": "Ошибка аутентификации.",
     "generic": "Произошла ошибка.",
     "tryAgain": "Пожалуйста, попробуйте снова.",
-    "noInternet": "Нет подключения к интернету",
+    "noInternet": "Нет подключения к Интернету",
     "serverError": "Ошибка сервера",
     "notFound": "Не найдено",
     "permissionDenied": "Доступ запрещён",
     "invalidData": "Неверные данные",
-    "signOutFailed": "Не удалось выйти"
+    "signOutFailed": "Не удалось выйти",
+    "notificationError": "Не удалось включить уведомления. Попробуйте снова."
   },
 
   "notifications": {

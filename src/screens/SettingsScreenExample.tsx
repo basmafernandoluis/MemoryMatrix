@@ -4,7 +4,7 @@
  * Exemple d'intégration du système i18n dans un écran existant
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,20 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Alert,
+  Linking,
+  Platform,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import messaging from '@react-native-firebase/messaging';
 import { COLORS } from '../constants/gameConfig';
 import { SPACING, FONT_SIZE, FONT_WEIGHT, BORDER_RADIUS } from '../constants/designTokens';
 import { useTranslation } from '../hooks/useTranslation';
+import { notificationService } from '../services/notificationService';
+import { firebaseService } from '../services/firebase';
 
 interface SettingsScreenExampleProps {
   onBack: () => void;
@@ -33,7 +40,146 @@ export const SettingsScreenExample: React.FC<SettingsScreenExampleProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [musicEnabled, setMusicEnabled] = useState(true);
   const [vibrationEnabled, setVibrationEnabled] = useState(true);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [isCheckingPermission, setIsCheckingPermission] = useState(true);
+  const appState = useRef(AppState.currentState);
+
+  // Vérifier l'état des permissions au chargement
+  useEffect(() => {
+    checkNotificationPermission();
+
+    // Écouter les changements d'état de l'app (retour depuis les paramètres)
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        // L'app revient au premier plan, revérifier les permissions
+        console.log('App returned to foreground, rechecking permissions');
+        checkNotificationPermission();
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const checkNotificationPermission = async () => {
+    try {
+      setIsCheckingPermission(true);
+      const enabled = await notificationService.checkPermission();
+      setNotificationsEnabled(enabled);
+      console.log('Notification permission status:', enabled);
+    } catch (error) {
+      console.error('Error checking notification permission:', error);
+      setNotificationsEnabled(false);
+    } finally {
+      setIsCheckingPermission(false);
+    }
+  };
+
+  const handleNotificationToggle = async (value: boolean) => {
+    if (value) {
+      // L'utilisateur veut activer les notifications
+      try {
+        console.log('User wants to enable notifications, requesting permission...');
+        
+        // Demander la permission système
+        const authStatus = await messaging().requestPermission();
+        console.log('Permission request result:', authStatus);
+        
+        const granted =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (granted) {
+          // Permission accordée - initialiser le service si pas déjà fait
+          const user = firebaseService.getCurrentUser();
+          if (user) {
+            // Vérifier si le service a déjà un token
+            const existingToken = notificationService.getToken();
+            if (!existingToken) {
+              console.log('Initializing notification service...');
+              await notificationService.initialize(user.uid);
+            } else {
+              console.log('Notification service already initialized');
+            }
+            
+            setNotificationsEnabled(true);
+            Alert.alert(
+              t('settings.notificationEnabled'),
+              t('settings.notificationEnabledMessage')
+            );
+          } else {
+            console.log('No user found, cannot initialize notifications');
+            setNotificationsEnabled(false);
+          }
+        } else {
+          // Permission refusée - proposer d'ouvrir les paramètres
+          console.log('Permission denied, showing alert to open settings');
+          Alert.alert(
+            t('settings.notificationBlocked'),
+            t('settings.notificationBlockedMessage'),
+            [
+              {
+                text: t('common.cancel'),
+                style: 'cancel',
+                onPress: () => setNotificationsEnabled(false),
+              },
+              {
+                text: t('settings.openSettings'),
+                onPress: () => {
+                  if (Platform.OS === 'ios') {
+                    Linking.openURL('app-settings:');
+                  } else {
+                    Linking.openSettings();
+                  }
+                },
+              },
+            ]
+          );
+          setNotificationsEnabled(false);
+        }
+      } catch (error) {
+        console.error('Error requesting notification permission:', error);
+        Alert.alert(
+          t('errors.generic'),
+          t('errors.notificationError')
+        );
+        setNotificationsEnabled(false);
+      }
+    } else {
+      // L'utilisateur veut désactiver les notifications
+      // On ne peut pas révoquer la permission, mais on peut proposer d'ouvrir les paramètres
+      console.log('User wants to disable notifications, showing settings alert');
+      Alert.alert(
+        t('settings.disableNotifications'),
+        t('settings.disableNotificationsMessage'),
+        [
+          {
+            text: t('common.cancel'),
+            style: 'cancel',
+            onPress: () => {
+              // L'utilisateur annule, garder le switch activé
+              setNotificationsEnabled(true);
+            },
+          },
+          {
+            text: t('settings.openSettings'),
+            onPress: () => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:');
+              } else {
+                Linking.openSettings();
+              }
+            },
+          },
+        ]
+      );
+    }
+  };
 
   const SettingItem = ({
     icon,
@@ -171,7 +317,7 @@ export const SettingsScreenExample: React.FC<SettingsScreenExampleProps> = ({
               label={t('settings.dailyReminder')}
               showSwitch
               switchValue={notificationsEnabled}
-              onSwitchChange={setNotificationsEnabled}
+              onSwitchChange={handleNotificationToggle}
             />
           </View>
 

@@ -534,6 +534,18 @@
     "notifications": "Notifications",
     "notificationsOn": "Activé",
     "notificationsOff": "Désactivé",
+    "dailyReminder": "Rappels quotidiens",
+    "music": "Musique",
+    "vibration": "Vibration",
+    "general": "Général",
+    "audio": "Audio",
+    "notificationEnabled": "Notifications activées",
+    "notificationEnabledMessage": "Vous recevrez des notifications pour les défis et demandes d'amis",
+    "notificationBlocked": "Notifications bloquées",
+    "notificationBlockedMessage": "Les notifications sont bloquées dans les paramètres système. Voulez-vous ouvrir les paramètres pour les activer ?",
+    "openSettings": "Ouvrir les paramètres",
+    "disableNotifications": "Désactiver les notifications",
+    "disableNotificationsMessage": "Pour désactiver les notifications, vous devez le faire depuis les paramètres système. Voulez-vous ouvrir les paramètres ?",
     "theme": "Thème",
     "themeLight": "Clair",
     "themeDark": "Sombre",
@@ -649,7 +661,8 @@
     "notFound": "Non trouvé",
     "permissionDenied": "Permission refusée",
     "invalidData": "Données invalides",
-    "signOutFailed": "Impossible de se déconnecter"
+    "signOutFailed": "Impossible de se déconnecter",
+    "notificationError": "Impossible d'activer les notifications. Veuillez réessayer."
   },
 
   "notifications": {
